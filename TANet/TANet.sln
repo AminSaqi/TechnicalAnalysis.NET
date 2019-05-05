@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TANet.Core", "TANet.Core\TANet.Core.csproj", "{63CFB1CF-BE63-40F1-9DCF-6056EDA162F2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4D7B4A03-4A95-4396-8290-1FC8BBC8BE9C} = {4D7B4A03-4A95-4396-8290-1FC8BBC8BE9C}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TANet.Contracts", "TANet.Contracts\TANet.Contracts.csproj", "{CC684BF3-8EA1-4C3E-928A-F2E195396AAE}"
 EndProject
