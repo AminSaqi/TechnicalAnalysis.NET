@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TANet.Contracts\TANet.Contracts.csproj" />
-    <ProjectReference Include="..\TANet.Util\TANet.Util.csproj" />
   </ItemGroup>
 
 </Project>
