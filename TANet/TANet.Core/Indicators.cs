@@ -8,8 +8,25 @@ namespace TANet.Core
 {
     public static class Indicators
     {
+        #region EMA
+
+        public static MovingAverageResult Ema(decimal[] input, int period)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Ema, period);
+        }
+        public static MovingAverageResult Ema(List<Candle> input, int period)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Ema, period);
+        }
+        public static MovingAverageResult Ema(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Ema, period, calculationBase: calculationBase);
+        }
+
+        #endregion
+
         #region ExtendedMacd
-                      
+
         public static ExtendedMacdResult ExtendedMacd(decimal[] input, int fastPeriod, int slowPeriod, int signalPeriod)
         {
             return Indicators.ExtendedMacd(input, MovingAverageType.Ema, fastPeriod, MovingAverageType.Ema, slowPeriod, MovingAverageType.Ema, signalPeriod);
