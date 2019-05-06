@@ -7,14 +7,14 @@ Simple use of technical analysis indicators for C#, based on TALib.
  - [ ] Atr 
  - [ ] BollingerBands
  - [ ] Cci
- - [ ] Ema
+ - [x] Ema
  - [x] ExtendedMacd
  - [ ] Kama
  - [ ] Macd
  - [ ] Mfi
  - [ ] ParabolicSar
  - [ ] Rsi
- - [ ] Sma
+ - [x] Sma
  - [ ] Stochastic
  - [ ] WilliamsR
  - [x] Wma
