@@ -8,8 +8,25 @@ namespace TANet.Core
 {
     public static class Indicators
     {
+        #region EMA
+
+        public static MovingAverageResult Ema(decimal[] input, int period)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Ema, period);
+        }
+        public static MovingAverageResult Ema(List<Candle> input, int period)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Ema, period);
+        }
+        public static MovingAverageResult Ema(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Ema, period, calculationBase: calculationBase);
+        }
+
+        #endregion
+
         #region ExtendedMacd
-                      
+
         public static ExtendedMacdResult ExtendedMacd(decimal[] input, int fastPeriod, int slowPeriod, int signalPeriod)
         {
             return Indicators.ExtendedMacd(input, MovingAverageType.Ema, fastPeriod, MovingAverageType.Ema, slowPeriod, MovingAverageType.Ema, signalPeriod);
@@ -33,6 +50,23 @@ namespace TANet.Core
         public static ExtendedMacdResult ExtendedMacd(List<Candle> input, int fastPeriod, int slowPeriod, int signalPeriod, MacdSignalType signalType, IndicatorCalculationBase calculationBase)
         {
             return Indicators.ExtendedMacd(input, MovingAverageType.Ema, fastPeriod, MovingAverageType.Ema, slowPeriod, MovingAverageType.Ema, signalPeriod, signalType: signalType, calculationBase: calculationBase);
+        }
+
+        #endregion
+
+        #region SMA
+
+        public static MovingAverageResult Sma(decimal[] input, int period)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Sma, period);
+        }
+        public static MovingAverageResult Sma(List<Candle> input, int period)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Sma, period);
+        }
+        public static MovingAverageResult Sma(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Sma, period, calculationBase: calculationBase);
         }
 
         #endregion
