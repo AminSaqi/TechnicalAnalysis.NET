@@ -54,6 +54,23 @@ namespace TANet.Core
 
         #endregion
 
+        #region SMA
+
+        public static MovingAverageResult Sma(decimal[] input, int period)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Sma, period);
+        }
+        public static MovingAverageResult Sma(List<Candle> input, int period)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Sma, period);
+        }
+        public static MovingAverageResult Sma(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Sma, period, calculationBase: calculationBase);
+        }
+
+        #endregion
+
         #region WMA
 
         public static MovingAverageResult Wma(decimal[] input, int period)
