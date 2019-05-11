@@ -88,6 +88,35 @@ namespace TANet.Core
 
         #endregion
 
+        #region KAMA
+
+        public static MovingAverageResult Kama(decimal[] input, int period)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Kama, period);
+        }
+        public static MovingAverageResult Kama(decimal[] input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Kama, period, signalLogic: signalLogic);
+        }
+        public static MovingAverageResult Kama(List<Candle> input, int period)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Kama, period);
+        }
+        public static MovingAverageResult Kama(List<Candle> input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Kama, period, signalLogic: signalLogic);
+        }
+        public static MovingAverageResult Kama(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Kama, period, calculationBase: calculationBase);
+        }
+        public static MovingAverageResult Kama(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Kama, period, calculationBase: calculationBase, signalLogic: signalLogic);
+        }
+
+        #endregion
+
         #region SMA
 
         public static MovingAverageResult Sma(decimal[] input, int period)
@@ -113,6 +142,35 @@ namespace TANet.Core
         public static MovingAverageResult Sma(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
             return Indicators.MovingAverage(input, MovingAverageType.Sma, period, calculationBase: calculationBase, signalLogic: signalLogic);
+        }
+
+        #endregion
+
+        #region TEMA
+
+        public static MovingAverageResult Tema(decimal[] input, int period)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Tema, period);
+        }
+        public static MovingAverageResult Tema(decimal[] input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Tema, period, signalLogic: signalLogic);
+        }
+        public static MovingAverageResult Tema(List<Candle> input, int period)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Tema, period);
+        }
+        public static MovingAverageResult Tema(List<Candle> input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Tema, period, signalLogic: signalLogic);
+        }
+        public static MovingAverageResult Tema(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Tema, period, calculationBase: calculationBase);
+        }
+        public static MovingAverageResult Tema(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Tema, period, calculationBase: calculationBase, signalLogic: signalLogic);
         }
 
         #endregion
