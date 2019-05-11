@@ -105,7 +105,7 @@ namespace TANet.Core
 
         #endregion
 
-        public static ExtendedMacdResult ExtendedMacd(List<Candle> candles, MovingAverageType fastMaType, int fastPeriod, MovingAverageType slowMaType, int slowPeriod, MovingAverageType signalMaType, int signalPeriod, IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close, MacdSignalType signalType = MacdSignalType.ZeroLineCrossover)
+        private static ExtendedMacdResult ExtendedMacd(List<Candle> candles, MovingAverageType fastMaType, int fastPeriod, MovingAverageType slowMaType, int slowPeriod, MovingAverageType signalMaType, int signalPeriod, IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close, MacdSignalType signalType = MacdSignalType.ZeroLineCrossover)
         {
             decimal[] input;
             if (calculationBase == IndicatorCalculationBase.Close)
@@ -128,12 +128,12 @@ namespace TANet.Core
 
             return ExtendedMacd(input, fastMaType, fastPeriod, slowMaType, slowPeriod, signalMaType, signalPeriod);
         }
-        public static ExtendedMacdResult ExtendedMacd(decimal[] input, MovingAverageType fastMaType, int fastPeriod, MovingAverageType slowMaType, int slowPeriod, MovingAverageType signalMaType, int signalPeriod, MacdSignalType signalType = MacdSignalType.ZeroLineCrossover)
+        private static ExtendedMacdResult ExtendedMacd(decimal[] input, MovingAverageType fastMaType, int fastPeriod, MovingAverageType slowMaType, int slowPeriod, MovingAverageType signalMaType, int signalPeriod, MacdSignalType signalType = MacdSignalType.ZeroLineCrossover)
         {
             return TANet.Util.StaticClasses.Indicators.MacdExt(input, fastMaType, fastPeriod, slowMaType, slowPeriod, signalMaType, signalPeriod, signalType);
         }
 
-        public static MovingAverageResult MovingAverage(List<Candle> candles, MovingAverageType maType, int period, IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close)
+        private static MovingAverageResult MovingAverage(List<Candle> candles, MovingAverageType maType, int period, IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close)
         {
             decimal[] input;
             if (calculationBase == IndicatorCalculationBase.Close)
@@ -156,7 +156,7 @@ namespace TANet.Core
 
             return MovingAverage(input, maType, period);
         }
-        public static MovingAverageResult MovingAverage(decimal[] input, MovingAverageType maType, int period)
+        private static MovingAverageResult MovingAverage(decimal[] input, MovingAverageType maType, int period)
         {
             return TANet.Util.StaticClasses.Indicators.Ma(input, maType, period);
         }
