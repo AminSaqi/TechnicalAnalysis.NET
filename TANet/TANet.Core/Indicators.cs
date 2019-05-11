@@ -94,13 +94,25 @@ namespace TANet.Core
         {
             return Indicators.MovingAverage(input, MovingAverageType.Sma, period);
         }
+        public static MovingAverageResult Sma(decimal[] input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Sma, period, signalLogic: signalLogic);
+        }
         public static MovingAverageResult Sma(List<Candle> input, int period)
         {
             return Indicators.MovingAverage(input, MovingAverageType.Sma, period);
         }
+        public static MovingAverageResult Sma(List<Candle> input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Sma, period, signalLogic: signalLogic);
+        }
         public static MovingAverageResult Sma(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
         {
             return Indicators.MovingAverage(input, MovingAverageType.Sma, period, calculationBase: calculationBase);
+        }
+        public static MovingAverageResult Sma(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Sma, period, calculationBase: calculationBase, signalLogic: signalLogic);
         }
 
         #endregion
