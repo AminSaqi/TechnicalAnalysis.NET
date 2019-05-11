@@ -8,6 +8,15 @@ namespace TANet.Util.StaticClasses
 {
     public static class Indicators
     {
+        #region Default Signal Logics
+
+        static Func<decimal[], IndicatorSignal> rsiDefaultLogic = output =>
+            output[output.Length - 1] <= 30 ? IndicatorSignal.Buy :
+            output[output.Length - 1] >= 70 ? IndicatorSignal.Sell :
+            IndicatorSignal.Stay;
+
+        #endregion
+
         public static MovingAverageResult Ma(decimal[] input, MovingAverageType maType, int period)
         {
             try
@@ -137,7 +146,7 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static RsiResult Rsi(decimal[] input, int period)
+        public static RsiResult Rsi(decimal[] input, int period, Func<decimal[], IndicatorSignal> signalLogic = null)
         {
             try
             {
@@ -161,9 +170,8 @@ namespace TANet.Util.StaticClasses
                     return new RsiResult
                     {
                         Success = true,
-                        IndicatorSignal = outputDecimal[outElementsCount - 1] <= 30 ? IndicatorSignal.Buy :
-                            outputDecimal[outElementsCount - 1] >= 70 ? IndicatorSignal.Sell :
-                            IndicatorSignal.Stay,
+                        IndicatorSignal = signalLogic != null ? 
+                            signalLogic.Invoke(outputDecimal) : rsiDefaultLogic.Invoke(outputDecimal),
                         Rsi = outputDecimal
                     };
                 }
