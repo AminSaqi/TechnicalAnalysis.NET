@@ -136,5 +136,56 @@ namespace TANet.Util.StaticClasses
                 };
             }
         }
+
+        public static RsiResult Rsi(decimal[] input, int period)
+        {
+            try
+            {
+                double[] output = new double[input.Length];
+                var result = Core.Rsi(0, 
+                    input.Length - 1, 
+                    Array.ConvertAll(input, item => (double)item), 
+                    period, 
+                    out int outBeginIndex,
+                    out int outElementsCount,
+                    output);             
+
+                if (result == Core.RetCode.Success)
+                {
+                    var outputDecimal = new decimal[outElementsCount];
+
+                    Array.Reverse(output);
+                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
+                    Array.Reverse(outputDecimal);
+
+                    return new RsiResult
+                    {
+                        Success = true,
+                        IndicatorSignal = outputDecimal[outElementsCount - 1] <= 30 ? IndicatorSignal.Buy :
+                            outputDecimal[outElementsCount - 1] >= 70 ? IndicatorSignal.Sell :
+                            IndicatorSignal.Stay,
+                        Rsi = outputDecimal
+                    };
+                }
+                else
+                {
+                    return new RsiResult
+                    {
+                        Success = false,
+                        IndicatorSignal = IndicatorSignal.Stay,
+                        Message = result.ToString()
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new RsiResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
     }
 }

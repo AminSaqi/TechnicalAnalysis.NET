@@ -54,6 +54,23 @@ namespace TANet.Core
 
         #endregion
 
+        #region RSI
+
+        public static RsiResult Rsi(decimal[] input, int period)
+        {
+            return Indicators.Rsi(input, period);
+        }
+        public static RsiResult Rsi(List<Candle> input, int period)
+        {
+            return Indicators.Rsi(input, period);
+        }
+        public static RsiResult Rsi(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return Indicators.Rsi(input, period, calculationBase: calculationBase);
+        }
+
+        #endregion
+
         #region SMA
 
         public static MovingAverageResult Sma(decimal[] input, int period)
