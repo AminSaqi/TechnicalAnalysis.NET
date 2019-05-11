@@ -79,7 +79,7 @@ namespace TANet.Util.StaticClasses
                     Message = ex.ToString()
                 };
             }
-        }
+        }        
 
         public static ExtendedMacdResult MacdExt(decimal[] input, 
             MovingAverageType fastMaType, 
