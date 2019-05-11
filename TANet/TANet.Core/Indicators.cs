@@ -88,6 +88,35 @@ namespace TANet.Core
 
         #endregion
 
+        #region KAMA
+
+        public static MovingAverageResult Kama(decimal[] input, int period)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Kama, period);
+        }
+        public static MovingAverageResult Kama(decimal[] input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Kama, period, signalLogic: signalLogic);
+        }
+        public static MovingAverageResult Kama(List<Candle> input, int period)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Kama, period);
+        }
+        public static MovingAverageResult Kama(List<Candle> input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Kama, period, signalLogic: signalLogic);
+        }
+        public static MovingAverageResult Kama(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Kama, period, calculationBase: calculationBase);
+        }
+        public static MovingAverageResult Kama(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return Indicators.MovingAverage(input, MovingAverageType.Kama, period, calculationBase: calculationBase, signalLogic: signalLogic);
+        }
+
+        #endregion
+
         #region SMA
 
         public static MovingAverageResult Sma(decimal[] input, int period)
