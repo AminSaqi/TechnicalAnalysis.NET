@@ -1,7 +1,7 @@
 ﻿
 namespace TANet.Contracts.OperationResults.Indicators
 {
-    public class ExtendedMacdResult : IndicatorResultBase
+    public class MacdResult : IndicatorResultBase
     {
         public decimal[] Macd { get; set; }
         public decimal[] Signal { get; set; }

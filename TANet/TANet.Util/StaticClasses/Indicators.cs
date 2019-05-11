@@ -10,7 +10,7 @@ namespace TANet.Util.StaticClasses
     {
         #region Default Signal Logics
 
-        static Func<decimal[], decimal[], decimal[], IndicatorSignal> macdExtDefaultSignalLogic = (outputMacd, outputSignal, outputHistogram) =>
+        static Func<decimal[], decimal[], decimal[], IndicatorSignal> macdDefaultSignalLogic = (outputMacd, outputSignal, outputHistogram) =>
             outputMacd[outputMacd.Length - 1] > 0 ? IndicatorSignal.Buy :
             outputMacd[outputMacd.Length - 1] < 0 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
@@ -81,7 +81,7 @@ namespace TANet.Util.StaticClasses
             }
         }        
 
-        public static ExtendedMacdResult MacdExt(decimal[] input, 
+        public static MacdResult MacdExt(decimal[] input, 
             MovingAverageType fastMaType, 
             int fastPeriod, 
             MovingAverageType slowMaType, 
@@ -126,9 +126,9 @@ namespace TANet.Util.StaticClasses
 
                     indicatorSignal = macdExtSignalLogic != null ?
                             macdExtSignalLogic.Invoke(outputMacdDecimal, outputSignalDecimal, outputHistogramDecimal) : 
-                            macdExtDefaultSignalLogic.Invoke(outputMacdDecimal, outputSignalDecimal, outputHistogramDecimal);
+                            macdDefaultSignalLogic.Invoke(outputMacdDecimal, outputSignalDecimal, outputHistogramDecimal);
 
-                    return new ExtendedMacdResult
+                    return new MacdResult
                     {
                         Success = true,
                         IndicatorSignal = indicatorSignal,
@@ -139,7 +139,7 @@ namespace TANet.Util.StaticClasses
                 }
                 else
                 {
-                    return new ExtendedMacdResult
+                    return new MacdResult
                     {
                         Success = false,
                         Message = result.ToString()
@@ -148,7 +148,7 @@ namespace TANet.Util.StaticClasses
             }
             catch (Exception ex)
             {
-                return new ExtendedMacdResult
+                return new MacdResult
                 {
                     Success = false,
                     Message = ex.ToString()
