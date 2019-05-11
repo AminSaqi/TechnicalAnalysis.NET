@@ -13,56 +13,56 @@ namespace TANet.Core
 
         public static MovingAverageResult Ema(decimal[] input, int period)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Ema, period);
+            return Indicators.MA(input, MovingAverageType.Ema, period);
         }
         public static MovingAverageResult Ema(decimal[] input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Ema, period, signalLogic: signalLogic);
+            return Indicators.MA(input, MovingAverageType.Ema, period, signalLogic: signalLogic);
         }
         public static MovingAverageResult Ema(List<Candle> input, int period)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Ema, period);
+            return Indicators.MA(input, MovingAverageType.Ema, period);
         }
         public static MovingAverageResult Ema(List<Candle> input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Ema, period, signalLogic: signalLogic);
+            return Indicators.MA(input, MovingAverageType.Ema, period, signalLogic: signalLogic);
         }
         public static MovingAverageResult Ema(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Ema, period, calculationBase: calculationBase);
+            return Indicators.MA(input, MovingAverageType.Ema, period, calculationBase: calculationBase);
         }
         public static MovingAverageResult Ema(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Ema, period, calculationBase: calculationBase, signalLogic: signalLogic);
+            return Indicators.MA(input, MovingAverageType.Ema, period, calculationBase: calculationBase, signalLogic: signalLogic);
         }
 
         #endregion
 
         #region ExtendedMacd
 
-        public static ExtendedMacdResult ExtendedMacd(decimal[] input, int fastPeriod, int slowPeriod, int signalPeriod)
+        public static MacdResult ExtendedMacd(decimal[] input, MovingAverageType fastMaType, int fastPeriod, MovingAverageType slowMaType, int slowPeriod, MovingAverageType signalMaType, int signalPeriod)
         {
-            return Indicators.ExtendedMacd(input, MovingAverageType.Ema, fastPeriod, MovingAverageType.Ema, slowPeriod, MovingAverageType.Ema, signalPeriod);
+            return Indicators.MACD(input, fastMaType, fastPeriod, slowMaType, slowPeriod, signalMaType, signalPeriod);
         }
-        public static ExtendedMacdResult ExtendedMacd(decimal[] input, int fastPeriod, int slowPeriod, int signalPeriod, Func<decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
+        public static MacdResult ExtendedMacd(decimal[] input, MovingAverageType fastMaType, int fastPeriod, MovingAverageType slowMaType, int slowPeriod, MovingAverageType signalMaType, int signalPeriod, Func<decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.ExtendedMacd(input, MovingAverageType.Ema, fastPeriod, MovingAverageType.Ema, slowPeriod, MovingAverageType.Ema, signalPeriod, signalLogic: signalLogic);
+            return Indicators.MACD(input, fastMaType, fastPeriod, slowMaType, slowPeriod, signalMaType, signalPeriod, signalLogic: signalLogic);
         }
-        public static ExtendedMacdResult ExtendedMacd(List<Candle> input, int fastPeriod, int slowPeriod, int signalPeriod)
+        public static MacdResult ExtendedMacd(List<Candle> input, MovingAverageType fastMaType, int fastPeriod, MovingAverageType slowMaType, int slowPeriod, MovingAverageType signalMaType, int signalPeriod)
         {
-            return Indicators.ExtendedMacd(input, MovingAverageType.Ema, fastPeriod, MovingAverageType.Ema, slowPeriod, MovingAverageType.Ema, signalPeriod);
+            return Indicators.MACD(input, fastMaType, fastPeriod, slowMaType, slowPeriod, signalMaType, signalPeriod);
         }
-        public static ExtendedMacdResult ExtendedMacd(List<Candle> input, int fastPeriod, int slowPeriod, int signalPeriod, Func<decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
+        public static MacdResult ExtendedMacd(List<Candle> input, MovingAverageType fastMaType, int fastPeriod, MovingAverageType slowMaType, int slowPeriod, MovingAverageType signalMaType, int signalPeriod, Func<decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.ExtendedMacd(input, MovingAverageType.Ema, fastPeriod, MovingAverageType.Ema, slowPeriod, MovingAverageType.Ema, signalPeriod, signalLogic: signalLogic);
+            return Indicators.MACD(input, fastMaType, fastPeriod, slowMaType, slowPeriod, signalMaType, signalPeriod, signalLogic: signalLogic);
         }
-        public static ExtendedMacdResult ExtendedMacd(List<Candle> input, int fastPeriod, int slowPeriod, int signalPeriod, IndicatorCalculationBase calculationBase)
+        public static MacdResult ExtendedMacd(List<Candle> input, MovingAverageType fastMaType, int fastPeriod, MovingAverageType slowMaType, int slowPeriod, MovingAverageType signalMaType, int signalPeriod, IndicatorCalculationBase calculationBase)
         {
-            return Indicators.ExtendedMacd(input, MovingAverageType.Ema, fastPeriod, MovingAverageType.Ema, slowPeriod, MovingAverageType.Ema, signalPeriod, calculationBase: calculationBase);
+            return Indicators.MACD(input, fastMaType, fastPeriod, slowMaType, slowPeriod, signalMaType, signalPeriod, calculationBase: calculationBase);
         }
-        public static ExtendedMacdResult ExtendedMacd(List<Candle> input, int fastPeriod, int slowPeriod, int signalPeriod, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
+        public static MacdResult ExtendedMacd(List<Candle> input, MovingAverageType fastMaType, int fastPeriod, MovingAverageType slowMaType, int slowPeriod, MovingAverageType signalMaType, int signalPeriod, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.ExtendedMacd(input, MovingAverageType.Ema, fastPeriod, MovingAverageType.Ema, slowPeriod, MovingAverageType.Ema, signalPeriod, calculationBase: calculationBase, signalLogic: signalLogic);
+            return Indicators.MACD(input, fastMaType, fastPeriod, slowMaType, slowPeriod, signalMaType, signalPeriod, calculationBase: calculationBase, signalLogic: signalLogic);
         }
 
         #endregion
@@ -71,19 +71,19 @@ namespace TANet.Core
 
         public static RsiResult Rsi(decimal[] input, int period)
         {
-            return RelativeStrengthIndex(input, period, null);
+            return RSI(input, period, null);
         }
         public static RsiResult Rsi(decimal[] input, int period, Func<decimal[], IndicatorSignal> signalLogic)
         {
-            return RelativeStrengthIndex(input, period, signalLogic);
+            return RSI(input, period, signalLogic);
         }
         public static RsiResult Rsi(List<Candle> input, int period)
         {
-            return RelativeStrengthIndex(input, period);
+            return RSI(input, period);
         }
         public static RsiResult Rsi(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
         {
-            return RelativeStrengthIndex(input, period, calculationBase: calculationBase);
+            return RSI(input, period, calculationBase: calculationBase);
         }
 
         #endregion
@@ -92,27 +92,56 @@ namespace TANet.Core
 
         public static MovingAverageResult Kama(decimal[] input, int period)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Kama, period);
+            return Indicators.MA(input, MovingAverageType.Kama, period);
         }
         public static MovingAverageResult Kama(decimal[] input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Kama, period, signalLogic: signalLogic);
+            return Indicators.MA(input, MovingAverageType.Kama, period, signalLogic: signalLogic);
         }
         public static MovingAverageResult Kama(List<Candle> input, int period)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Kama, period);
+            return Indicators.MA(input, MovingAverageType.Kama, period);
         }
         public static MovingAverageResult Kama(List<Candle> input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Kama, period, signalLogic: signalLogic);
+            return Indicators.MA(input, MovingAverageType.Kama, period, signalLogic: signalLogic);
         }
         public static MovingAverageResult Kama(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Kama, period, calculationBase: calculationBase);
+            return Indicators.MA(input, MovingAverageType.Kama, period, calculationBase: calculationBase);
         }
         public static MovingAverageResult Kama(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Kama, period, calculationBase: calculationBase, signalLogic: signalLogic);
+            return Indicators.MA(input, MovingAverageType.Kama, period, calculationBase: calculationBase, signalLogic: signalLogic);
+        }
+
+        #endregion
+
+        #region MACD
+
+        public static MacdResult Macd(decimal[] input, int fastPeriod, int slowPeriod, int signalPeriod)
+        {
+            return Indicators.MACD(input, MovingAverageType.Ema, fastPeriod, MovingAverageType.Ema, slowPeriod, MovingAverageType.Ema, signalPeriod);
+        }
+        public static MacdResult Macd(decimal[] input, int fastPeriod, int slowPeriod, int signalPeriod, Func<decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return Indicators.MACD(input, MovingAverageType.Ema, fastPeriod, MovingAverageType.Ema, slowPeriod, MovingAverageType.Ema, signalPeriod, signalLogic: signalLogic);
+        }
+        public static MacdResult Macd(List<Candle> input, int fastPeriod, int slowPeriod, int signalPeriod)
+        {
+            return Indicators.MACD(input, MovingAverageType.Ema, fastPeriod, MovingAverageType.Ema, slowPeriod, MovingAverageType.Ema, signalPeriod);
+        }
+        public static MacdResult Macd(List<Candle> input, int fastPeriod, int slowPeriod, int signalPeriod, Func<decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return Indicators.MACD(input, MovingAverageType.Ema, fastPeriod, MovingAverageType.Ema, slowPeriod, MovingAverageType.Ema, signalPeriod, signalLogic: signalLogic);
+        }
+        public static MacdResult Macd(List<Candle> input, int fastPeriod, int slowPeriod, int signalPeriod, IndicatorCalculationBase calculationBase)
+        {
+            return Indicators.MACD(input, MovingAverageType.Ema, fastPeriod, MovingAverageType.Ema, slowPeriod, MovingAverageType.Ema, signalPeriod, calculationBase: calculationBase);
+        }
+        public static MacdResult Macd(List<Candle> input, int fastPeriod, int slowPeriod, int signalPeriod, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return Indicators.MACD(input, MovingAverageType.Ema, fastPeriod, MovingAverageType.Ema, slowPeriod, MovingAverageType.Ema, signalPeriod, calculationBase: calculationBase, signalLogic: signalLogic);
         }
 
         #endregion
@@ -121,27 +150,27 @@ namespace TANet.Core
 
         public static MovingAverageResult Sma(decimal[] input, int period)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Sma, period);
+            return Indicators.MA(input, MovingAverageType.Sma, period);
         }
         public static MovingAverageResult Sma(decimal[] input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Sma, period, signalLogic: signalLogic);
+            return Indicators.MA(input, MovingAverageType.Sma, period, signalLogic: signalLogic);
         }
         public static MovingAverageResult Sma(List<Candle> input, int period)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Sma, period);
+            return Indicators.MA(input, MovingAverageType.Sma, period);
         }
         public static MovingAverageResult Sma(List<Candle> input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Sma, period, signalLogic: signalLogic);
+            return Indicators.MA(input, MovingAverageType.Sma, period, signalLogic: signalLogic);
         }
         public static MovingAverageResult Sma(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Sma, period, calculationBase: calculationBase);
+            return Indicators.MA(input, MovingAverageType.Sma, period, calculationBase: calculationBase);
         }
         public static MovingAverageResult Sma(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Sma, period, calculationBase: calculationBase, signalLogic: signalLogic);
+            return Indicators.MA(input, MovingAverageType.Sma, period, calculationBase: calculationBase, signalLogic: signalLogic);
         }
 
         #endregion
@@ -150,27 +179,27 @@ namespace TANet.Core
 
         public static MovingAverageResult Tema(decimal[] input, int period)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Tema, period);
+            return Indicators.MA(input, MovingAverageType.Tema, period);
         }
         public static MovingAverageResult Tema(decimal[] input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Tema, period, signalLogic: signalLogic);
+            return Indicators.MA(input, MovingAverageType.Tema, period, signalLogic: signalLogic);
         }
         public static MovingAverageResult Tema(List<Candle> input, int period)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Tema, period);
+            return Indicators.MA(input, MovingAverageType.Tema, period);
         }
         public static MovingAverageResult Tema(List<Candle> input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Tema, period, signalLogic: signalLogic);
+            return Indicators.MA(input, MovingAverageType.Tema, period, signalLogic: signalLogic);
         }
         public static MovingAverageResult Tema(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Tema, period, calculationBase: calculationBase);
+            return Indicators.MA(input, MovingAverageType.Tema, period, calculationBase: calculationBase);
         }
         public static MovingAverageResult Tema(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Tema, period, calculationBase: calculationBase, signalLogic: signalLogic);
+            return Indicators.MA(input, MovingAverageType.Tema, period, calculationBase: calculationBase, signalLogic: signalLogic);
         }
 
         #endregion
@@ -179,36 +208,36 @@ namespace TANet.Core
 
         public static MovingAverageResult Wma(decimal[] input, int period)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Wma, period);
+            return Indicators.MA(input, MovingAverageType.Wma, period);
         }
         public static MovingAverageResult Wma(decimal[] input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Wma, period, signalLogic: signalLogic);
+            return Indicators.MA(input, MovingAverageType.Wma, period, signalLogic: signalLogic);
         }
         public static MovingAverageResult Wma(List<Candle> input, int period)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Wma, period);
+            return Indicators.MA(input, MovingAverageType.Wma, period);
         }
         public static MovingAverageResult Wma(List<Candle> input, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Wma, period, signalLogic: signalLogic);
+            return Indicators.MA(input, MovingAverageType.Wma, period, signalLogic: signalLogic);
         }
         public static MovingAverageResult Wma(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Wma, period, calculationBase: calculationBase);
+            return Indicators.MA(input, MovingAverageType.Wma, period, calculationBase: calculationBase);
         }
         public static MovingAverageResult Wma(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
-            return Indicators.MovingAverage(input, MovingAverageType.Wma, period, calculationBase: calculationBase, signalLogic: signalLogic);
+            return Indicators.MA(input, MovingAverageType.Wma, period, calculationBase: calculationBase, signalLogic: signalLogic);
         }
 
         #endregion
 
         #region Private Methods
 
-        /* ExtendedMacd */
+        /* MACD */
 
-        private static ExtendedMacdResult ExtendedMacd(List<Candle> candles, 
+        private static MacdResult MACD(List<Candle> candles, 
             MovingAverageType fastMaType, 
             int fastPeriod, 
             MovingAverageType slowMaType, 
@@ -237,9 +266,9 @@ namespace TANet.Core
             else
                 input = candles.Select(c => c.Close).ToArray();
 
-            return ExtendedMacd(input, fastMaType, fastPeriod, slowMaType, slowPeriod, signalMaType, signalPeriod, signalLogic);
+            return MACD(input, fastMaType, fastPeriod, slowMaType, slowPeriod, signalMaType, signalPeriod, signalLogic);
         }
-        private static ExtendedMacdResult ExtendedMacd(decimal[] input, 
+        private static MacdResult MACD(decimal[] input, 
             MovingAverageType fastMaType, 
             int fastPeriod, 
             MovingAverageType slowMaType, 
@@ -251,9 +280,9 @@ namespace TANet.Core
             return TANet.Util.StaticClasses.Indicators.MacdExt(input, fastMaType, fastPeriod, slowMaType, slowPeriod, signalMaType, signalPeriod, signalLogic);
         }
 
-        /* MovingAverage */
+        /* MA */
 
-        private static MovingAverageResult MovingAverage(List<Candle> candles, 
+        private static MovingAverageResult MA(List<Candle> candles, 
             MovingAverageType maType, 
             int period, 
             IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
@@ -278,9 +307,9 @@ namespace TANet.Core
             else
                 input = candles.Select(c => c.Close).ToArray();
 
-            return MovingAverage(input, maType, period, signalLogic);
+            return MA(input, maType, period, signalLogic);
         }
-        private static MovingAverageResult MovingAverage(decimal[] input, 
+        private static MovingAverageResult MA(decimal[] input, 
             MovingAverageType maType, 
             int period,
             Func<decimal[], decimal[], IndicatorSignal> signalLogic = null)
@@ -288,9 +317,9 @@ namespace TANet.Core
             return TANet.Util.StaticClasses.Indicators.Ma(input, maType, period, signalLogic);
         }
 
-        /* RelativeStrengthIndex (RSI) */
+        /* RSI */
 
-        private static RsiResult RelativeStrengthIndex(List<Candle> candles, 
+        private static RsiResult RSI(List<Candle> candles, 
             int period, 
             IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close, 
             Func<decimal[], IndicatorSignal> signalLogic = null)
@@ -316,7 +345,7 @@ namespace TANet.Core
 
             return Rsi(input, period, signalLogic);
         }
-        private static RsiResult RelativeStrengthIndex(decimal[] input,
+        private static RsiResult RSI(decimal[] input,
             int period,
             Func<decimal[], IndicatorSignal> signalLogic = null)
         {
