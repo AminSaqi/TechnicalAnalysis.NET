@@ -10,6 +10,11 @@ namespace TANet.Util.StaticClasses
     {
         #region Default Signal Logics
 
+        static Func<decimal[], decimal[], decimal[], IndicatorSignal> macdExtDefaultSignalLogic = (outputMacd, outputSignal, outputHistogram) =>
+            outputMacd[outputMacd.Length - 1] > 0 ? IndicatorSignal.Buy :
+            outputMacd[outputMacd.Length - 1] < 0 ? IndicatorSignal.Sell :
+            IndicatorSignal.Stay;
+
         static Func<decimal[], decimal[], IndicatorSignal> maDefaultSignalLogic = (input, output) =>
             input[input.Length - 1] > output[output.Length - 1] ? IndicatorSignal.Buy :
             input[input.Length - 1] < output[output.Length - 1] ? IndicatorSignal.Sell :
@@ -76,7 +81,14 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static ExtendedMacdResult MacdExt(decimal[] input, MovingAverageType fastMaType, int fastPeriod, MovingAverageType slowMaType, int slowPeriod, MovingAverageType signalMaType, int signalPeriod, MacdSignalType signalType = MacdSignalType.ZeroLineCrossover)
+        public static ExtendedMacdResult MacdExt(decimal[] input, 
+            MovingAverageType fastMaType, 
+            int fastPeriod, 
+            MovingAverageType slowMaType, 
+            int slowPeriod, 
+            MovingAverageType signalMaType, 
+            int signalPeriod, 
+            Func<decimal[], decimal[], decimal[], IndicatorSignal> macdExtSignalLogic = null)
         {
             try
             {
@@ -112,18 +124,9 @@ namespace TANet.Util.StaticClasses
                     Array.Reverse(outputSignalDecimal);
                     Array.Reverse(outputHistogramDecimal);
 
-                    if (signalType == MacdSignalType.ZeroLineCrossover)
-                    {
-                        indicatorSignal = outputMacdDecimal[outElementsCount - 1] > 0 ? IndicatorSignal.Buy :
-                            outputMacdDecimal[outElementsCount - 1] < 0 ? IndicatorSignal.Sell :
-                            IndicatorSignal.Stay;
-                    }
-                    else
-                    {
-                        indicatorSignal = outputMacdDecimal[outElementsCount - 1] > outputSignalDecimal[outElementsCount - 1] ? IndicatorSignal.Buy :
-                            outputMacdDecimal[outElementsCount - 1] < outputSignalDecimal[outElementsCount - 1] ? IndicatorSignal.Sell :
-                            IndicatorSignal.Stay;
-                    }
+                    indicatorSignal = macdExtSignalLogic != null ?
+                            macdExtSignalLogic.Invoke(outputMacdDecimal, outputSignalDecimal, outputHistogramDecimal) : 
+                            macdExtDefaultSignalLogic.Invoke(outputMacdDecimal, outputSignalDecimal, outputHistogramDecimal);
 
                     return new ExtendedMacdResult
                     {
