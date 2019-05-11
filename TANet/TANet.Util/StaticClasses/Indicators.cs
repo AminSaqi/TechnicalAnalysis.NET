@@ -10,14 +10,22 @@ namespace TANet.Util.StaticClasses
     {
         #region Default Signal Logics
 
-        static Func<decimal[], IndicatorSignal> rsiDefaultLogic = output =>
+        static Func<decimal[], decimal[], IndicatorSignal> maDefaultSignalLogic = (input, output) =>
+            input[input.Length - 1] > output[output.Length - 1] ? IndicatorSignal.Buy :
+            input[input.Length - 1] < output[output.Length - 1] ? IndicatorSignal.Sell :
+            IndicatorSignal.Stay;
+
+        static Func<decimal[], IndicatorSignal> rsiDefaultSignalLogic = output =>
             output[output.Length - 1] <= 30 ? IndicatorSignal.Buy :
             output[output.Length - 1] >= 70 ? IndicatorSignal.Sell :
-            IndicatorSignal.Stay;
+            IndicatorSignal.Stay;        
 
         #endregion
 
-        public static MovingAverageResult Ma(decimal[] input, MovingAverageType maType, int period)
+        public static MovingAverageResult Ma(decimal[] input, 
+            MovingAverageType maType, 
+            int period, 
+            Func<decimal[], decimal[], IndicatorSignal> maSignalLogic = null)
         {
             try
             {
@@ -42,9 +50,8 @@ namespace TANet.Util.StaticClasses
                     return new MovingAverageResult
                     {
                         Success = true,
-                        IndicatorSignal = input[input.Length - 1] > outputDecimal[outElementsCount - 1] ? IndicatorSignal.Buy :
-                            input[input.Length - 1] < outputDecimal[outElementsCount - 1] ? IndicatorSignal.Sell :
-                            IndicatorSignal.Stay,
+                        IndicatorSignal = maSignalLogic != null ?
+                            maSignalLogic.Invoke(input, outputDecimal) : maDefaultSignalLogic.Invoke(input, outputDecimal),
                         Ma = outputDecimal
                     };
                 }
@@ -146,7 +153,7 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static RsiResult Rsi(decimal[] input, int period, Func<decimal[], IndicatorSignal> signalLogic = null)
+        public static RsiResult Rsi(decimal[] input, int period, Func<decimal[], IndicatorSignal> rsiSignalLogic = null)
         {
             try
             {
@@ -170,8 +177,8 @@ namespace TANet.Util.StaticClasses
                     return new RsiResult
                     {
                         Success = true,
-                        IndicatorSignal = signalLogic != null ? 
-                            signalLogic.Invoke(outputDecimal) : rsiDefaultLogic.Invoke(outputDecimal),
+                        IndicatorSignal = rsiSignalLogic != null ? 
+                            rsiSignalLogic.Invoke(outputDecimal) : rsiDefaultSignalLogic.Invoke(outputDecimal),
                         Rsi = outputDecimal
                     };
                 }

@@ -140,7 +140,11 @@ namespace TANet.Core
             return TANet.Util.StaticClasses.Indicators.MacdExt(input, fastMaType, fastPeriod, slowMaType, slowPeriod, signalMaType, signalPeriod, signalType);
         }
 
-        private static MovingAverageResult MovingAverage(List<Candle> candles, MovingAverageType maType, int period, IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close)
+        private static MovingAverageResult MovingAverage(List<Candle> candles, 
+            MovingAverageType maType, 
+            int period, 
+            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            Func<decimal[], IndicatorSignal> signalLogic = null)
         {
             decimal[] input;
             if (calculationBase == IndicatorCalculationBase.Close)
@@ -161,11 +165,14 @@ namespace TANet.Core
             else
                 input = candles.Select(c => c.Close).ToArray();
 
-            return MovingAverage(input, maType, period);
+            return MovingAverage(input, maType, period, signalLogic);
         }
-        private static MovingAverageResult MovingAverage(decimal[] input, MovingAverageType maType, int period)
+        private static MovingAverageResult MovingAverage(decimal[] input, 
+            MovingAverageType maType, 
+            int period,
+            Func<decimal[], IndicatorSignal> signalLogic = null)
         {
-            return TANet.Util.StaticClasses.Indicators.Ma(input, maType, period);
+            return TANet.Util.StaticClasses.Indicators.Ma(input, maType, period, signalLogic);
         }
 
         private static RsiResult RelativeStrengthIndex(List<Candle> candles, 
