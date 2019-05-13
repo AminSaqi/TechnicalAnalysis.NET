@@ -65,28 +65,7 @@ namespace TANet.Core
             return Indicators.MACD(input, fastMaType, fastPeriod, slowMaType, slowPeriod, signalMaType, signalPeriod, calculationBase: calculationBase, signalLogic: signalLogic);
         }
 
-        #endregion
-
-        #region RSI
-
-        public static RsiResult Rsi(decimal[] input, int period)
-        {
-            return RSI(input, period, null);
-        }
-        public static RsiResult Rsi(decimal[] input, int period, Func<decimal[], IndicatorSignal> signalLogic)
-        {
-            return RSI(input, period, signalLogic);
-        }
-        public static RsiResult Rsi(List<Candle> input, int period)
-        {
-            return RSI(input, period);
-        }
-        public static RsiResult Rsi(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
-        {
-            return RSI(input, period, calculationBase: calculationBase);
-        }
-
-        #endregion
+        #endregion        
 
         #region KAMA
 
@@ -146,6 +125,27 @@ namespace TANet.Core
 
         #endregion
 
+        #region RSI
+
+        public static RsiResult Rsi(decimal[] input, int period)
+        {
+            return RSI(input, period, null);
+        }
+        public static RsiResult Rsi(decimal[] input, int period, Func<decimal[], IndicatorSignal> signalLogic)
+        {
+            return RSI(input, period, signalLogic);
+        }
+        public static RsiResult Rsi(List<Candle> input, int period)
+        {
+            return RSI(input, period);
+        }
+        public static RsiResult Rsi(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return RSI(input, period, calculationBase: calculationBase);
+        }
+
+        #endregion
+
         #region SMA
 
         public static MovingAverageResult Sma(decimal[] input, int period)
@@ -171,6 +171,43 @@ namespace TANet.Core
         public static MovingAverageResult Sma(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
             return Indicators.MA(input, MovingAverageType.Sma, period, calculationBase: calculationBase, signalLogic: signalLogic);
+        }
+
+        #endregion
+
+        #region Stochastic
+
+        public static StochasticResult Stochsatic(List<Candle> candles, int fastKPeriod, int slowKPeriod, int slowDPeriod)
+        {
+            return STOCH(candles, fastKPeriod, MovingAverageType.Sma, slowKPeriod, MovingAverageType.Sma, slowDPeriod);
+        }
+        public static StochasticResult Stochsatic(List<Candle> candles, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod)
+        {
+            return STOCH(candles, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod);
+        }
+        public static StochasticResult Stochsatic(List<Candle> candles, int fastKPeriod, int slowKPeriod, int slowDPeriod, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return STOCH(candles, fastKPeriod, MovingAverageType.Sma, slowKPeriod, MovingAverageType.Sma, slowDPeriod, signalLogic);
+        }
+        public static StochasticResult Stochsatic(List<Candle> candles, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return STOCH(candles, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod, signalLogic);
+        }
+        public static StochasticResult Stochsatic(decimal[] high, decimal[] low, decimal[] close, int fastKPeriod, int slowKPeriod, int slowDPeriod)
+        {
+            return STOCH(high, low, close, fastKPeriod, MovingAverageType.Sma, slowKPeriod, MovingAverageType.Sma, slowDPeriod);
+        }
+        public static StochasticResult Stochsatic(decimal[] high, decimal[] low, decimal[] close, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod)
+        {
+            return STOCH(high, low, close, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod);
+        }
+        public static StochasticResult Stochsatic(decimal[] high, decimal[] low, decimal[] close, int fastKPeriod, int slowKPeriod, int slowDPeriod, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return STOCH(high, low, close, fastKPeriod, MovingAverageType.Sma, slowKPeriod, MovingAverageType.Sma, slowDPeriod, signalLogic);
+        }
+        public static StochasticResult Stochsatic(decimal[] high, decimal[] low, decimal[] close, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return STOCH(high, low, close, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod, signalLogic);
         }
 
         #endregion
@@ -350,6 +387,36 @@ namespace TANet.Core
             Func<decimal[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Rsi(input, period, signalLogic);
+        }
+
+        /* STOCH */
+
+        private static StochasticResult STOCH(List<Candle> candles,
+            int fastKPeriod,
+            MovingAverageType slowKMaType,
+            int slowKPeriod,
+            MovingAverageType slowDMaType,
+            int slowDPeriod,
+            Func<decimal[], decimal[], IndicatorSignal> signalLogic = null)
+        {       
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            var close = candles.Select(c => c.Close).ToArray();
+
+            return STOCH(high, low, close, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod, signalLogic);
+        }
+        private static StochasticResult STOCH(decimal[] high,
+            decimal[] low, 
+            decimal[] close,
+            int fastKPeriod,
+            MovingAverageType slowKMaType,
+            int slowKPeriod,
+            MovingAverageType slowDMaType,
+            int slowDPeriod,
+            Func<decimal[], decimal[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Stochastic(high, 
+                low, close, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod, signalLogic);
         }
 
         #endregion

@@ -23,7 +23,12 @@ namespace TANet.Util.StaticClasses
         static Func<decimal[], IndicatorSignal> rsiDefaultSignalLogic = output =>
             output[output.Length - 1] <= 30 ? IndicatorSignal.Buy :
             output[output.Length - 1] >= 70 ? IndicatorSignal.Sell :
-            IndicatorSignal.Stay;        
+            IndicatorSignal.Stay;
+
+        static Func<decimal[], decimal[], IndicatorSignal> stochDefaultSignalLogic = (slowK, slowD) =>
+            slowK[slowK.Length - 1] < 20 && slowD[slowD.Length -1] < 20 ? IndicatorSignal.Buy :
+            slowK[slowK.Length - 1] > 80 && slowD[slowD.Length - 1] > 80 ? IndicatorSignal.Sell :
+            IndicatorSignal.Stay;
 
         #endregion
 
@@ -100,11 +105,17 @@ namespace TANet.Util.StaticClasses
                 var result = Core.MacdExt(0,
                     input.Length - 1,
                     Array.ConvertAll(input, item => (float)item),
-                    fastPeriod, MovingAverageTypes.ToTaLib(fastMaType),
-                    slowPeriod, MovingAverageTypes.ToTaLib(slowMaType),
-                    signalPeriod, MovingAverageTypes.ToTaLib(signalMaType),
-                    out int outBeginIndex, out int outElementsCount,
-                    outputMacd, outputSignal, outputHistogram);
+                    fastPeriod, 
+                    MovingAverageTypes.ToTaLib(fastMaType),
+                    slowPeriod, 
+                    MovingAverageTypes.ToTaLib(slowMaType),
+                    signalPeriod, 
+                    MovingAverageTypes.ToTaLib(signalMaType),
+                    out int outBeginIndex, 
+                    out int outElementsCount,
+                    outputMacd, 
+                    outputSignal, 
+                    outputHistogram);
 
                 if (result == Core.RetCode.Success)
                 {
@@ -198,6 +209,85 @@ namespace TANet.Util.StaticClasses
             catch (Exception ex)
             {
                 return new RsiResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
+        public static StochasticResult Stochastic(decimal[] inputHigh, 
+            decimal[] inputLow, 
+            decimal[] inputClose, 
+            int fastKPeriod, 
+            MovingAverageType slowKMaType, 
+            int slowKPeriod, 
+            MovingAverageType slowDMaType, 
+            int slowDPeriod, 
+            Func<decimal[], decimal[], IndicatorSignal> stochSignalLogic = null)
+        {            
+            try
+            {
+                var indicatorSignal = IndicatorSignal.Stay;
+
+                double[] outputSlowK = new double[inputHigh.Length];
+                double[] outputSlowD = new double[inputHigh.Length];
+
+                var result = Core.Stoch(0, 
+                    inputHigh.Length - 1,
+                    Array.ConvertAll(inputHigh, item => (double)item),
+                    Array.ConvertAll(inputLow, item => (double)item),
+                    Array.ConvertAll(inputClose, item => (double)item), 
+                    fastKPeriod, 
+                    slowKPeriod,
+                    MovingAverageTypes.ToTaLib(slowKMaType), 
+                    slowDPeriod,
+                    MovingAverageTypes.ToTaLib(slowDMaType), 
+                    out int outBeginIndex,
+                    out int outElementsCount, 
+                    outputSlowK, 
+                    outputSlowD);
+
+                if (result == Core.RetCode.Success)
+                {
+                    var outputSlowKDecimal = new decimal[outElementsCount];
+                    var outputSlowDDecimal = new decimal[outElementsCount];                    
+
+                    Array.Reverse(outputSlowKDecimal);
+                    Array.Reverse(outputSlowDDecimal);                    
+
+                    Array.ConstrainedCopy(Array.ConvertAll(outputSlowK, item => (decimal)item), outBeginIndex, outputSlowKDecimal, 0, outElementsCount);
+                    Array.ConstrainedCopy(Array.ConvertAll(outputSlowD, item => (decimal)item), outBeginIndex, outputSlowDDecimal, 0, outElementsCount);                    
+
+                    Array.Reverse(outputSlowKDecimal);
+                    Array.Reverse(outputSlowDDecimal);
+
+                    indicatorSignal = stochSignalLogic != null ?
+                            stochSignalLogic.Invoke(outputSlowKDecimal, outputSlowDDecimal) :
+                            stochDefaultSignalLogic.Invoke(outputSlowKDecimal, outputSlowDDecimal);
+
+                    return new StochasticResult
+                    {
+                        Success = true,
+                        IndicatorSignal = indicatorSignal,
+                        SlowK = outputSlowKDecimal,
+                        SlowD = outputSlowDDecimal
+                    };
+                }
+                else
+                {
+                    return new StochasticResult
+                    {
+                        Success = false,
+                        IndicatorSignal = IndicatorSignal.Stay,
+                        Message = result.ToString()
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new StochasticResult
                 {
                     Success = false,
                     IndicatorSignal = IndicatorSignal.Stay,
