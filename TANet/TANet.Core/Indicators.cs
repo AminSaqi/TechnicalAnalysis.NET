@@ -9,6 +9,27 @@ namespace TANet.Core
 {
     public static class Indicators
     {
+        #region ATR
+
+        public static AtrResult Atr(decimal[] high, decimal[] low, decimal[] close, int period)
+        {
+            return ATR(high, low, close, period, null);
+        }
+        public static AtrResult Atr(decimal[] high, decimal[] low, decimal[] close, int period, Func<decimal[], IndicatorSignal> signalLogic)
+        {
+            return ATR(high, low, close, period, signalLogic);
+        }
+        public static AtrResult Atr(List<Candle> candles, int period)
+        {
+            return ATR(candles, period);
+        }
+        public static AtrResult Atr(List<Candle> candles, int period, IndicatorCalculationBase calculationBase)
+        {
+            return ATR(candles, period, calculationBase: calculationBase);
+        }
+
+        #endregion
+
         #region EMA
 
         public static MovingAverageResult Ema(decimal[] input, int period)
@@ -272,6 +293,28 @@ namespace TANet.Core
 
         #region Private Methods
 
+        /* ATR */
+
+        private static AtrResult ATR(List<Candle> candles,
+            int period,
+            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            Func<decimal[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            var close = candles.Select(c => c.Close).ToArray();
+
+            return ATR(high, low, close, period, signalLogic);
+        }
+        private static AtrResult ATR(decimal[] high,
+            decimal[] low,
+            decimal[] close,
+            int period,
+            Func<decimal[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Atr(high, low, close, period, signalLogic);
+        }
+
         /* MACD */
 
         private static MacdResult MACD(List<Candle> candles, 
@@ -380,7 +423,7 @@ namespace TANet.Core
             else
                 input = candles.Select(c => c.Close).ToArray();
 
-            return Rsi(input, period, signalLogic);
+            return RSI(input, period, signalLogic);
         }
         private static RsiResult RSI(decimal[] input,
             int period,
