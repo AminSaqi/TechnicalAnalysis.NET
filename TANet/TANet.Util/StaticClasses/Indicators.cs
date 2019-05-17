@@ -32,6 +32,67 @@ namespace TANet.Util.StaticClasses
 
         #endregion
 
+        public static AtrResult Atr(decimal[] inputHigh,
+            decimal[] inputLow,
+            decimal[] inputClose, 
+            int period,
+            Func<decimal[], IndicatorSignal> atrSignalLogic = null)
+        {
+            try
+            {
+                var indicatorSignal = IndicatorSignal.Stay;
+
+                double[] output = new double[inputHigh.Length];                
+
+                var result = Core.Atr(0, 
+                    inputHigh.Length - 1,
+                    Array.ConvertAll(inputHigh, item => (double)item),
+                    Array.ConvertAll(inputLow, item => (double)item),
+                    Array.ConvertAll(inputClose, item => (double)item),
+                    period, 
+                    out int outBeginIndex,
+                    out int outElementsCount, 
+                    output);
+
+                if (result == Core.RetCode.Success)
+                {
+                    var outputDecimal = new decimal[outElementsCount];                    
+
+                    Array.Reverse(outputDecimal);                    
+                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);                    
+                    Array.Reverse(outputDecimal);
+
+                    indicatorSignal = atrSignalLogic != null ?
+                            atrSignalLogic.Invoke(outputDecimal) : IndicatorSignal.Stay;
+
+                    return new AtrResult
+                    {
+                        Success = true,
+                        IndicatorSignal = indicatorSignal,
+                        Atr = outputDecimal
+                    };
+                }
+                else
+                {
+                    return new AtrResult
+                    {
+                        Success = false,
+                        IndicatorSignal = IndicatorSignal.Stay,
+                        Message = result.ToString()
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new AtrResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }            
+        }
+
         public static MovingAverageResult Ma(decimal[] input, 
             MovingAverageType maType, 
             int period, 
