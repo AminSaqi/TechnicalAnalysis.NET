@@ -20,6 +20,11 @@ namespace TANet.Util.StaticClasses
             input[input.Length - 1] < output[output.Length - 1] ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
+        static Func<decimal[], IndicatorSignal> mfiDefaultSignalLogic = output =>
+            output[output.Length - 1] < 20 ? IndicatorSignal.Buy :
+            output[output.Length - 1] > 80 ? IndicatorSignal.Sell :
+            IndicatorSignal.Stay;
+
         static Func<decimal[], IndicatorSignal> rsiDefaultSignalLogic = output =>
             output[output.Length - 1] <= 30 ? IndicatorSignal.Buy :
             output[output.Length - 1] >= 70 ? IndicatorSignal.Sell :
@@ -223,6 +228,70 @@ namespace TANet.Util.StaticClasses
                 return new MacdResult
                 {
                     Success = false,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
+        public static MfiResult Mfi(decimal[] inputHigh,
+            decimal[] inputLow,
+            decimal[] inputClose,
+            decimal[] inputVolume,
+            int period,
+            Func<decimal[], IndicatorSignal> mfiSignalLogic = null)
+        {
+            try
+            {
+                var indicatorSignal = IndicatorSignal.Stay;
+
+                double[] output = new double[inputHigh.Length];
+
+                var result = Core.Mfi(0,
+                    inputHigh.Length - 1,
+                    Array.ConvertAll(inputHigh, item => (double)item),
+                    Array.ConvertAll(inputLow, item => (double)item),
+                    Array.ConvertAll(inputClose, item => (double)item),
+                    Array.ConvertAll(inputVolume, item => (double)item),
+                    period,
+                    out int outBeginIndex,
+                    out int outElementsCount,
+                    output);
+
+                if (result == Core.RetCode.Success)
+                {
+                    var outputDecimal = new decimal[outElementsCount];
+
+                    Array.Reverse(outputDecimal);
+                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
+                    Array.Reverse(outputDecimal);
+
+                    indicatorSignal = mfiSignalLogic != null ?
+                            mfiSignalLogic.Invoke(outputDecimal) : 
+                            mfiDefaultSignalLogic.Invoke(outputDecimal);
+
+                    return new MfiResult
+                    {
+                        Success = true,
+                        IndicatorSignal = indicatorSignal,
+                        Mfi = outputDecimal
+                    };
+                }
+                else
+                {
+                    return new MfiResult
+                    {
+                        Success = false,
+                        IndicatorSignal = IndicatorSignal.Stay,
+                        Message = result.ToString()
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new MfiResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
                     Message = ex.ToString()
                 };
             }
