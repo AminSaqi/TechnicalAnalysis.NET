@@ -146,6 +146,27 @@ namespace TANet.Core
 
         #endregion
 
+        #region MFI
+
+        public static MfiResult Mfi(decimal[] high, decimal[] low, decimal[] close, decimal[] volume, int period)
+        {
+            return MFI(high, low, close, volume, period, null);
+        }
+        public static MfiResult Mfi(decimal[] high, decimal[] low, decimal[] close, decimal[] volume, int period, Func<decimal[], IndicatorSignal> signalLogic)
+        {
+            return MFI(high, low, close, volume, period, signalLogic);
+        }
+        public static MfiResult Mfi(List<Candle> candles, int period)
+        {
+            return MFI(candles, period);
+        }
+        public static MfiResult Mfi(List<Candle> candles, int period, IndicatorCalculationBase calculationBase)
+        {
+            return MFI(candles, period, calculationBase: calculationBase);
+        }
+
+        #endregion
+
         #region RSI
 
         public static RsiResult Rsi(decimal[] input, int period)
@@ -395,6 +416,30 @@ namespace TANet.Core
             Func<decimal[], decimal[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Ma(input, maType, period, signalLogic);
+        }
+
+        /* MFI */
+
+        private static MfiResult MFI(List<Candle> candles,
+            int period,
+            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            Func<decimal[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            var close = candles.Select(c => c.Close).ToArray();
+            var volume = candles.Select(c => c.Volume).ToArray();
+
+            return MFI(high, low, close, volume, period, signalLogic);
+        }
+        private static MfiResult MFI(decimal[] high,
+            decimal[] low,
+            decimal[] close,
+            decimal[] volume,
+            int period,
+            Func<decimal[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Mfi(high, low, close, volume, period, signalLogic);
         }
 
         /* RSI */
