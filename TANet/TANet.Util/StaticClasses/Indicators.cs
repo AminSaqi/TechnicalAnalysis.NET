@@ -105,8 +105,7 @@ namespace TANet.Util.StaticClasses
 
         public static CciResult Cci(decimal[] inputHigh,
             decimal[] inputLow,
-            decimal[] inputClose,
-            decimal[] inputVolume,
+            decimal[] inputClose,            
             int period,
             Func<decimal[], IndicatorSignal> cciSignalLogic = null)
         {

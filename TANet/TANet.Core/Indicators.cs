@@ -30,6 +30,27 @@ namespace TANet.Core
 
         #endregion
 
+        #region CCI
+
+        public static CciResult Cci(decimal[] high, decimal[] low, decimal[] close, int period)
+        {
+            return CCI(high, low, close, period, null);
+        }
+        public static CciResult Cci(decimal[] high, decimal[] low, decimal[] close, int period, Func<decimal[], IndicatorSignal> signalLogic)
+        {
+            return CCI(high, low, close, period, signalLogic);
+        }
+        public static CciResult Cci(List<Candle> candles, int period)
+        {
+            return CCI(candles, period);
+        }
+        public static CciResult Cci(List<Candle> candles, int period, Func<decimal[], IndicatorSignal> signalLogic)
+        {
+            return CCI(candles, period, signalLogic);
+        }
+
+        #endregion
+
         #region EMA
 
         public static MovingAverageResult Ema(decimal[] input, int period)
@@ -334,6 +355,27 @@ namespace TANet.Core
             Func<decimal[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Atr(high, low, close, period, signalLogic);
+        }
+
+        /* CCI */
+
+        private static CciResult CCI(List<Candle> candles,
+            int period,            
+            Func<decimal[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            var close = candles.Select(c => c.Close).ToArray();            
+
+            return CCI(high, low, close, period, signalLogic);
+        }
+        private static CciResult CCI(decimal[] high,
+            decimal[] low,
+            decimal[] close,            
+            int period,
+            Func<decimal[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Cci(high, low, close, period, signalLogic);
         }
 
         /* MACD */
