@@ -6,7 +6,7 @@ Simple use of technical analysis indicators for C#, based on TALib.
  - [ ] AroonOscillator
  - [x] Atr 
  - [ ] BollingerBands
- - [ ] Cci
+ - [x] Cci
  - [x] Ema
  - [x] ExtendedMacd
  - [x] Kama

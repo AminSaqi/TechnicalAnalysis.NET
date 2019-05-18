@@ -10,6 +10,11 @@ namespace TANet.Util.StaticClasses
     {
         #region Default Signal Logics
 
+        static Func<decimal[], IndicatorSignal> cciDefaultSignalLogic = output =>
+            output[output.Length - 1] > 100 ? IndicatorSignal.Buy :
+            output[output.Length - 1] < -100 ? IndicatorSignal.Sell :
+            IndicatorSignal.Stay;
+
         static Func<decimal[], decimal[], decimal[], IndicatorSignal> macdDefaultSignalLogic = (outputMacd, outputSignal, outputHistogram) =>
             outputMacd[outputMacd.Length - 1] > 0 ? IndicatorSignal.Buy :
             outputMacd[outputMacd.Length - 1] < 0 ? IndicatorSignal.Sell :
@@ -96,6 +101,68 @@ namespace TANet.Util.StaticClasses
                     Message = ex.ToString()
                 };
             }            
+        }
+
+        public static CciResult Cci(decimal[] inputHigh,
+            decimal[] inputLow,
+            decimal[] inputClose,            
+            int period,
+            Func<decimal[], IndicatorSignal> cciSignalLogic = null)
+        {
+            try
+            {
+                var indicatorSignal = IndicatorSignal.Stay;
+
+                double[] output = new double[inputHigh.Length];
+
+                var result = Core.Cci(0,
+                    inputHigh.Length - 1,
+                    Array.ConvertAll(inputHigh, item => (double)item),
+                    Array.ConvertAll(inputLow, item => (double)item),
+                    Array.ConvertAll(inputClose, item => (double)item),                    
+                    period,
+                    out int outBeginIndex,
+                    out int outElementsCount,
+                    output);
+
+                if (result == Core.RetCode.Success)
+                {
+                    var outputDecimal = new decimal[outElementsCount];
+
+                    Array.Reverse(outputDecimal);
+                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
+                    Array.Reverse(outputDecimal);
+
+                    indicatorSignal = cciSignalLogic != null ?
+                            cciSignalLogic.Invoke(outputDecimal) :
+                            cciDefaultSignalLogic.Invoke(outputDecimal);
+
+                    return new CciResult
+                    {
+                        Success = true,
+                        IndicatorSignal = indicatorSignal,
+                        Cci = outputDecimal
+                    };
+                }
+                else
+                {
+                    return new CciResult
+                    {
+                        Success = false,
+                        IndicatorSignal = IndicatorSignal.Stay,
+                        Message = result.ToString()
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new CciResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
         }
 
         public static MovingAverageResult Ma(decimal[] input, 
