@@ -181,9 +181,9 @@ namespace TANet.Core
         {
             return MFI(candles, period);
         }
-        public static MfiResult Mfi(List<Candle> candles, int period, IndicatorCalculationBase calculationBase)
+        public static MfiResult Mfi(List<Candle> candles, int period, Func<decimal[], IndicatorSignal> signalLogic)
         {
-            return MFI(candles, period, calculationBase: calculationBase);
+            return MFI(candles, period, signalLogic);
         }
 
         #endregion
@@ -463,8 +463,7 @@ namespace TANet.Core
         /* MFI */
 
         private static MfiResult MFI(List<Candle> candles,
-            int period,
-            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            int period,            
             Func<decimal[], IndicatorSignal> signalLogic = null)
         {
             var high = candles.Select(c => c.High).ToArray();
