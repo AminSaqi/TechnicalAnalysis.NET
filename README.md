@@ -2,7 +2,7 @@
 Simple use of technical analysis indicators for C#, based on TALib. 
 
 ## Implemented Indicators:
- - [ ] Aroon
+ - [x] Aroon
  - [ ] AroonOscillator
  - [x] Atr 
  - [ ] BollingerBands
