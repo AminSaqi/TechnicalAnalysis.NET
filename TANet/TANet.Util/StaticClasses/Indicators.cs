@@ -10,6 +10,11 @@ namespace TANet.Util.StaticClasses
     {
         #region Default Signal Logics
 
+        static Func<decimal[], IndicatorSignal> aroonOscDefaultSignalLogic = output =>
+            output[output.Length - 1] > 0 ? IndicatorSignal.Buy :
+            output[output.Length - 1] < 0 ? IndicatorSignal.Sell :
+            IndicatorSignal.Stay;
+
         static Func<decimal[], decimal[], IndicatorSignal> aroonDefaultSignalLogic = (outputAroonUp, outputAroonDown) =>
             outputAroonUp[outputAroonUp.Length - 1] > 50 && outputAroonDown[outputAroonDown.Length - 1] < 50 ? IndicatorSignal.Buy :
             outputAroonUp[outputAroonUp.Length - 1] < 50 && outputAroonDown[outputAroonDown.Length - 1] > 50 ? IndicatorSignal.Sell :
@@ -107,6 +112,66 @@ namespace TANet.Util.StaticClasses
             catch (Exception ex)
             {
                 return new AroonResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
+        public static AroonOscillatorResult AroonOscillator(decimal[] inputHigh,
+            decimal[] inputLow,
+            int period,
+            Func<decimal[], IndicatorSignal> aroonOscSignalLogic = null)
+        {
+            try
+            {
+                var indicatorSignal = IndicatorSignal.Stay;
+
+                double[] output = new double[inputHigh.Length];  
+
+                var result = Core.AroonOsc(0,
+                    inputHigh.Length - 1,
+                    Array.ConvertAll(inputHigh, item => (double)item),
+                    Array.ConvertAll(inputLow, item => (double)item),
+                    period,
+                    out int outBeginIndex,
+                    out int outElementsCount,
+                    output);
+
+                if (result == Core.RetCode.Success)
+                {
+                    var outputDecimal = new decimal[outElementsCount];                    
+
+                    Array.Reverse(outputDecimal);
+                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
+                    Array.Reverse(outputDecimal);          
+
+                    indicatorSignal = aroonOscSignalLogic != null ?
+                            aroonOscSignalLogic.Invoke(outputDecimal) :
+                            aroonOscDefaultSignalLogic.Invoke(outputDecimal);
+
+                    return new AroonOscillatorResult
+                    {
+                        Success = true,
+                        IndicatorSignal = indicatorSignal,
+                        AroonOscillator = outputDecimal
+                    };
+                }
+                else
+                {
+                    return new AroonOscillatorResult
+                    {
+                        Success = false,
+                        IndicatorSignal = IndicatorSignal.Stay,
+                        Message = result.ToString()
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new AroonOscillatorResult
                 {
                     Success = false,
                     IndicatorSignal = IndicatorSignal.Stay,
