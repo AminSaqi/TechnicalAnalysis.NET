@@ -9,6 +9,27 @@ namespace TANet.Core
 {
     public static class Indicators
     {
+        #region Aroon
+
+        public static AroonResult Aroon(decimal[] high, decimal[] low, int period)
+        {
+            return AROON(high, low, period, null);
+        }
+        public static AroonResult Aroon(decimal[] high, decimal[] low, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return AROON(high, low, period, signalLogic);
+        }
+        public static AroonResult Aroon(List<Candle> candles, int period)
+        {
+            return AROON(candles, period);
+        }
+        public static AroonResult Aroon(List<Candle> candles, int period, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return AROON(candles, period, signalLogic);
+        }
+
+        #endregion
+
         #region ATR
 
         public static AtrResult Atr(decimal[] high, decimal[] low, decimal[] close, int period)
@@ -334,6 +355,25 @@ namespace TANet.Core
         #endregion
 
         #region Private Methods
+
+        /* AROON */
+
+        private static AroonResult AROON(List<Candle> candles,
+            int period,
+            Func<decimal[], decimal[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();            
+
+            return AROON(high, low, period, signalLogic);
+        }
+        private static AroonResult AROON(decimal[] high,
+            decimal[] low,            
+            int period,
+            Func<decimal[], decimal[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Aroon(high, low, period, signalLogic);
+        }
 
         /* ATR */
 
