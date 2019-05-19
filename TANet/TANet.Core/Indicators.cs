@@ -72,6 +72,51 @@ namespace TANet.Core
 
         #endregion
 
+        #region BollingerBands
+
+        public static BollingerBandsResult BollingerBands(decimal[] input, int period, double standardDeviationUp, double standardDeviationDown)
+        {
+            return B_BANDS(input, period, standardDeviationUp, standardDeviationDown, MovingAverageType.Sma);
+        }
+        public static BollingerBandsResult BollingerBands(decimal[] input, int period, double standardDeviationUp, double standardDeviationDown, Func<decimal[], decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return B_BANDS(input, period, standardDeviationUp, standardDeviationDown, MovingAverageType.Sma, signalLogic: signalLogic);
+        }
+        public static BollingerBandsResult BollingerBands(decimal[] input, int period, double standardDeviationUp, double standardDeviationDown, MovingAverageType maType)
+        {
+            return B_BANDS(input, period, standardDeviationUp, standardDeviationDown, maType);
+        }
+        public static BollingerBandsResult BollingerBands(decimal[] input, int period, double standardDeviationUp, double standardDeviationDown, MovingAverageType maType, Func<decimal[], decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return B_BANDS(input, period, standardDeviationUp, standardDeviationDown, maType, signalLogic: signalLogic);
+        }
+        public static BollingerBandsResult BollingerBands(List<Candle> input, int period, double standardDeviationUp, double standardDeviationDown)
+        {
+            return B_BANDS(input, period, standardDeviationUp, standardDeviationDown, MovingAverageType.Sma, IndicatorCalculationBase.Close);
+        }
+        public static BollingerBandsResult BollingerBands(List<Candle> input, int period, double standardDeviationUp, double standardDeviationDown, Func<decimal[], decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return B_BANDS(input, period, standardDeviationUp, standardDeviationDown, MovingAverageType.Sma, IndicatorCalculationBase.Close, signalLogic);
+        }
+        public static BollingerBandsResult BollingerBands(List<Candle> input, int period, double standardDeviationUp, double standardDeviationDown, IndicatorCalculationBase calculationBase)
+        {
+            return B_BANDS(input, period, standardDeviationUp, standardDeviationDown, MovingAverageType.Sma, calculationBase: calculationBase);
+        }
+        public static BollingerBandsResult BollingerBands(List<Candle> input, int period, double standardDeviationUp, double standardDeviationDown, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return B_BANDS(input, period, standardDeviationUp, standardDeviationDown, MovingAverageType.Sma, calculationBase: calculationBase, signalLogic: signalLogic);
+        }
+        public static BollingerBandsResult BollingerBands(List<Candle> input, int period, double standardDeviationUp, double standardDeviationDown, MovingAverageType maType, IndicatorCalculationBase calculationBase)
+        {
+            return B_BANDS(input, period, standardDeviationUp, standardDeviationDown, maType, calculationBase: calculationBase);
+        }
+        public static BollingerBandsResult BollingerBands(List<Candle> input, int period, double standardDeviationUp, double standardDeviationDown, MovingAverageType maType, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return B_BANDS(input, period, standardDeviationUp, standardDeviationDown, maType, calculationBase: calculationBase, signalLogic: signalLogic);
+        }
+
+        #endregion
+
         #region CCI
 
         public static CciResult Cci(decimal[] high, decimal[] low, decimal[] close, int period)
@@ -434,6 +479,44 @@ namespace TANet.Core
             Func<decimal[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Atr(high, low, close, period, signalLogic);
+        }
+
+        /* B_BANDS */
+
+        private static BollingerBandsResult B_BANDS(List<Candle> candles,            
+            int period,
+            double stdDevUp,
+            double stdDevDown,
+            MovingAverageType maType, 
+            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            Func<decimal[], decimal[], decimal[], decimal[], IndicatorSignal> signalLogic = null)
+        {
+            decimal[] input;
+            if (calculationBase == IndicatorCalculationBase.Close)
+                input = candles.Select(c => c.Close).ToArray();
+
+            else if (calculationBase == IndicatorCalculationBase.Open)
+                input = candles.Select(c => c.Open).ToArray();
+
+            else if (calculationBase == IndicatorCalculationBase.High)
+                input = candles.Select(c => c.High).ToArray();
+
+            else if (calculationBase == IndicatorCalculationBase.Low)
+                input = candles.Select(c => c.Low).ToArray();
+
+            else
+                input = candles.Select(c => c.Close).ToArray();
+
+            return B_BANDS(input, period, stdDevUp, stdDevDown, maType, signalLogic);
+        }
+        private static BollingerBandsResult B_BANDS(decimal[] input,
+            int period,
+            double stdDevUp,
+            double stdDevDown,
+            MovingAverageType maType,          
+            Func<decimal[], decimal[], decimal[], decimal[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.BollingerBands(input, period, stdDevUp, stdDevDown, maType, signalLogic);
         }
 
         /* CCI */

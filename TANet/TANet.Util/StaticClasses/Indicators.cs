@@ -245,7 +245,7 @@ namespace TANet.Util.StaticClasses
             int period,
             double stdDevUp,
             double stdDevDown,
-            MovingAverageType maType = MovingAverageType.Sma,            
+            MovingAverageType maType,            
             Func<decimal[], decimal[], decimal[], decimal[], IndicatorSignal> bBandsSignalLogic = null)
         {
             try
