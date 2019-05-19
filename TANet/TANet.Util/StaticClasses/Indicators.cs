@@ -241,6 +241,86 @@ namespace TANet.Util.StaticClasses
             }            
         }
 
+        public static BollingerBandsResult BollingerBands(decimal[] input,
+            int period,
+            double stdDevUp,
+            double stdDevDown,
+            MovingAverageType maType,            
+            Func<decimal[], decimal[], decimal[], decimal[], IndicatorSignal> bBandsSignalLogic = null)
+        {
+            try
+            {
+                var indicatorSignal = IndicatorSignal.Stay;
+
+                double[] outputUp = new double[input.Length];
+                double[] outputMiddle = new double[input.Length];
+                double[] outputDown = new double[input.Length];
+
+                var result = Core.Bbands(0,
+                    input.Length - 1,
+                    Array.ConvertAll(input, item => (float)item),
+                    period,
+                    stdDevUp,
+                    stdDevDown,
+                    MovingAverageTypes.ToTaLib(maType),                                        
+                    out int outBeginIndex,
+                    out int outElementsCount,
+                    outputUp,
+                    outputMiddle,
+                    outputDown);
+
+                if (result == Core.RetCode.Success)
+                {
+                    var outputUpDecimal = new decimal[outElementsCount];
+                    var outputMiddleDecimal = new decimal[outElementsCount];
+                    var outputDownDecimal = new decimal[outElementsCount];
+
+                    Array.Reverse(outputUp);
+                    Array.ConstrainedCopy(Array.ConvertAll(outputUp, item => (decimal)item), outBeginIndex, outputUpDecimal, 0, outElementsCount);
+                    Array.Reverse(outputUpDecimal);
+
+                    Array.Reverse(outputMiddle);
+                    Array.ConstrainedCopy(Array.ConvertAll(outputMiddle, item => (decimal)item), outBeginIndex, outputMiddleDecimal, 0, outElementsCount);
+                    Array.Reverse(outputMiddleDecimal);
+
+                    Array.Reverse(outputDown);
+                    Array.ConstrainedCopy(Array.ConvertAll(outputDown, item => (decimal)item), outBeginIndex, outputDownDecimal, 0, outElementsCount);
+                    Array.Reverse(outputDownDecimal);
+
+                    indicatorSignal = bBandsSignalLogic != null ?
+                            bBandsSignalLogic.Invoke(input, outputUpDecimal, outputMiddleDecimal, outputDownDecimal) :
+                            IndicatorSignal.Stay;
+
+                    return new BollingerBandsResult
+                    {
+                        Success = true,
+                        IndicatorSignal = indicatorSignal,
+                        UpperBand = outputUpDecimal,
+                        MiddleBand = outputMiddleDecimal,
+                        LowerBand = outputDownDecimal
+                    };
+                }
+                else
+                {
+                    return new BollingerBandsResult
+                    {
+                        Success = false,
+                        IndicatorSignal = IndicatorSignal.Stay,
+                        Message = result.ToString()
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BollingerBandsResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
         public static CciResult Cci(decimal[] inputHigh,
             decimal[] inputLow,
             decimal[] inputClose,            
