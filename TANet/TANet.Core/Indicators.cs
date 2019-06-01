@@ -275,6 +275,27 @@ namespace TANet.Core
 
         #endregion
 
+        #region MFI
+
+        public static ParabolicSarResult ParabolicSar(decimal[] high, decimal[] low, double acceleration, double maximum)
+        {
+            return P_SAR(high, low, acceleration, maximum, null);
+        }
+        public static ParabolicSarResult ParabolicSar(decimal[] high, decimal[] low, double acceleration, double maximum, Func<decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return P_SAR(high, low, acceleration, maximum, signalLogic);
+        }
+        public static ParabolicSarResult ParabolicSar(List<Candle> candles, double acceleration, double maximum)
+        {
+            return P_SAR(candles, acceleration, maximum);
+        }
+        public static ParabolicSarResult ParabolicSar(List<Candle> candles, double acceleration, double maximum, Func<decimal[], decimal[], decimal[], IndicatorSignal> signalLogic)
+        {
+            return P_SAR(candles, acceleration, maximum, signalLogic);
+        }
+
+        #endregion
+
         #region RSI
 
         public static RsiResult Rsi(decimal[] input, int period)
@@ -643,6 +664,27 @@ namespace TANet.Core
             Func<decimal[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Mfi(high, low, close, volume, period, signalLogic);
+        }
+
+        /* P_SAR */
+
+        private static ParabolicSarResult P_SAR(List<Candle> candles,
+            double acceleration,
+            double maximum,
+            Func<decimal[], decimal[], decimal[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+
+            return P_SAR(high, low, acceleration, maximum, signalLogic);
+        }
+        private static ParabolicSarResult P_SAR(decimal[] high,
+            decimal[] low,
+            double acceleration,
+            double maximum,            
+            Func<decimal[], decimal[], decimal[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.ParabolicSar(high, low, acceleration, maximum, signalLogic);
         }
 
         /* RSI */

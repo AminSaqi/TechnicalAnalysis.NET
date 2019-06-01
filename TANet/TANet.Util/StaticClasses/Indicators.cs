@@ -40,6 +40,11 @@ namespace TANet.Util.StaticClasses
             output[output.Length - 1] > 80 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
+        static Func<decimal[], decimal[], decimal[], IndicatorSignal> pSarDefaultSignalLogic = (high, low, output) =>
+            low[low.Length - 1] > output[output.Length - 1] ? IndicatorSignal.Buy :
+            high[high.Length - 1] < output[output.Length - 1] ? IndicatorSignal.Sell :
+            IndicatorSignal.Stay;
+
         static Func<decimal[], IndicatorSignal> rsiDefaultSignalLogic = output =>
             output[output.Length - 1] <= 30 ? IndicatorSignal.Buy :
             output[output.Length - 1] >= 70 ? IndicatorSignal.Sell :
@@ -574,6 +579,62 @@ namespace TANet.Util.StaticClasses
             catch (Exception ex)
             {
                 return new MfiResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
+        public static ParabolicSarResult ParabolicSar(decimal[] high,
+            decimal[] low,
+            double acceleration,
+            double maximum,
+            Func<decimal[], decimal[], decimal[], IndicatorSignal> pSarSignalLogic = null)
+        {
+            try
+            {
+                double[] output = new double[high.Length];
+                var result = Core.Sar(0,
+                    high.Length - 1,
+                    Array.ConvertAll(high, item => (float)item),
+                    Array.ConvertAll(low, item => (float)item),
+                    acceleration,
+                    maximum,
+                    out int outBeginIndex,
+                    out int outElementsCount,
+                    output);
+
+                if (result == Core.RetCode.Success)
+                {
+                    var outputDecimal = new decimal[outElementsCount];
+
+                    Array.Reverse(output);
+                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
+                    Array.Reverse(outputDecimal);
+
+                    return new ParabolicSarResult
+                    {
+                        Success = true,
+                        IndicatorSignal = pSarSignalLogic != null ?
+                            pSarSignalLogic.Invoke(high, low, outputDecimal) : pSarDefaultSignalLogic.Invoke(high, low, outputDecimal),
+                        Sar = outputDecimal
+                    };
+                }
+                else
+                {
+                    return new ParabolicSarResult
+                    {
+                        Success = false,
+                        IndicatorSignal = IndicatorSignal.Stay,
+                        Message = result.ToString()
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ParabolicSarResult
                 {
                     Success = false,
                     IndicatorSignal = IndicatorSignal.Stay,
