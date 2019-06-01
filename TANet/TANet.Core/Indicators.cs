@@ -275,7 +275,7 @@ namespace TANet.Core
 
         #endregion
 
-        #region MFI
+        #region ParabolicSar
 
         public static ParabolicSarResult ParabolicSar(decimal[] high, decimal[] low, double acceleration, double maximum)
         {
