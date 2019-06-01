@@ -591,7 +591,6 @@ namespace TANet.Util.StaticClasses
             decimal[] low,
             double acceleration,
             double maximum,
-            int period,
             Func<decimal[], decimal[], decimal[], IndicatorSignal> pSarSignalLogic = null)
         {
             try
