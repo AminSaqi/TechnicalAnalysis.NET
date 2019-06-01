@@ -17,7 +17,6 @@ Simple use of technical analysis indicators for C#, based on TALib.
  - [x] Sma
  - [x] Stochastic
  - [x] Tema
- - [ ] WilliamsR
+ - [x] WilliamsR
  - [x] Wma
- 
- more on the go ...
+
