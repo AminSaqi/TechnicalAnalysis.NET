@@ -275,7 +275,7 @@ namespace TANet.Core
 
         #endregion
 
-        #region MFI
+        #region ParabolicSar
 
         public static ParabolicSarResult ParabolicSar(decimal[] high, decimal[] low, double acceleration, double maximum)
         {
@@ -408,6 +408,27 @@ namespace TANet.Core
         public static MovingAverageResult Tema(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<decimal[], decimal[], IndicatorSignal> signalLogic)
         {
             return Indicators.MA(input, MovingAverageType.Tema, period, calculationBase: calculationBase, signalLogic: signalLogic);
+        }
+
+        #endregion
+
+        #region WilliamsR
+
+        public static WilliamsRResult WilliamsR(decimal[] high, decimal[] low, decimal[] close, decimal[] volume, int period)
+        {
+            return WILL_R(high, low, close, period, null);
+        }
+        public static WilliamsRResult WilliamsR(decimal[] high, decimal[] low, decimal[] close, decimal[] volume, int period, Func<decimal[], IndicatorSignal> signalLogic)
+        {
+            return WILL_R(high, low, close, period, signalLogic);
+        }
+        public static WilliamsRResult WilliamsR(List<Candle> candles, int period)
+        {
+            return WILL_R(candles, period);
+        }
+        public static WilliamsRResult WilliamsR(List<Candle> candles, int period, Func<decimal[], IndicatorSignal> signalLogic)
+        {
+            return WILL_R(candles, period, signalLogic);
         }
 
         #endregion
@@ -750,6 +771,27 @@ namespace TANet.Core
         {
             return TANet.Util.StaticClasses.Indicators.Stochastic(high, 
                 low, close, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod, signalLogic);
+        }
+
+        /* WILL_R */
+
+        private static WilliamsRResult WILL_R(List<Candle> candles,
+            int period,
+            Func<decimal[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            var close = candles.Select(c => c.Close).ToArray();            
+
+            return WILL_R(high, low, close, period, signalLogic);
+        }
+        private static WilliamsRResult WILL_R(decimal[] high,
+            decimal[] low,
+            decimal[] close,            
+            int period,
+            Func<decimal[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.WilliamsR(high, low, close, period, signalLogic);
         }
 
         #endregion

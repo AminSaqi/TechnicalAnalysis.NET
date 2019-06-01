@@ -55,6 +55,11 @@ namespace TANet.Util.StaticClasses
             slowK[slowK.Length - 1] > 80 && slowD[slowD.Length - 1] > 80 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
+        static Func<decimal[], IndicatorSignal> williamsRDefaultSignalLogic = output =>
+            output[output.Length - 1] < -80 ? IndicatorSignal.Buy :
+            output[output.Length - 1] > -20 ? IndicatorSignal.Sell :
+            IndicatorSignal.Stay;
+
         #endregion
 
         public static AroonResult Aroon(decimal[] inputHigh,
@@ -764,6 +769,68 @@ namespace TANet.Util.StaticClasses
             catch (Exception ex)
             {
                 return new StochasticResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
+        public static WilliamsRResult WilliamsR(decimal[] inputHigh,
+            decimal[] inputLow,
+            decimal[] inputClose,
+            int period,
+            Func<decimal[], IndicatorSignal> williamsRSignalLogic = null)
+        {
+            try
+            {
+                var indicatorSignal = IndicatorSignal.Stay;
+
+                double[] output = new double[inputHigh.Length];
+
+                var result = Core.WillR(0,
+                    inputHigh.Length - 1,
+                    Array.ConvertAll(inputHigh, item => (double)item),
+                    Array.ConvertAll(inputLow, item => (double)item),
+                    Array.ConvertAll(inputClose, item => (double)item),                    
+                    period,
+                    out int outBeginIndex,
+                    out int outElementsCount,
+                    output);
+
+                if (result == Core.RetCode.Success)
+                {
+                    var outputDecimal = new decimal[outElementsCount];
+
+                    Array.Reverse(outputDecimal);
+                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
+                    Array.Reverse(outputDecimal);
+
+                    indicatorSignal = williamsRSignalLogic != null ?
+                            williamsRSignalLogic.Invoke(outputDecimal) :
+                            williamsRDefaultSignalLogic.Invoke(outputDecimal);
+
+                    return new WilliamsRResult
+                    {
+                        Success = true,
+                        IndicatorSignal = indicatorSignal,
+                        RangePercent = outputDecimal
+                    };
+                }
+                else
+                {
+                    return new WilliamsRResult
+                    {
+                        Success = false,
+                        IndicatorSignal = IndicatorSignal.Stay,
+                        Message = result.ToString()
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new WilliamsRResult
                 {
                     Success = false,
                     IndicatorSignal = IndicatorSignal.Stay,
