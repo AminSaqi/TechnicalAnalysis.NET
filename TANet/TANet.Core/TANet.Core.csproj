@@ -2,6 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <Version>1.0.0</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageId>TechnicalAnalysis.Net</PackageId>
+    <Authors>Amin Saqi</Authors>
+    <Product>TechnicalAnalysis.Net</Product>
+    <Description>Simple use of technical analysis indicators for C#, based on TALib.</Description>
+    <PackageTags>TechnicalAnalysis Trade FinancialMarkets TechnicalIndicators C#</PackageTags>
+    <Copyright>Copyright (c) 2019 Amin Saqi</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/AminSaqi/TechnicalAnalysis.NET</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +22,13 @@
   <ItemGroup>
     <ProjectReference Include="..\TANet.Contracts\TANet.Contracts.csproj" />
     <ProjectReference Include="..\TANet.Util\TANet.Util.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

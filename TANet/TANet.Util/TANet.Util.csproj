@@ -2,6 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <PackageProjectUrl>https://github.com/AminSaqi/TechnicalAnalysis.NET</PackageProjectUrl>
+    <Copyright>Copyright (c) 2019 Amin Saqi</Copyright>
+    <Authors>Amin Saqi</Authors>
+    <Product>TechnicalAnalysis.Net</Product>
+    <PackageId>TechnicalAnalysis.Net.Util</PackageId>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Description>Core methods and calculations of TechnicalAnalysis.Net.</Description>
+    <PackageTags>TechnicalAnalysis Trade FinancialMarkets TechnicalIndicators C#</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +20,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TANet.Contracts\TANet.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
