@@ -37,15 +37,19 @@ You can also use the Candle model- it's more clean in indicators that require se
 	
 	var resultCandles = Indicators.Cci(candles, 14);
 
+## Supported Frameworks
+
+- netstandard2.0
+
 ## Installation:
 
 Simply via nuget package manager:
 
-    PM> Install-Package TechnicalAnalysis.Net
+    PM> Install-Package TechnicalAnalysis.Net -Version 2.0.0
 
 Or .NET CLI:
 
-    > dotnet add package TechnicalAnalysis.Net
+    > dotnet add package TechnicalAnalysis.Net --version 2.0.0
 
 ## Implemented Indicators:
  - [x] Aroon
