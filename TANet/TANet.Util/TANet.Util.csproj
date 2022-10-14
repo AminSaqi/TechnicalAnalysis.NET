@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>2.0.0</Version>
     <PackageProjectUrl>https://github.com/AminSaqi/TechnicalAnalysis.NET</PackageProjectUrl>
-    <Copyright>Copyright (c) 2019 Amin Saqi</Copyright>
+    <Copyright>Copyright (c) 2022 Amin Saqi</Copyright>
     <Authors>Amin Saqi</Authors>
     <Product>TechnicalAnalysis.Net</Product>
     <PackageId>TechnicalAnalysis.Net.Util</PackageId>
@@ -11,7 +12,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>Core methods and calculations of TechnicalAnalysis.Net.</Description>
-    <PackageTags>TechnicalAnalysis Trade FinancialMarkets TechnicalIndicators C#</PackageTags>
+    <PackageTags>TechnicalAnalysis Trade FinancialMarkets TechnicalIndicators C# Crypto AlgorithmicTrading</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
