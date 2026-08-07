@@ -68,5 +68,6 @@ Or .NET CLI:
  - [x] Stochastic
  - [x] Tema
  - [x] WilliamsR
+ - [x] T3
  - [x] Wma
 
