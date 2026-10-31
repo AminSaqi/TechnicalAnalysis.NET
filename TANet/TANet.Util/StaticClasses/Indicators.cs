@@ -393,48 +393,50 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static MovingAverageResult Ma(decimal[] input, 
+        public static MovingAverageResult Ma(
+            decimal[] input, 
             MovingAverageType maType, 
             int period, 
             Func<decimal[], decimal[], IndicatorSignal> maSignalLogic = null)
         {
             try
             {
-                double[] output = new double[input.Length];
-                var result = Core.MovingAverage(0,
-                    input.Length - 1,
-                    Array.ConvertAll(input, item => (float)item),
+                var inputDouble = Array.ConvertAll(input, item => (double)item);
+                var outputDouble = new double[inputDouble.Length];
+
+                var range = TALib.Core.Default.Ma(
+                    0,
+                    inputDouble.Length - 1,
+                    inputDouble,
                     period,
-                    MovingAverageTypes.ToTaLib(maType),
-                    out int outBeginIndex,
-                    out int outElementsCount,
-                    output);
+                    MovingAverageTypes.ToOfficialTaLib(maType),
+                    outputDouble);
 
-                if (result == Core.RetCode.Success)
-                {
-                    var outputDecimal = new decimal[outElementsCount];
-
-                    Array.Reverse(output);
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDecimal);
-
-                    return new MovingAverageResult
-                    {
-                        Success = true,
-                        IndicatorSignal = maSignalLogic != null ?
-                            maSignalLogic.Invoke(input, outputDecimal) : maDefaultSignalLogic.Invoke(input, outputDecimal),
-                        Ma = outputDecimal
-                    };
-                }
-                else
+                if (range.Count == 0)
                 {
                     return new MovingAverageResult
                     {
                         Success = false,
                         IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
+                        Message = "TA-Lib produced no MA values for the input."
                     };
                 }
+
+                var outputDecimal = new decimal[range.Count];
+                for (var i = 0; i < range.Count; i++)
+                    outputDecimal[i] = (decimal)outputDouble[i];
+
+                var indicatorSignal = maSignalLogic != null ?
+                    maSignalLogic.Invoke(input, outputDecimal) :
+                    maDefaultSignalLogic.Invoke(input, outputDecimal);
+
+                return new MovingAverageResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Ma = outputDecimal
+                };
+
             }
             catch (Exception ex)
             {
