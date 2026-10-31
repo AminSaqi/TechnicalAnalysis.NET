@@ -6,7 +6,7 @@
     <PackageProjectUrl>https://github.com/AminSaqi/TechnicalAnalysis.NET</PackageProjectUrl>
     <Authors>Amin Saqi</Authors>
     <Product>TechnicalAnalysis.Net</Product>
-    <Copyright>Copyright (c) 2022 Amin Saqi</Copyright>
+    <Copyright>Copyright (c) 2019 Amin Saqi</Copyright>
     <PackageId>TechnicalAnalysis.Net.Contracts</PackageId>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
