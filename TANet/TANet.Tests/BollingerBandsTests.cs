@@ -1,5 +1,6 @@
 ﻿using TANet.Contracts.Enums;
 using TANet.Core;
+using TANet.Util.Extensions;
 
 
 namespace TANet.Tests;
@@ -23,24 +24,26 @@ public class BollingerBandsTests
 
         const int period = 3;
         const double standardDeviationUp = 2;
-        const double standardDeviationDown = 2;
+        const double standardDeviationDown = 1.5;
 
         var result = Indicators.BollingerBands(
             input,
             period,
             standardDeviationUp,
-            standardDeviationDown);
+            standardDeviationDown,
+            maType);
 
         Assert.True(result.Success, result.Message);
 
+        var chronologicalInput = input.Reverse().ToArray();
         var expectedUpper = new double[input.Length];
         var expectedMiddle = new double[input.Length];
         var expectedLower = new double[input.Length];
 
         var range = TALib.Core.Default.Bbands(
             0,
-            input.Length - 1,
-            input,
+            chronologicalInput.Length - 1,
+            chronologicalInput,
             period,
             standardDeviationUp,
             standardDeviationDown,
@@ -51,20 +54,31 @@ public class BollingerBandsTests
 
         Assert.True(range.Count > 0);
 
-        Assert.Equal(range.Count, result.UpperBand.Length);
-        Assert.Equal(range.Count, result.MiddleBand.Length);
-        Assert.Equal(range.Count, result.LowerBand.Length);
+        void AssertBand(double[] expected, double[] actual)
+        {
+            Assert.Equal(input.Length, actual.Length);
 
-        Assert.Equal(expectedUpper[..range.Count], result.UpperBand);
-        Assert.Equal(expectedMiddle[..range.Count], result.MiddleBand);
-        Assert.Equal(expectedLower[..range.Count], result.LowerBand);
+            Assert.Equal(
+                expected.Take(range.Count).Reverse(),
+                actual.Take(range.Count));
+
+            Assert.All(
+                actual.Skip(range.Count),
+                value => Assert.True(double.IsNaN(value)));
+
+            Assert.True(actual.HasValidData());
+            Assert.Equal(range.Count, actual.CountValidData());
+        }
+
+        AssertBand(expectedUpper, result.UpperBand);
+        AssertBand(expectedMiddle, result.MiddleBand);
+        AssertBand(expectedLower, result.LowerBand);
 
         Assert.Equal(IndicatorSignal.Stay, result.IndicatorSignal);
-
     }
 
     [Fact]
-    public void Bbands_WhenHistoryIsTooShort_ReturnsFailure()
+    public void Bbands_WhenHistoryIsTooShort_ReturnsNaNValues()
     {
         var result = Indicators.BollingerBands(
             [1, 2],
@@ -72,9 +86,21 @@ public class BollingerBandsTests
             standardDeviationUp: 2,
             standardDeviationDown: 2);
 
-        Assert.False(result.Success);
-        Assert.Equal(expected: IndicatorSignal.Stay, actual: result.IndicatorSignal);
-        Assert.NotEmpty(result.Message);
+        Assert.True(result.Success, result.Message);
+
+        void AssertBand(double[] band)
+        {
+            Assert.Equal(2, band.Length);
+            Assert.All(band, value => Assert.True(double.IsNaN(value)));
+            Assert.False(band.HasValidData());
+            Assert.Equal(0, band.CountValidData());
+        }
+
+        AssertBand(result.UpperBand);
+        AssertBand(result.MiddleBand);
+        AssertBand(result.LowerBand);
+
+        Assert.Equal(expected: IndicatorSignal.Stay, actual: result.IndicatorSignal);       
     }
 }
 

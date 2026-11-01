@@ -289,48 +289,44 @@ namespace TANet.Util.StaticClasses
             Func<double[], double[], double[], double[], IndicatorSignal> bBandsSignalLogic = null)
         {
             try
-            {                
-                var outputUpDouble = new double[input.Length];
-                var outputMiddleDouble = new double[input.Length];
-                var outputDownDouble = new double[input.Length];
+            {       
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var outputUp = new double[input.Length];
+                var outputMiddle = new double[input.Length];
+                var outputDown = new double[input.Length];
 
                 var range = TALib.Core.Default.Bbands(
                     0,
-                    input.Length - 1,
-                    input,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
                     period,
                     stdDevUp,
                     stdDevDown,
                     MovingAverageTypes.ToOfficialTaLib(maType),
-                    outputUpDouble,
-                    outputMiddleDouble,
-                    outputDownDouble);
+                    outputUp,
+                    outputMiddle,
+                    outputDown);
 
-                if (range.Count == 0)
+                CompleteNewestFirstOutput(outputUp, range.Count);
+                CompleteNewestFirstOutput(outputMiddle, range.Count);
+                CompleteNewestFirstOutput(outputDown, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+
+                if (outputUp.HasValidData() && outputMiddle.HasValidData() && outputDown.HasValidData())
                 {
-                    return new BollingerBandsResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = "TA-Lib produced no Bbands values for the input."
-                    };
+                    indicatorSignal = bBandsSignalLogic != null ?
+                        bBandsSignalLogic.Invoke(input, outputUp, outputMiddle, outputDown) :
+                        IndicatorSignal.Stay;
                 }
-
-                var upperBandValues = outputUpDouble[..range.Count];
-                var middleBandValues = outputMiddleDouble[..range.Count];
-                var lowerBandValues = outputDownDouble[..range.Count];
-
-                var indicatorSignal = bBandsSignalLogic != null ?
-                    bBandsSignalLogic.Invoke(input, upperBandValues, middleBandValues, lowerBandValues) :
-                    IndicatorSignal.Stay;
 
                 return new BollingerBandsResult
                 {
                     Success = true,
                     IndicatorSignal = indicatorSignal,
-                    UpperBand = upperBandValues,
-                    MiddleBand = middleBandValues,
-                    LowerBand = lowerBandValues
+                    UpperBand = outputUp,
+                    MiddleBand = outputMiddle,
+                    LowerBand = outputDown
                 };
             }
             catch (Exception ex)
