@@ -47,10 +47,10 @@ public class MovingAverageParityTests
         MovingAverageType maType,
         TALib.MAType officialMaType)
     {
-        decimal[] input =
+        double[] input =
         [
-            10m, 11m, 13m, 12m, 15m, 14m, 18m, 17m,
-        20m, 19m, 23m, 22m, 25m, 24m, 28m, 27m
+            10, 11, 13, 12, 15, 14, 18, 17,
+            20, 19, 23, 22, 25, 24, 28, 27
         ];
 
         const int period = 3;
@@ -67,26 +67,18 @@ public class MovingAverageParityTests
 
         Assert.True(tanetResult.Success, tanetResult.Message);
 
-        var inputDouble = Array.ConvertAll(input, value => (double)value);
         var officialOutput = new double[input.Length];
 
         var range = TALib.Core.Default.Ma(
             0,
-            inputDouble.Length - 1,
-            inputDouble,
+            input.Length - 1,
+            input,
             period,
             officialMaType,
             officialOutput);
 
-        Assert.True(range.Count > 0);
-
-        var expected = new decimal[range.Count];
-        for (var i = 0; i < range.Count; i++)
-        {
-            expected[i] = (decimal)officialOutput[i];
-        }
-
+        Assert.True(range.Count > 0);       
         Assert.Equal(expected: range.Count, actual: tanetResult.Ma.Length);
-        Assert.Equal(expected: expected, actual: tanetResult.Ma);
+        Assert.Equal(expected: officialOutput[..range.Count], actual: tanetResult.Ma);
     }
 }

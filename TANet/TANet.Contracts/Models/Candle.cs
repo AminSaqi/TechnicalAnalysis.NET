@@ -6,11 +6,11 @@ namespace TANet.Contracts.Models
 {
     public class Candle
     {
-        public decimal Open { get; set; }
-        public decimal High { get; set; }
-        public decimal Low { get; set; }
-        public decimal Close { get; set; }
-        public decimal Volume { get; set; }
+        public double Open { get; set; }
+        public double High { get; set; }
+        public double Low { get; set; }
+        public double Close { get; set; }
+        public double Volume { get; set; }
         public int TradesCount { get; set; }
         public bool Finalized { get; set; }
 

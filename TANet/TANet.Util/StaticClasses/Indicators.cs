@@ -10,62 +10,62 @@ namespace TANet.Util.StaticClasses
     {
         #region Default Signal Logics
 
-        static Func<decimal[], IndicatorSignal> aroonOscDefaultSignalLogic = output =>
+        static Func<double[], IndicatorSignal> aroonOscDefaultSignalLogic = output =>
             output[output.Length - 1] > 0 ? IndicatorSignal.Buy :
             output[output.Length - 1] < 0 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], decimal[], IndicatorSignal> aroonDefaultSignalLogic = (outputAroonUp, outputAroonDown) =>
+        static Func<double[], double[], IndicatorSignal> aroonDefaultSignalLogic = (outputAroonUp, outputAroonDown) =>
             outputAroonUp[outputAroonUp.Length - 1] > 50 && outputAroonDown[outputAroonDown.Length - 1] < 50 ? IndicatorSignal.Buy :
             outputAroonUp[outputAroonUp.Length - 1] < 50 && outputAroonDown[outputAroonDown.Length - 1] > 50 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], IndicatorSignal> cciDefaultSignalLogic = output =>
+        static Func<double[], IndicatorSignal> cciDefaultSignalLogic = output =>
             output[output.Length - 1] > 100 ? IndicatorSignal.Buy :
             output[output.Length - 1] < -100 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], decimal[], decimal[], IndicatorSignal> macdDefaultSignalLogic = (outputMacd, outputSignal, outputHistogram) =>
+        static Func<double[], double[], double[], IndicatorSignal> macdDefaultSignalLogic = (outputMacd, outputSignal, outputHistogram) =>
             outputMacd[outputMacd.Length - 1] > 0 ? IndicatorSignal.Buy :
             outputMacd[outputMacd.Length - 1] < 0 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], decimal[], IndicatorSignal> maDefaultSignalLogic = (input, output) =>
+        static Func<double[], double[], IndicatorSignal> maDefaultSignalLogic = (input, output) =>
             input[input.Length - 1] > output[output.Length - 1] ? IndicatorSignal.Buy :
             input[input.Length - 1] < output[output.Length - 1] ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], IndicatorSignal> mfiDefaultSignalLogic = output =>
+        static Func<double[], IndicatorSignal> mfiDefaultSignalLogic = output =>
             output[output.Length - 1] < 20 ? IndicatorSignal.Buy :
             output[output.Length - 1] > 80 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], decimal[], decimal[], IndicatorSignal> pSarDefaultSignalLogic = (high, low, output) =>
+        static Func<double[], double[], double[], IndicatorSignal> pSarDefaultSignalLogic = (high, low, output) =>
             low[low.Length - 1] > output[output.Length - 1] ? IndicatorSignal.Buy :
             high[high.Length - 1] < output[output.Length - 1] ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], IndicatorSignal> rsiDefaultSignalLogic = output =>
+        static Func<double[], IndicatorSignal> rsiDefaultSignalLogic = output =>
             output[output.Length - 1] <= 30 ? IndicatorSignal.Buy :
             output[output.Length - 1] >= 70 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], decimal[], IndicatorSignal> stochDefaultSignalLogic = (slowK, slowD) =>
+        static Func<double[], double[], IndicatorSignal> stochDefaultSignalLogic = (slowK, slowD) =>
             slowK[slowK.Length - 1] < 20 && slowD[slowD.Length -1] < 20 ? IndicatorSignal.Buy :
             slowK[slowK.Length - 1] > 80 && slowD[slowD.Length - 1] > 80 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], IndicatorSignal> williamsRDefaultSignalLogic = output =>
+        static Func<double[], IndicatorSignal> williamsRDefaultSignalLogic = output =>
             output[output.Length - 1] < -80 ? IndicatorSignal.Buy :
             output[output.Length - 1] > -20 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
         #endregion
 
-        public static AroonResult Aroon(decimal[] inputHigh,
-            decimal[] inputLow,            
+        public static AroonResult Aroon(double[] inputHigh,
+            double[] inputLow,            
             int period,
-            Func<decimal[], decimal[], IndicatorSignal> aroonSignalLogic = null)
+            Func<double[], double[], IndicatorSignal> aroonSignalLogic = null)
         {
             try
             {
@@ -76,8 +76,8 @@ namespace TANet.Util.StaticClasses
 
                 var result = Core.Aroon(0,
                     inputHigh.Length - 1,
-                    Array.ConvertAll(inputHigh, item => (double)item),
-                    Array.ConvertAll(inputLow, item => (double)item),                    
+                    inputHigh, 
+                    inputLow, 
                     period,
                     out int outBeginIndex,
                     out int outElementsCount,
@@ -86,27 +86,27 @@ namespace TANet.Util.StaticClasses
 
                 if (result == Core.RetCode.Success)
                 {
-                    var outputUpDecimal = new decimal[outElementsCount];
-                    var outputDownDecimal = new decimal[outElementsCount];
+                    var outputUpValues = new double[outElementsCount];
+                    var outputDownValues = new double[outElementsCount];
 
-                    Array.Reverse(outputUpDecimal);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputUp, item => (decimal)item), outBeginIndex, outputUpDecimal, 0, outElementsCount);
-                    Array.Reverse(outputUpDecimal);
+                    Array.Reverse(outputUp);
+                    Array.ConstrainedCopy(outputUp, outBeginIndex, outputUpValues, 0, outElementsCount);
+                    Array.Reverse(outputUpValues);
 
-                    Array.Reverse(outputDownDecimal);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputDown, item => (decimal)item), outBeginIndex, outputDownDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDownDecimal);
+                    Array.Reverse(outputDown);
+                    Array.ConstrainedCopy(outputDown, outBeginIndex, outputDownValues, 0, outElementsCount);
+                    Array.Reverse(outputDownValues);
 
                     indicatorSignal = aroonSignalLogic != null ?
-                            aroonSignalLogic.Invoke(outputUpDecimal, outputDownDecimal) :
-                            aroonDefaultSignalLogic.Invoke(outputUpDecimal, outputDownDecimal);
+                            aroonSignalLogic.Invoke(outputUpValues, outputDownValues) :
+                            aroonDefaultSignalLogic.Invoke(outputUpValues, outputDownValues);
 
                     return new AroonResult
                     {
                         Success = true,
                         IndicatorSignal = indicatorSignal,
-                        AroonUp = outputUpDecimal,
-                        AroonDown = outputDownDecimal
+                        AroonUp = outputUpValues,
+                        AroonDown = outputDownValues
                     };
                 }
                 else
@@ -130,10 +130,10 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static AroonOscillatorResult AroonOscillator(decimal[] inputHigh,
-            decimal[] inputLow,
+        public static AroonOscillatorResult AroonOscillator(double[] inputHigh,
+            double[] inputLow,
             int period,
-            Func<decimal[], IndicatorSignal> aroonOscSignalLogic = null)
+            Func<double[], IndicatorSignal> aroonOscSignalLogic = null)
         {
             try
             {
@@ -143,8 +143,8 @@ namespace TANet.Util.StaticClasses
 
                 var result = Core.AroonOsc(0,
                     inputHigh.Length - 1,
-                    Array.ConvertAll(inputHigh, item => (double)item),
-                    Array.ConvertAll(inputLow, item => (double)item),
+                    inputHigh, 
+                    inputLow, 
                     period,
                     out int outBeginIndex,
                     out int outElementsCount,
@@ -152,21 +152,21 @@ namespace TANet.Util.StaticClasses
 
                 if (result == Core.RetCode.Success)
                 {
-                    var outputDecimal = new decimal[outElementsCount];                    
+                    var outputValues = new double[outElementsCount];                    
 
-                    Array.Reverse(outputDecimal);
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDecimal);          
+                    Array.Reverse(output);
+                    Array.ConstrainedCopy(output, outBeginIndex, outputValues, 0, outElementsCount);
+                    Array.Reverse(outputValues);          
 
                     indicatorSignal = aroonOscSignalLogic != null ?
-                            aroonOscSignalLogic.Invoke(outputDecimal) :
-                            aroonOscDefaultSignalLogic.Invoke(outputDecimal);
+                            aroonOscSignalLogic.Invoke(outputValues) :
+                            aroonOscDefaultSignalLogic.Invoke(outputValues);
 
                     return new AroonOscillatorResult
                     {
                         Success = true,
                         IndicatorSignal = indicatorSignal,
-                        AroonOscillator = outputDecimal
+                        AroonOscillator = outputValues
                     };
                 }
                 else
@@ -190,11 +190,12 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static AtrResult Atr(decimal[] inputHigh,
-            decimal[] inputLow,
-            decimal[] inputClose, 
+        public static AtrResult Atr(
+            double[] inputHigh,
+            double[] inputLow,
+            double[] inputClose, 
             int period,
-            Func<decimal[], IndicatorSignal> atrSignalLogic = null)
+            Func<double[], IndicatorSignal> atrSignalLogic = null)
         {
             try
             {
@@ -204,9 +205,9 @@ namespace TANet.Util.StaticClasses
 
                 var result = Core.Atr(0, 
                     inputHigh.Length - 1,
-                    Array.ConvertAll(inputHigh, item => (double)item),
-                    Array.ConvertAll(inputLow, item => (double)item),
-                    Array.ConvertAll(inputClose, item => (double)item),
+                    inputHigh, 
+                    inputLow, 
+                    inputClose, 
                     period, 
                     out int outBeginIndex,
                     out int outElementsCount, 
@@ -214,20 +215,20 @@ namespace TANet.Util.StaticClasses
 
                 if (result == Core.RetCode.Success)
                 {
-                    var outputDecimal = new decimal[outElementsCount];                    
+                    var outputValues = new double[outElementsCount];                    
 
-                    Array.Reverse(outputDecimal);                    
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);                    
-                    Array.Reverse(outputDecimal);
+                    Array.Reverse(output);                    
+                    Array.ConstrainedCopy(output, outBeginIndex, outputValues, 0, outElementsCount);                    
+                    Array.Reverse(outputValues);
 
                     indicatorSignal = atrSignalLogic != null ?
-                            atrSignalLogic.Invoke(outputDecimal) : IndicatorSignal.Stay;
+                            atrSignalLogic.Invoke(outputValues) : IndicatorSignal.Stay;
 
                     return new AtrResult
                     {
                         Success = true,
                         IndicatorSignal = indicatorSignal,
-                        Atr = outputDecimal
+                        Atr = outputValues
                     };
                 }
                 else
@@ -251,74 +252,58 @@ namespace TANet.Util.StaticClasses
             }            
         }
 
-        public static BollingerBandsResult BollingerBands(decimal[] input,
+        public static BollingerBandsResult BollingerBands(
+            double[] input,
             int period,
             double stdDevUp,
             double stdDevDown,
             MovingAverageType maType,            
-            Func<decimal[], decimal[], decimal[], decimal[], IndicatorSignal> bBandsSignalLogic = null)
+            Func<double[], double[], double[], double[], IndicatorSignal> bBandsSignalLogic = null)
         {
             try
-            {
-                var indicatorSignal = IndicatorSignal.Stay;
+            {                
+                var outputUpDouble = new double[input.Length];
+                var outputMiddleDouble = new double[input.Length];
+                var outputDownDouble = new double[input.Length];
 
-                double[] outputUp = new double[input.Length];
-                double[] outputMiddle = new double[input.Length];
-                double[] outputDown = new double[input.Length];
-
-                var result = Core.Bbands(0,
+                var range = TALib.Core.Default.Bbands(
+                    0,
                     input.Length - 1,
-                    Array.ConvertAll(input, item => (float)item),
+                    input,
                     period,
                     stdDevUp,
                     stdDevDown,
-                    MovingAverageTypes.ToTaLib(maType),                                        
-                    out int outBeginIndex,
-                    out int outElementsCount,
-                    outputUp,
-                    outputMiddle,
-                    outputDown);
+                    MovingAverageTypes.ToOfficialTaLib(maType),
+                    outputUpDouble,
+                    outputMiddleDouble,
+                    outputDownDouble);
 
-                if (result == Core.RetCode.Success)
-                {
-                    var outputUpDecimal = new decimal[outElementsCount];
-                    var outputMiddleDecimal = new decimal[outElementsCount];
-                    var outputDownDecimal = new decimal[outElementsCount];
-
-                    Array.Reverse(outputUp);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputUp, item => (decimal)item), outBeginIndex, outputUpDecimal, 0, outElementsCount);
-                    Array.Reverse(outputUpDecimal);
-
-                    Array.Reverse(outputMiddle);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputMiddle, item => (decimal)item), outBeginIndex, outputMiddleDecimal, 0, outElementsCount);
-                    Array.Reverse(outputMiddleDecimal);
-
-                    Array.Reverse(outputDown);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputDown, item => (decimal)item), outBeginIndex, outputDownDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDownDecimal);
-
-                    indicatorSignal = bBandsSignalLogic != null ?
-                            bBandsSignalLogic.Invoke(input, outputUpDecimal, outputMiddleDecimal, outputDownDecimal) :
-                            IndicatorSignal.Stay;
-
-                    return new BollingerBandsResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        UpperBand = outputUpDecimal,
-                        MiddleBand = outputMiddleDecimal,
-                        LowerBand = outputDownDecimal
-                    };
-                }
-                else
+                if (range.Count == 0)
                 {
                     return new BollingerBandsResult
                     {
                         Success = false,
                         IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
+                        Message = "TA-Lib produced no Bbands values for the input."
                     };
                 }
+
+                var upperBandValues = outputUpDouble[..range.Count];
+                var middleBandValues = outputMiddleDouble[..range.Count];
+                var lowerBandValues = outputDownDouble[..range.Count];
+
+                var indicatorSignal = bBandsSignalLogic != null ?
+                    bBandsSignalLogic.Invoke(input, upperBandValues, middleBandValues, lowerBandValues) :
+                    IndicatorSignal.Stay;
+
+                return new BollingerBandsResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    UpperBand = upperBandValues,
+                    MiddleBand = middleBandValues,
+                    LowerBand = lowerBandValues
+                };
             }
             catch (Exception ex)
             {
@@ -331,11 +316,11 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static CciResult Cci(decimal[] inputHigh,
-            decimal[] inputLow,
-            decimal[] inputClose,            
+        public static CciResult Cci(double[] inputHigh,
+            double[] inputLow,
+            double[] inputClose,            
             int period,
-            Func<decimal[], IndicatorSignal> cciSignalLogic = null)
+            Func<double[], IndicatorSignal> cciSignalLogic = null)
         {
             try
             {
@@ -345,9 +330,9 @@ namespace TANet.Util.StaticClasses
 
                 var result = Core.Cci(0,
                     inputHigh.Length - 1,
-                    Array.ConvertAll(inputHigh, item => (double)item),
-                    Array.ConvertAll(inputLow, item => (double)item),
-                    Array.ConvertAll(inputClose, item => (double)item),                    
+                    inputHigh, 
+                    inputLow, 
+                    inputClose, 
                     period,
                     out int outBeginIndex,
                     out int outElementsCount,
@@ -355,21 +340,21 @@ namespace TANet.Util.StaticClasses
 
                 if (result == Core.RetCode.Success)
                 {
-                    var outputDecimal = new decimal[outElementsCount];
+                    var outputValues = new double[outElementsCount];
 
-                    Array.Reverse(outputDecimal);
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDecimal);
+                    Array.Reverse(output);
+                    Array.ConstrainedCopy(output, outBeginIndex, outputValues, 0, outElementsCount);
+                    Array.Reverse(outputValues);
 
                     indicatorSignal = cciSignalLogic != null ?
-                            cciSignalLogic.Invoke(outputDecimal) :
-                            cciDefaultSignalLogic.Invoke(outputDecimal);
+                            cciSignalLogic.Invoke(outputValues) :
+                            cciDefaultSignalLogic.Invoke(outputValues);
 
                     return new CciResult
                     {
                         Success = true,
                         IndicatorSignal = indicatorSignal,
-                        Cci = outputDecimal
+                        Cci = outputValues
                     };
                 }
                 else
@@ -394,20 +379,19 @@ namespace TANet.Util.StaticClasses
         }
 
         public static MovingAverageResult Ma(
-            decimal[] input, 
+            double[] input, 
             MovingAverageType maType, 
             int period, 
-            Func<decimal[], decimal[], IndicatorSignal> maSignalLogic = null)
+            Func<double[], double[], IndicatorSignal> maSignalLogic = null)
         {
             try
-            {
-                var inputDouble = Array.ConvertAll(input, item => (double)item);
-                var outputDouble = new double[inputDouble.Length];
+            {                
+                var outputDouble = new double[input.Length];
 
                 var range = TALib.Core.Default.Ma(
                     0,
-                    inputDouble.Length - 1,
-                    inputDouble,
+                    input.Length - 1,
+                    input,
                     period,
                     MovingAverageTypes.ToOfficialTaLib(maType),
                     outputDouble);
@@ -422,19 +406,17 @@ namespace TANet.Util.StaticClasses
                     };
                 }
 
-                var outputDecimal = new decimal[range.Count];
-                for (var i = 0; i < range.Count; i++)
-                    outputDecimal[i] = (decimal)outputDouble[i];
+                var maValues = outputDouble[..range.Count];
 
                 var indicatorSignal = maSignalLogic != null ?
-                    maSignalLogic.Invoke(input, outputDecimal) :
-                    maDefaultSignalLogic.Invoke(input, outputDecimal);
+                    maSignalLogic.Invoke(input, maValues) :
+                    maDefaultSignalLogic.Invoke(input, maValues);
 
                 return new MovingAverageResult
                 {
                     Success = true,
                     IndicatorSignal = indicatorSignal,
-                    Ma = outputDecimal
+                    Ma = maValues
                 };
 
             }
@@ -449,14 +431,14 @@ namespace TANet.Util.StaticClasses
             }
         }        
 
-        public static MacdResult MacdExt(decimal[] input, 
+        public static MacdResult MacdExt(double[] input, 
             MovingAverageType fastMaType, 
             int fastPeriod, 
             MovingAverageType slowMaType, 
             int slowPeriod, 
             MovingAverageType signalMaType, 
             int signalPeriod, 
-            Func<decimal[], decimal[], decimal[], IndicatorSignal> macdExtSignalLogic = null)
+            Func<double[], double[], double[], IndicatorSignal> macdExtSignalLogic = null)
         {
             try
             {
@@ -467,7 +449,7 @@ namespace TANet.Util.StaticClasses
                 double[] outputHistogram = new double[input.Length];
                 var result = Core.MacdExt(0,
                     input.Length - 1,
-                    Array.ConvertAll(input, item => (float)item),
+                    input,
                     fastPeriod, 
                     MovingAverageTypes.ToTaLib(fastMaType),
                     slowPeriod, 
@@ -482,33 +464,33 @@ namespace TANet.Util.StaticClasses
 
                 if (result == Core.RetCode.Success)
                 {
-                    var outputMacdDecimal = new decimal[outElementsCount];
-                    var outputSignalDecimal = new decimal[outElementsCount];
-                    var outputHistogramDecimal = new decimal[outElementsCount];
+                    var outputMacdValues = new double[outElementsCount];
+                    var outputSignalValues = new double[outElementsCount];
+                    var outputHistogramValues = new double[outElementsCount];
 
                     Array.Reverse(outputMacd);
                     Array.Reverse(outputSignal);
                     Array.Reverse(outputHistogram);
 
-                    Array.ConstrainedCopy(Array.ConvertAll(outputMacd, item => (decimal)item), outBeginIndex, outputMacdDecimal, 0, outElementsCount);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputSignal, item => (decimal)item), outBeginIndex, outputSignalDecimal, 0, outElementsCount);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputHistogram, item => (decimal)item), outBeginIndex, outputHistogramDecimal, 0, outElementsCount);
+                    Array.ConstrainedCopy(outputMacd, outBeginIndex, outputMacdValues, 0, outElementsCount);
+                    Array.ConstrainedCopy(outputSignal, outBeginIndex, outputSignalValues, 0, outElementsCount);
+                    Array.ConstrainedCopy(outputHistogram, outBeginIndex, outputHistogramValues, 0, outElementsCount);
 
-                    Array.Reverse(outputMacdDecimal);
-                    Array.Reverse(outputSignalDecimal);
-                    Array.Reverse(outputHistogramDecimal);
+                    Array.Reverse(outputMacdValues);
+                    Array.Reverse(outputSignalValues);
+                    Array.Reverse(outputHistogramValues);
 
                     indicatorSignal = macdExtSignalLogic != null ?
-                            macdExtSignalLogic.Invoke(outputMacdDecimal, outputSignalDecimal, outputHistogramDecimal) : 
-                            macdDefaultSignalLogic.Invoke(outputMacdDecimal, outputSignalDecimal, outputHistogramDecimal);
+                            macdExtSignalLogic.Invoke(outputMacdValues, outputSignalValues, outputHistogramValues) : 
+                            macdDefaultSignalLogic.Invoke(outputMacdValues, outputSignalValues, outputHistogramValues);
 
                     return new MacdResult
                     {
                         Success = true,
                         IndicatorSignal = indicatorSignal,
-                        Macd = outputMacdDecimal,
-                        Signal = outputSignalDecimal,
-                        Histogram = outputHistogramDecimal
+                        Macd = outputMacdValues,
+                        Signal = outputSignalValues,
+                        Histogram = outputHistogramValues
                     };
                 }
                 else
@@ -530,12 +512,12 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static MfiResult Mfi(decimal[] inputHigh,
-            decimal[] inputLow,
-            decimal[] inputClose,
-            decimal[] inputVolume,
+        public static MfiResult Mfi(double[] inputHigh,
+            double[] inputLow,
+            double[] inputClose,
+            double[] inputVolume,
             int period,
-            Func<decimal[], IndicatorSignal> mfiSignalLogic = null)
+            Func<double[], IndicatorSignal> mfiSignalLogic = null)
         {
             try
             {
@@ -545,10 +527,10 @@ namespace TANet.Util.StaticClasses
 
                 var result = Core.Mfi(0,
                     inputHigh.Length - 1,
-                    Array.ConvertAll(inputHigh, item => (double)item),
-                    Array.ConvertAll(inputLow, item => (double)item),
-                    Array.ConvertAll(inputClose, item => (double)item),
-                    Array.ConvertAll(inputVolume, item => (double)item),
+                    inputHigh, 
+                    inputLow, 
+                    inputClose, 
+                    inputVolume, 
                     period,
                     out int outBeginIndex,
                     out int outElementsCount,
@@ -556,21 +538,21 @@ namespace TANet.Util.StaticClasses
 
                 if (result == Core.RetCode.Success)
                 {
-                    var outputDecimal = new decimal[outElementsCount];
+                    var outputValues = new double[outElementsCount];
 
-                    Array.Reverse(outputDecimal);
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDecimal);
+                    Array.Reverse(output);
+                    Array.ConstrainedCopy(output, outBeginIndex, outputValues, 0, outElementsCount);
+                    Array.Reverse(outputValues);
 
                     indicatorSignal = mfiSignalLogic != null ?
-                            mfiSignalLogic.Invoke(outputDecimal) : 
-                            mfiDefaultSignalLogic.Invoke(outputDecimal);
+                            mfiSignalLogic.Invoke(outputValues) : 
+                            mfiDefaultSignalLogic.Invoke(outputValues);
 
                     return new MfiResult
                     {
                         Success = true,
                         IndicatorSignal = indicatorSignal,
-                        Mfi = outputDecimal
+                        Mfi = outputValues
                     };
                 }
                 else
@@ -594,19 +576,19 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static ParabolicSarResult ParabolicSar(decimal[] high,
-            decimal[] low,
+        public static ParabolicSarResult ParabolicSar(double[] high,
+            double[] low,
             double acceleration,
             double maximum,
-            Func<decimal[], decimal[], decimal[], IndicatorSignal> pSarSignalLogic = null)
+            Func<double[], double[], double[], IndicatorSignal> pSarSignalLogic = null)
         {
             try
             {
                 double[] output = new double[high.Length];
                 var result = Core.Sar(0,
                     high.Length - 1,
-                    Array.ConvertAll(high, item => (float)item),
-                    Array.ConvertAll(low, item => (float)item),
+                    high, 
+                    low, 
                     acceleration,
                     maximum,
                     out int outBeginIndex,
@@ -615,18 +597,18 @@ namespace TANet.Util.StaticClasses
 
                 if (result == Core.RetCode.Success)
                 {
-                    var outputDecimal = new decimal[outElementsCount];
+                    var outputValues = new double[outElementsCount];
 
                     Array.Reverse(output);
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDecimal);
+                    Array.ConstrainedCopy(output, outBeginIndex, outputValues, 0, outElementsCount);
+                    Array.Reverse(outputValues);
 
                     return new ParabolicSarResult
                     {
                         Success = true,
                         IndicatorSignal = pSarSignalLogic != null ?
-                            pSarSignalLogic.Invoke(high, low, outputDecimal) : pSarDefaultSignalLogic.Invoke(high, low, outputDecimal),
-                        Sar = outputDecimal
+                            pSarSignalLogic.Invoke(high, low, outputValues) : pSarDefaultSignalLogic.Invoke(high, low, outputValues),
+                        Sar = outputValues
                     };
                 }
                 else
@@ -650,14 +632,14 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static RsiResult Rsi(decimal[] input, int period, Func<decimal[], IndicatorSignal> rsiSignalLogic = null)
+        public static RsiResult Rsi(double[] input, int period, Func<double[], IndicatorSignal> rsiSignalLogic = null)
         {
             try
             {
                 double[] output = new double[input.Length];
                 var result = Core.Rsi(0, 
                     input.Length - 1, 
-                    Array.ConvertAll(input, item => (double)item), 
+                    input, 
                     period, 
                     out int outBeginIndex,
                     out int outElementsCount,
@@ -665,18 +647,18 @@ namespace TANet.Util.StaticClasses
 
                 if (result == Core.RetCode.Success)
                 {
-                    var outputDecimal = new decimal[outElementsCount];
+                    var outputValues = new double[outElementsCount];
 
                     Array.Reverse(output);
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDecimal);
+                    Array.ConstrainedCopy(output, outBeginIndex, outputValues, 0, outElementsCount);
+                    Array.Reverse(outputValues);
 
                     return new RsiResult
                     {
                         Success = true,
                         IndicatorSignal = rsiSignalLogic != null ? 
-                            rsiSignalLogic.Invoke(outputDecimal) : rsiDefaultSignalLogic.Invoke(outputDecimal),
-                        Rsi = outputDecimal
+                            rsiSignalLogic.Invoke(outputValues) : rsiDefaultSignalLogic.Invoke(outputValues),
+                        Rsi = outputValues
                     };
                 }
                 else
@@ -700,15 +682,15 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static StochasticResult Stochastic(decimal[] inputHigh, 
-            decimal[] inputLow, 
-            decimal[] inputClose, 
+        public static StochasticResult Stochastic(double[] inputHigh, 
+            double[] inputLow, 
+            double[] inputClose, 
             int fastKPeriod, 
             MovingAverageType slowKMaType, 
             int slowKPeriod, 
             MovingAverageType slowDMaType, 
             int slowDPeriod, 
-            Func<decimal[], decimal[], IndicatorSignal> stochSignalLogic = null)
+            Func<double[], double[], IndicatorSignal> stochSignalLogic = null)
         {            
             try
             {
@@ -719,9 +701,9 @@ namespace TANet.Util.StaticClasses
 
                 var result = Core.Stoch(0, 
                     inputHigh.Length - 1,
-                    Array.ConvertAll(inputHigh, item => (double)item),
-                    Array.ConvertAll(inputLow, item => (double)item),
-                    Array.ConvertAll(inputClose, item => (double)item), 
+                    inputHigh, 
+                    inputLow, 
+                    inputClose, 
                     fastKPeriod, 
                     slowKPeriod,
                     MovingAverageTypes.ToTaLib(slowKMaType), 
@@ -734,28 +716,28 @@ namespace TANet.Util.StaticClasses
 
                 if (result == Core.RetCode.Success)
                 {
-                    var outputSlowKDecimal = new decimal[outElementsCount];
-                    var outputSlowDDecimal = new decimal[outElementsCount];                    
+                    var outputSlowKValues = new double[outElementsCount];
+                    var outputSlowDValues = new double[outElementsCount];                    
 
-                    Array.Reverse(outputSlowKDecimal);
-                    Array.Reverse(outputSlowDDecimal);                    
+                    Array.Reverse(outputSlowK);
+                    Array.Reverse(outputSlowD);                    
 
-                    Array.ConstrainedCopy(Array.ConvertAll(outputSlowK, item => (decimal)item), outBeginIndex, outputSlowKDecimal, 0, outElementsCount);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputSlowD, item => (decimal)item), outBeginIndex, outputSlowDDecimal, 0, outElementsCount);                    
+                    Array.ConstrainedCopy(outputSlowK, outBeginIndex, outputSlowKValues, 0, outElementsCount);
+                    Array.ConstrainedCopy(outputSlowD, outBeginIndex, outputSlowDValues, 0, outElementsCount);                    
 
-                    Array.Reverse(outputSlowKDecimal);
-                    Array.Reverse(outputSlowDDecimal);
+                    Array.Reverse(outputSlowKValues);
+                    Array.Reverse(outputSlowDValues);
 
                     indicatorSignal = stochSignalLogic != null ?
-                            stochSignalLogic.Invoke(outputSlowKDecimal, outputSlowDDecimal) :
-                            stochDefaultSignalLogic.Invoke(outputSlowKDecimal, outputSlowDDecimal);
+                            stochSignalLogic.Invoke(outputSlowKValues, outputSlowDValues) :
+                            stochDefaultSignalLogic.Invoke(outputSlowKValues, outputSlowDValues);
 
                     return new StochasticResult
                     {
                         Success = true,
                         IndicatorSignal = indicatorSignal,
-                        SlowK = outputSlowKDecimal,
-                        SlowD = outputSlowDDecimal
+                        SlowK = outputSlowKValues,
+                        SlowD = outputSlowDValues
                     };
                 }
                 else
@@ -779,11 +761,11 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static WilliamsRResult WilliamsR(decimal[] inputHigh,
-            decimal[] inputLow,
-            decimal[] inputClose,
+        public static WilliamsRResult WilliamsR(double[] inputHigh,
+            double[] inputLow,
+            double[] inputClose,
             int period,
-            Func<decimal[], IndicatorSignal> williamsRSignalLogic = null)
+            Func<double[], IndicatorSignal> williamsRSignalLogic = null)
         {
             try
             {
@@ -793,9 +775,9 @@ namespace TANet.Util.StaticClasses
 
                 var result = Core.WillR(0,
                     inputHigh.Length - 1,
-                    Array.ConvertAll(inputHigh, item => (double)item),
-                    Array.ConvertAll(inputLow, item => (double)item),
-                    Array.ConvertAll(inputClose, item => (double)item),                    
+                    inputHigh, 
+                    inputLow, 
+                    inputClose, 
                     period,
                     out int outBeginIndex,
                     out int outElementsCount,
@@ -803,21 +785,21 @@ namespace TANet.Util.StaticClasses
 
                 if (result == Core.RetCode.Success)
                 {
-                    var outputDecimal = new decimal[outElementsCount];
+                    var outputValues = new double[outElementsCount];
 
-                    Array.Reverse(outputDecimal);
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDecimal);
+                    Array.Reverse(outputValues);
+                    Array.ConstrainedCopy(output, outBeginIndex, outputValues, 0, outElementsCount);
+                    Array.Reverse(outputValues);
 
                     indicatorSignal = williamsRSignalLogic != null ?
-                            williamsRSignalLogic.Invoke(outputDecimal) :
-                            williamsRDefaultSignalLogic.Invoke(outputDecimal);
+                            williamsRSignalLogic.Invoke(outputValues) :
+                            williamsRDefaultSignalLogic.Invoke(outputValues);
 
                     return new WilliamsRResult
                     {
                         Success = true,
                         IndicatorSignal = indicatorSignal,
-                        RangePercent = outputDecimal
+                        RangePercent = outputValues
                     };
                 }
                 else

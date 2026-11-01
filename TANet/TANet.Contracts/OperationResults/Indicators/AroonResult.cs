@@ -3,7 +3,7 @@ namespace TANet.Contracts.OperationResults.Indicators
 {
     public class AroonResult : IndicatorResultBase
     {
-        public decimal[] AroonUp { get; set; }
-        public decimal[] AroonDown { get; set; }
+        public double[] AroonUp { get; set; }
+        public double[] AroonDown { get; set; }
     }
 }
