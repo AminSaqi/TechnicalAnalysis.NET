@@ -1,6 +1,7 @@
 ﻿
 using TANet.Contracts.Enums;
 using TANet.Core;
+using TANet.Util.Extensions;
 using Xunit;
 
 
@@ -13,24 +14,27 @@ public class SmaTests
     public void Sma_ReturnsValuesAfterWarmup()
     {
         var result = Indicators.Sma(
-            [1, 2, 3, 4, 5],
+            [5, 4, 3, 2, 1],
             period: 3);
 
         Assert.True(result.Success, result.Message);
-        Assert.Equal(expected: [ 2, 3, 4 ], actual: result.Ma);
+        Assert.Equal(expected: [4, 3, 2, double.NaN, double.NaN], actual: result.Ma);
         Assert.Equal(expected: IndicatorSignal.Buy, actual: result.IndicatorSignal);
     }
 
     [Fact]
-    public void Sma_WhenHistoryIsTooShort_ReturnsFailure()
+    public void Sma_WhenHistoryIsTooShort_ReturnsNaNValues()
     {
         var result = Indicators.Sma(
-            [1, 2],
+            [2, 1],
             period: 3);
 
-        Assert.False(result.Success);
-        Assert.Equal(expected: IndicatorSignal.Stay, actual: result.IndicatorSignal);
-        Assert.NotEmpty(result.Message);
+        Assert.True(result.Success, result.Message);
+        Assert.Equal(2, result.Ma.Length);
+        Assert.All(result.Ma, value => Assert.True(double.IsNaN(value)));
+        Assert.False(result.Ma.HasValidData());
+        Assert.Equal(0, result.Ma.CountValidData());
+        Assert.Equal(IndicatorSignal.Stay, result.IndicatorSignal);
     }
 }
 
@@ -67,18 +71,29 @@ public class MovingAverageParityTests
 
         Assert.True(tanetResult.Success, tanetResult.Message);
 
+        var chronologicalInput = input.Reverse().ToArray();
         var officialOutput = new double[input.Length];
 
         var range = TALib.Core.Default.Ma(
             0,
-            input.Length - 1,
-            input,
+            chronologicalInput.Length - 1,
+            chronologicalInput,
             period,
             officialMaType,
             officialOutput);
 
-        Assert.True(range.Count > 0);       
-        Assert.Equal(expected: range.Count, actual: tanetResult.Ma.Length);
-        Assert.Equal(expected: officialOutput[..range.Count], actual: tanetResult.Ma);
+        Assert.True(range.Count > 0);            
+        Assert.Equal(expected: input.Length, actual: tanetResult.Ma.Length);
+
+        var expectedValues = officialOutput.Take(range.Count).Reverse().ToArray();
+
+        Assert.Equal(expected: expectedValues, actual: tanetResult.Ma[..range.Count]);
+
+        Assert.All(
+            tanetResult.Ma[range.Count..],
+            value => Assert.True(double.IsNaN(value)));
+
+        Assert.True(tanetResult.Ma.HasValidData());
+        Assert.Equal(expected: range.Count, actual: tanetResult.Ma.CountValidData());
     }
 }

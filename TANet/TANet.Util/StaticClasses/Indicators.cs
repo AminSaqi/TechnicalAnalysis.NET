@@ -2,12 +2,40 @@
 using TANet.Contracts.Enums;
 using TANet.Contracts.OperationResults.Indicators;
 using TANet.Util.StaticClasses.EnumConvertors;
+using TANet.Util.Extensions;
 using TicTacTec.TA.Library;
 
 namespace TANet.Util.StaticClasses
 {
     public static class Indicators
     {
+        #region helper methods
+
+        static double[] CopyToChronologicalOrder(double[] input)
+        {
+            var chronological = new double[input.Length];
+
+            for (var i = 0; i < input.Length; i++)
+            {
+                chronological[i] = input[input.Length - 1 - i];
+            }
+
+            return chronological;
+        }
+
+        static void CompleteNewestFirstOutput(double[] output, int writtenCount)
+        {
+            Array.Reverse(output, 0, writtenCount);
+
+            Array.Fill(
+                output,
+                double.NaN,
+                writtenCount,
+                output.Length - writtenCount);
+        }
+
+        #endregion
+
         #region Default Signal Logics
 
         static Func<double[], IndicatorSignal> aroonOscDefaultSignalLogic = output =>
@@ -31,8 +59,8 @@ namespace TANet.Util.StaticClasses
             IndicatorSignal.Stay;
 
         static Func<double[], double[], IndicatorSignal> maDefaultSignalLogic = (input, output) =>
-            input[input.Length - 1] > output[output.Length - 1] ? IndicatorSignal.Buy :
-            input[input.Length - 1] < output[output.Length - 1] ? IndicatorSignal.Sell :
+            input[0] > output[0] ? IndicatorSignal.Buy :
+            input[0] < output[0] ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
         static Func<double[], IndicatorSignal> mfiDefaultSignalLogic = output =>
@@ -385,38 +413,34 @@ namespace TANet.Util.StaticClasses
             Func<double[], double[], IndicatorSignal> maSignalLogic = null)
         {
             try
-            {                
-                var outputDouble = new double[input.Length];
+            {        
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
 
                 var range = TALib.Core.Default.Ma(
                     0,
-                    input.Length - 1,
-                    input,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
                     period,
                     MovingAverageTypes.ToOfficialTaLib(maType),
-                    outputDouble);
+                    output);                
 
-                if (range.Count == 0)
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+
+                if (output.HasValidData())
                 {
-                    return new MovingAverageResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = "TA-Lib produced no MA values for the input."
-                    };
+                    indicatorSignal = maSignalLogic != null ?
+                        maSignalLogic.Invoke(input, output) :
+                        maDefaultSignalLogic.Invoke(input, output);
                 }
-
-                var maValues = outputDouble[..range.Count];
-
-                var indicatorSignal = maSignalLogic != null ?
-                    maSignalLogic.Invoke(input, maValues) :
-                    maDefaultSignalLogic.Invoke(input, maValues);
 
                 return new MovingAverageResult
                 {
                     Success = true,
                     IndicatorSignal = indicatorSignal,
-                    Ma = maValues
+                    Ma = output
                 };
 
             }
