@@ -64,8 +64,8 @@ namespace TANet.Util.StaticClasses
             IndicatorSignal.Stay;
 
         static Func<double[], IndicatorSignal> mfiDefaultSignalLogic = output =>
-            output[output.Length - 1] < 20 ? IndicatorSignal.Buy :
-            output[output.Length - 1] > 80 ? IndicatorSignal.Sell :
+            output[0] < 20 ? IndicatorSignal.Buy :
+            output[0] > 80 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
         static Func<double[], double[], double[], IndicatorSignal> pSarDefaultSignalLogic = (high, low, output) =>
@@ -537,49 +537,50 @@ namespace TANet.Util.StaticClasses
         {
             try
             {
-                var indicatorSignal = IndicatorSignal.Stay;
+                ArgumentNullException.ThrowIfNull(inputHigh);
+                ArgumentNullException.ThrowIfNull(inputLow);
+                ArgumentNullException.ThrowIfNull(inputClose);
+                ArgumentNullException.ThrowIfNull(inputVolume);
 
-                double[] output = new double[inputHigh.Length];
+                if (inputHigh.Length != inputLow.Length ||
+                    inputHigh.Length != inputClose.Length ||
+                    inputHigh.Length != inputVolume.Length)
+                {
+                    throw new ArgumentException("High, low, close and volume series must have the same length.");
+                }
 
-                var result = Core.Mfi(0,
-                    inputHigh.Length - 1,
-                    inputHigh, 
-                    inputLow, 
-                    inputClose, 
-                    inputVolume, 
+                var chronologicalHigh = CopyToChronologicalOrder(inputHigh);
+                var chronologicalLow = CopyToChronologicalOrder(inputLow);
+                var chronologicalClose = CopyToChronologicalOrder(inputClose);
+                var chronologicalVolume = CopyToChronologicalOrder(inputVolume);
+                var output = new double[inputHigh.Length];
+
+                var range = TALib.Core.Default.Mfi(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
+                    chronologicalClose,
+                    chronologicalVolume,
                     period,
-                    out int outBeginIndex,
-                    out int outElementsCount,
                     output);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
                 {
-                    var outputValues = new double[outElementsCount];
-
-                    Array.Reverse(output);
-                    Array.ConstrainedCopy(output, outBeginIndex, outputValues, 0, outElementsCount);
-                    Array.Reverse(outputValues);
-
-                    indicatorSignal = mfiSignalLogic != null ?
-                            mfiSignalLogic.Invoke(outputValues) : 
-                            mfiDefaultSignalLogic.Invoke(outputValues);
-
-                    return new MfiResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        Mfi = outputValues
-                    };
+                    indicatorSignal = mfiSignalLogic != null
+                        ? mfiSignalLogic.Invoke(output)
+                        : mfiDefaultSignalLogic.Invoke(output);
                 }
-                else
+
+                return new MfiResult
                 {
-                    return new MfiResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Mfi = output
+                };
             }
             catch (Exception ex)
             {
