@@ -74,8 +74,8 @@ namespace TANet.Util.StaticClasses
             IndicatorSignal.Stay;
 
         static Func<double[], IndicatorSignal> rsiDefaultSignalLogic = output =>
-            output[output.Length - 1] <= 30 ? IndicatorSignal.Buy :
-            output[output.Length - 1] >= 70 ? IndicatorSignal.Sell :
+            output[0] <= 30 ? IndicatorSignal.Buy :
+            output[0] >= 70 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
         static Func<double[], double[], IndicatorSignal> stochDefaultSignalLogic = (slowK, slowD) =>
@@ -656,40 +656,32 @@ namespace TANet.Util.StaticClasses
         {
             try
             {
-                double[] output = new double[input.Length];
-                var result = Core.Rsi(0, 
-                    input.Length - 1, 
-                    input, 
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+
+                var range = TALib.Core.Default.Rsi(0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput, 
                     period, 
-                    out int outBeginIndex,
-                    out int outElementsCount,
-                    output);             
+                    output);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+
+                if (output.HasValidData())
                 {
-                    var outputValues = new double[outElementsCount];
-
-                    Array.Reverse(output);
-                    Array.ConstrainedCopy(output, outBeginIndex, outputValues, 0, outElementsCount);
-                    Array.Reverse(outputValues);
-
-                    return new RsiResult
-                    {
-                        Success = true,
-                        IndicatorSignal = rsiSignalLogic != null ? 
-                            rsiSignalLogic.Invoke(outputValues) : rsiDefaultSignalLogic.Invoke(outputValues),
-                        Rsi = outputValues
-                    };
+                    indicatorSignal = rsiSignalLogic != null ?
+                        rsiSignalLogic.Invoke(output) :
+                        rsiDefaultSignalLogic.Invoke(output);
                 }
-                else
+
+                return new RsiResult
                 {
-                    return new RsiResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Rsi = output
+                };                
             }
             catch (Exception ex)
             {
