@@ -69,8 +69,8 @@ namespace TANet.Util.StaticClasses
             IndicatorSignal.Stay;
 
         static Func<double[], double[], double[], IndicatorSignal> pSarDefaultSignalLogic = (high, low, output) =>
-            low[low.Length - 1] > output[output.Length - 1] ? IndicatorSignal.Buy :
-            high[high.Length - 1] < output[output.Length - 1] ? IndicatorSignal.Sell :
+            low[0] > output[0] ? IndicatorSignal.Buy :
+            high[0] < output[0] ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
         static Func<double[], IndicatorSignal> rsiDefaultSignalLogic = output =>
@@ -561,7 +561,8 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static ParabolicSarResult ParabolicSar(double[] high,
+        public static ParabolicSarResult ParabolicSar(
+            double[] high,
             double[] low,
             double acceleration,
             double maximum,
@@ -569,42 +570,43 @@ namespace TANet.Util.StaticClasses
         {
             try
             {
-                double[] output = new double[high.Length];
-                var result = Core.Sar(0,
-                    high.Length - 1,
-                    high, 
-                    low, 
+                ArgumentNullException.ThrowIfNull(high);
+                ArgumentNullException.ThrowIfNull(low);
+
+                if (high.Length != low.Length)
+                {
+                    throw new ArgumentException("High and low series must have the same length.");
+                }
+
+                var chronologicalHigh = CopyToChronologicalOrder(high);
+                var chronologicalLow = CopyToChronologicalOrder(low);
+                var output = new double[high.Length];
+
+                var range = TALib.Core.Default.Sar(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
                     acceleration,
                     maximum,
-                    out int outBeginIndex,
-                    out int outElementsCount,
                     output);
 
-                if (result == Core.RetCode.Success)
-                {
-                    var outputValues = new double[outElementsCount];
+                CompleteNewestFirstOutput(output, range.Count);
 
-                    Array.Reverse(output);
-                    Array.ConstrainedCopy(output, outBeginIndex, outputValues, 0, outElementsCount);
-                    Array.Reverse(outputValues);
-
-                    return new ParabolicSarResult
-                    {
-                        Success = true,
-                        IndicatorSignal = pSarSignalLogic != null ?
-                            pSarSignalLogic.Invoke(high, low, outputValues) : pSarDefaultSignalLogic.Invoke(high, low, outputValues),
-                        Sar = outputValues
-                    };
-                }
-                else
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
                 {
-                    return new ParabolicSarResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
+                    indicatorSignal = pSarSignalLogic != null
+                        ? pSarSignalLogic.Invoke(high, low, output)
+                        : pSarDefaultSignalLogic.Invoke(high, low, output);
                 }
+
+                return new ParabolicSarResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Sar = output
+                };
             }
             catch (Exception ex)
             {
