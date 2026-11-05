@@ -39,8 +39,8 @@ namespace TANet.Util.StaticClasses
         #region Default Signal Logics
 
         static Func<double[], IndicatorSignal> aroonOscDefaultSignalLogic = output =>
-            output[output.Length - 1] > 0 ? IndicatorSignal.Buy :
-            output[output.Length - 1] < 0 ? IndicatorSignal.Sell :
+            output[0] > 0 ? IndicatorSignal.Buy :
+            output[0] < 0 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
         static Func<double[], double[], IndicatorSignal> aroonDefaultSignalLogic = (outputAroonUp, outputAroonDown) =>
@@ -150,54 +150,50 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static AroonOscillatorResult AroonOscillator(double[] inputHigh,
+        public static AroonOscillatorResult AroonOscillator(
+            double[] inputHigh,
             double[] inputLow,
             int period,
             Func<double[], IndicatorSignal> aroonOscSignalLogic = null)
         {
             try
             {
-                var indicatorSignal = IndicatorSignal.Stay;
+                ArgumentNullException.ThrowIfNull(inputHigh);
+                ArgumentNullException.ThrowIfNull(inputLow);
 
-                double[] output = new double[inputHigh.Length];  
+                if (inputHigh.Length != inputLow.Length)
+                {
+                    throw new ArgumentException("High and low series must have the same length.");
+                }
 
-                var result = Core.AroonOsc(0,
-                    inputHigh.Length - 1,
-                    inputHigh, 
-                    inputLow, 
+                var chronologicalHigh = CopyToChronologicalOrder(inputHigh);
+                var chronologicalLow = CopyToChronologicalOrder(inputLow);
+                var output = new double[inputHigh.Length];
+
+                var range = TALib.Core.Default.Aroonosc(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
                     period,
-                    out int outBeginIndex,
-                    out int outElementsCount,
                     output);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
                 {
-                    var outputValues = new double[outElementsCount];                    
-
-                    Array.Reverse(output);
-                    Array.ConstrainedCopy(output, outBeginIndex, outputValues, 0, outElementsCount);
-                    Array.Reverse(outputValues);          
-
-                    indicatorSignal = aroonOscSignalLogic != null ?
-                            aroonOscSignalLogic.Invoke(outputValues) :
-                            aroonOscDefaultSignalLogic.Invoke(outputValues);
-
-                    return new AroonOscillatorResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        AroonOscillator = outputValues
-                    };
+                    indicatorSignal = aroonOscSignalLogic != null
+                        ? aroonOscSignalLogic.Invoke(output)
+                        : aroonOscDefaultSignalLogic.Invoke(output);
                 }
-                else
+
+                return new AroonOscillatorResult
                 {
-                    return new AroonOscillatorResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    AroonOscillator = output
+                };
             }
             catch (Exception ex)
             {
