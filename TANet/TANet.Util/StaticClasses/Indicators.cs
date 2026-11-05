@@ -49,8 +49,8 @@ namespace TANet.Util.StaticClasses
             IndicatorSignal.Stay;
 
         static Func<double[], IndicatorSignal> cciDefaultSignalLogic = output =>
-            output[output.Length - 1] > 100 ? IndicatorSignal.Buy :
-            output[output.Length - 1] < -100 ? IndicatorSignal.Sell :
+            output[0] > 100 ? IndicatorSignal.Buy :
+            output[0] < -100 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
         static Func<double[], double[], double[], IndicatorSignal> macdDefaultSignalLogic = (outputMacd, outputSignal, outputHistogram) =>
@@ -336,56 +336,54 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static CciResult Cci(double[] inputHigh,
+        public static CciResult Cci(
+            double[] inputHigh,
             double[] inputLow,
-            double[] inputClose,            
+            double[] inputClose,
             int period,
             Func<double[], IndicatorSignal> cciSignalLogic = null)
         {
             try
             {
-                var indicatorSignal = IndicatorSignal.Stay;
+                ArgumentNullException.ThrowIfNull(inputHigh);
+                ArgumentNullException.ThrowIfNull(inputLow);
+                ArgumentNullException.ThrowIfNull(inputClose);
 
-                double[] output = new double[inputHigh.Length];
+                if (inputHigh.Length != inputLow.Length || inputHigh.Length != inputClose.Length)
+                {
+                    throw new ArgumentException("High, low and close series must have the same length.");
+                }
 
-                var result = Core.Cci(0,
-                    inputHigh.Length - 1,
-                    inputHigh, 
-                    inputLow, 
-                    inputClose, 
+                var chronologicalHigh = CopyToChronologicalOrder(inputHigh);
+                var chronologicalLow = CopyToChronologicalOrder(inputLow);
+                var chronologicalClose = CopyToChronologicalOrder(inputClose);
+                var output = new double[inputHigh.Length];
+
+                var range = TALib.Core.Default.Cci(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
+                    chronologicalClose,
                     period,
-                    out int outBeginIndex,
-                    out int outElementsCount,
                     output);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
                 {
-                    var outputValues = new double[outElementsCount];
-
-                    Array.Reverse(output);
-                    Array.ConstrainedCopy(output, outBeginIndex, outputValues, 0, outElementsCount);
-                    Array.Reverse(outputValues);
-
-                    indicatorSignal = cciSignalLogic != null ?
-                            cciSignalLogic.Invoke(outputValues) :
-                            cciDefaultSignalLogic.Invoke(outputValues);
-
-                    return new CciResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        Cci = outputValues
-                    };
+                    indicatorSignal = cciSignalLogic != null
+                        ? cciSignalLogic.Invoke(output)
+                        : cciDefaultSignalLogic.Invoke(output);
                 }
-                else
+
+                return new CciResult
                 {
-                    return new CciResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Cci = output
+                };
             }
             catch (Exception ex)
             {
