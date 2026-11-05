@@ -44,8 +44,8 @@ namespace TANet.Util.StaticClasses
             IndicatorSignal.Stay;
 
         static Func<double[], double[], IndicatorSignal> aroonDefaultSignalLogic = (outputAroonUp, outputAroonDown) =>
-            outputAroonUp[outputAroonUp.Length - 1] > 50 && outputAroonDown[outputAroonDown.Length - 1] < 50 ? IndicatorSignal.Buy :
-            outputAroonUp[outputAroonUp.Length - 1] < 50 && outputAroonDown[outputAroonDown.Length - 1] > 50 ? IndicatorSignal.Sell :
+            outputAroonUp[0] > 50 && outputAroonDown[0] < 50 ? IndicatorSignal.Buy :
+            outputAroonUp[0] < 50 && outputAroonDown[0] > 50 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
         static Func<double[], IndicatorSignal> cciDefaultSignalLogic = output =>
@@ -90,62 +90,54 @@ namespace TANet.Util.StaticClasses
 
         #endregion
 
-        public static AroonResult Aroon(double[] inputHigh,
-            double[] inputLow,            
+        public static AroonResult Aroon(
+            double[] inputHigh,
+            double[] inputLow,
             int period,
             Func<double[], double[], IndicatorSignal> aroonSignalLogic = null)
         {
             try
             {
-                var indicatorSignal = IndicatorSignal.Stay;
+                ArgumentNullException.ThrowIfNull(inputHigh);
+                ArgumentNullException.ThrowIfNull(inputLow);
 
-                double[] outputUp = new double[inputHigh.Length];
-                double[] outputDown = new double[inputHigh.Length];
+                if (inputHigh.Length != inputLow.Length)
+                {
+                    throw new ArgumentException("High and low series must have the same length.");
+                }
 
-                var result = Core.Aroon(0,
-                    inputHigh.Length - 1,
-                    inputHigh, 
-                    inputLow, 
+                var chronologicalHigh = CopyToChronologicalOrder(inputHigh);
+                var chronologicalLow = CopyToChronologicalOrder(inputLow);
+                var outputUp = new double[inputHigh.Length];
+                var outputDown = new double[inputHigh.Length];
+
+                var range = TALib.Core.Default.Aroon(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
                     period,
-                    out int outBeginIndex,
-                    out int outElementsCount,
                     outputDown,
                     outputUp);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(outputUp, range.Count);
+                CompleteNewestFirstOutput(outputDown, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (outputUp.HasValidData() && outputDown.HasValidData())
                 {
-                    var outputUpValues = new double[outElementsCount];
-                    var outputDownValues = new double[outElementsCount];
-
-                    Array.Reverse(outputUp);
-                    Array.ConstrainedCopy(outputUp, outBeginIndex, outputUpValues, 0, outElementsCount);
-                    Array.Reverse(outputUpValues);
-
-                    Array.Reverse(outputDown);
-                    Array.ConstrainedCopy(outputDown, outBeginIndex, outputDownValues, 0, outElementsCount);
-                    Array.Reverse(outputDownValues);
-
-                    indicatorSignal = aroonSignalLogic != null ?
-                            aroonSignalLogic.Invoke(outputUpValues, outputDownValues) :
-                            aroonDefaultSignalLogic.Invoke(outputUpValues, outputDownValues);
-
-                    return new AroonResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        AroonUp = outputUpValues,
-                        AroonDown = outputDownValues
-                    };
+                    indicatorSignal = aroonSignalLogic != null
+                        ? aroonSignalLogic.Invoke(outputUp, outputDown)
+                        : aroonDefaultSignalLogic.Invoke(outputUp, outputDown);
                 }
-                else
+
+                return new AroonResult
                 {
-                    return new AroonResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    AroonUp = outputUp,
+                    AroonDown = outputDown
+                };
             }
             catch (Exception ex)
             {
