@@ -54,8 +54,8 @@ namespace TANet.Util.StaticClasses
             IndicatorSignal.Stay;
 
         static Func<double[], double[], double[], IndicatorSignal> macdDefaultSignalLogic = (outputMacd, outputSignal, outputHistogram) =>
-            outputMacd[outputMacd.Length - 1] > 0 ? IndicatorSignal.Buy :
-            outputMacd[outputMacd.Length - 1] < 0 ? IndicatorSignal.Sell :
+            outputMacd[0] > 0 ? IndicatorSignal.Buy :
+            outputMacd[0] < 0 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
         static Func<double[], double[], IndicatorSignal> maDefaultSignalLogic = (input, output) =>
@@ -433,7 +433,8 @@ namespace TANet.Util.StaticClasses
             }
         }        
 
-        public static MacdResult MacdExt(double[] input, 
+        public static MacdResult MacdExt(
+            double[] input, 
             MovingAverageType fastMaType, 
             int fastPeriod, 
             MovingAverageType slowMaType, 
@@ -444,71 +445,52 @@ namespace TANet.Util.StaticClasses
         {
             try
             {
-                var indicatorSignal = IndicatorSignal.Stay;
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var outputMacd = new double[input.Length];
+                var outputSignal = new double[input.Length];
+                var outputHistogram = new double[input.Length];
 
-                double[] outputMacd = new double[input.Length];
-                double[] outputSignal = new double[input.Length];
-                double[] outputHistogram = new double[input.Length];
-                var result = Core.MacdExt(0,
-                    input.Length - 1,
-                    input,
-                    fastPeriod, 
-                    MovingAverageTypes.ToTaLib(fastMaType),
-                    slowPeriod, 
-                    MovingAverageTypes.ToTaLib(slowMaType),
-                    signalPeriod, 
-                    MovingAverageTypes.ToTaLib(signalMaType),
-                    out int outBeginIndex, 
-                    out int outElementsCount,
-                    outputMacd, 
-                    outputSignal, 
+                var range = TALib.Core.Default.Macdext(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
+                    fastPeriod,
+                    MovingAverageTypes.ToOfficialTaLib(fastMaType),
+                    slowPeriod,
+                    MovingAverageTypes.ToOfficialTaLib(slowMaType),
+                    signalPeriod,
+                    MovingAverageTypes.ToOfficialTaLib(signalMaType),
+                    outputMacd,
+                    outputSignal,
                     outputHistogram);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(outputMacd, range.Count);
+                CompleteNewestFirstOutput(outputSignal, range.Count);
+                CompleteNewestFirstOutput(outputHistogram, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (outputMacd.HasValidData() && outputSignal.HasValidData() && outputHistogram.HasValidData())
                 {
-                    var outputMacdValues = new double[outElementsCount];
-                    var outputSignalValues = new double[outElementsCount];
-                    var outputHistogramValues = new double[outElementsCount];
-
-                    Array.Reverse(outputMacd);
-                    Array.Reverse(outputSignal);
-                    Array.Reverse(outputHistogram);
-
-                    Array.ConstrainedCopy(outputMacd, outBeginIndex, outputMacdValues, 0, outElementsCount);
-                    Array.ConstrainedCopy(outputSignal, outBeginIndex, outputSignalValues, 0, outElementsCount);
-                    Array.ConstrainedCopy(outputHistogram, outBeginIndex, outputHistogramValues, 0, outElementsCount);
-
-                    Array.Reverse(outputMacdValues);
-                    Array.Reverse(outputSignalValues);
-                    Array.Reverse(outputHistogramValues);
-
-                    indicatorSignal = macdExtSignalLogic != null ?
-                            macdExtSignalLogic.Invoke(outputMacdValues, outputSignalValues, outputHistogramValues) : 
-                            macdDefaultSignalLogic.Invoke(outputMacdValues, outputSignalValues, outputHistogramValues);
-
-                    return new MacdResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        Macd = outputMacdValues,
-                        Signal = outputSignalValues,
-                        Histogram = outputHistogramValues
-                    };
+                    indicatorSignal = macdExtSignalLogic != null
+                        ? macdExtSignalLogic.Invoke(outputMacd, outputSignal, outputHistogram)
+                        : macdDefaultSignalLogic.Invoke(outputMacd, outputSignal, outputHistogram);
                 }
-                else
+
+                return new MacdResult
                 {
-                    return new MacdResult
-                    {
-                        Success = false,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Macd = outputMacd,
+                    Signal = outputSignal,
+                    Histogram = outputHistogram
+                };
             }
             catch (Exception ex)
             {
                 return new MacdResult
                 {
                     Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
                     Message = ex.ToString()
                 };
             }
