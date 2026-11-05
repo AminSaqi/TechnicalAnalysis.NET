@@ -79,8 +79,8 @@ namespace TANet.Util.StaticClasses
             IndicatorSignal.Stay;
 
         static Func<double[], double[], IndicatorSignal> stochDefaultSignalLogic = (slowK, slowD) =>
-            slowK[slowK.Length - 1] < 20 && slowD[slowD.Length -1] < 20 ? IndicatorSignal.Buy :
-            slowK[slowK.Length - 1] > 80 && slowD[slowD.Length - 1] > 80 ? IndicatorSignal.Sell :
+            slowK[0] < 20 && slowD[0] < 20 ? IndicatorSignal.Buy :
+            slowK[0] > 80 && slowD[0] > 80 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
         static Func<double[], IndicatorSignal> williamsRDefaultSignalLogic = output =>
@@ -661,73 +661,66 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static StochasticResult Stochastic(double[] inputHigh, 
-            double[] inputLow, 
-            double[] inputClose, 
-            int fastKPeriod, 
-            MovingAverageType slowKMaType, 
-            int slowKPeriod, 
-            MovingAverageType slowDMaType, 
-            int slowDPeriod, 
+        public static StochasticResult Stochastic(
+            double[] inputHigh,
+            double[] inputLow,
+            double[] inputClose,
+            int fastKPeriod,
+            MovingAverageType slowKMaType,
+            int slowKPeriod,
+            MovingAverageType slowDMaType,
+            int slowDPeriod,
             Func<double[], double[], IndicatorSignal> stochSignalLogic = null)
-        {            
+        {
             try
             {
-                var indicatorSignal = IndicatorSignal.Stay;
+                ArgumentNullException.ThrowIfNull(inputHigh);
+                ArgumentNullException.ThrowIfNull(inputLow);
+                ArgumentNullException.ThrowIfNull(inputClose);
 
-                double[] outputSlowK = new double[inputHigh.Length];
-                double[] outputSlowD = new double[inputHigh.Length];
+                if (inputHigh.Length != inputLow.Length || inputHigh.Length != inputClose.Length)
+                {
+                    throw new ArgumentException("High, low and close series must have the same length.");
+                }
 
-                var result = Core.Stoch(0, 
-                    inputHigh.Length - 1,
-                    inputHigh, 
-                    inputLow, 
-                    inputClose, 
-                    fastKPeriod, 
+                var chronologicalHigh = CopyToChronologicalOrder(inputHigh);
+                var chronologicalLow = CopyToChronologicalOrder(inputLow);
+                var chronologicalClose = CopyToChronologicalOrder(inputClose);
+                var outputSlowK = new double[inputHigh.Length];
+                var outputSlowD = new double[inputHigh.Length];
+
+                var range = TALib.Core.Default.Stoch(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
+                    chronologicalClose,
+                    fastKPeriod,
                     slowKPeriod,
-                    MovingAverageTypes.ToTaLib(slowKMaType), 
+                    MovingAverageTypes.ToOfficialTaLib(slowKMaType),
                     slowDPeriod,
-                    MovingAverageTypes.ToTaLib(slowDMaType), 
-                    out int outBeginIndex,
-                    out int outElementsCount, 
-                    outputSlowK, 
+                    MovingAverageTypes.ToOfficialTaLib(slowDMaType),
+                    outputSlowK,
                     outputSlowD);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(outputSlowK, range.Count);
+                CompleteNewestFirstOutput(outputSlowD, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (outputSlowK.HasValidData() && outputSlowD.HasValidData())
                 {
-                    var outputSlowKValues = new double[outElementsCount];
-                    var outputSlowDValues = new double[outElementsCount];                    
-
-                    Array.Reverse(outputSlowK);
-                    Array.Reverse(outputSlowD);                    
-
-                    Array.ConstrainedCopy(outputSlowK, outBeginIndex, outputSlowKValues, 0, outElementsCount);
-                    Array.ConstrainedCopy(outputSlowD, outBeginIndex, outputSlowDValues, 0, outElementsCount);                    
-
-                    Array.Reverse(outputSlowKValues);
-                    Array.Reverse(outputSlowDValues);
-
-                    indicatorSignal = stochSignalLogic != null ?
-                            stochSignalLogic.Invoke(outputSlowKValues, outputSlowDValues) :
-                            stochDefaultSignalLogic.Invoke(outputSlowKValues, outputSlowDValues);
-
-                    return new StochasticResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        SlowK = outputSlowKValues,
-                        SlowD = outputSlowDValues
-                    };
+                    indicatorSignal = stochSignalLogic != null
+                        ? stochSignalLogic.Invoke(outputSlowK, outputSlowD)
+                        : stochDefaultSignalLogic.Invoke(outputSlowK, outputSlowD);
                 }
-                else
+
+                return new StochasticResult
                 {
-                    return new StochasticResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    SlowK = outputSlowK,
+                    SlowD = outputSlowD
+                };
             }
             catch (Exception ex)
             {
