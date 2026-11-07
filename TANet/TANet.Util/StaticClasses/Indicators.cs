@@ -84,8 +84,8 @@ namespace TANet.Util.StaticClasses
             IndicatorSignal.Stay;
 
         static Func<double[], IndicatorSignal> williamsRDefaultSignalLogic = output =>
-            output[output.Length - 1] < -80 ? IndicatorSignal.Buy :
-            output[output.Length - 1] > -20 ? IndicatorSignal.Sell :
+            output[0] < -80 ? IndicatorSignal.Buy :
+            output[0] > -20 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
         #endregion
@@ -733,7 +733,8 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static WilliamsRResult WilliamsR(double[] inputHigh,
+        public static WilliamsRResult WilliamsR(
+            double[] inputHigh,
             double[] inputLow,
             double[] inputClose,
             int period,
@@ -741,48 +742,45 @@ namespace TANet.Util.StaticClasses
         {
             try
             {
-                var indicatorSignal = IndicatorSignal.Stay;
+                ArgumentNullException.ThrowIfNull(inputHigh);
+                ArgumentNullException.ThrowIfNull(inputLow);
+                ArgumentNullException.ThrowIfNull(inputClose);
 
-                double[] output = new double[inputHigh.Length];
+                if (inputHigh.Length != inputLow.Length || inputHigh.Length != inputClose.Length)
+                {
+                    throw new ArgumentException("High, low and close series must have the same length.");
+                }
 
-                var result = Core.WillR(0,
-                    inputHigh.Length - 1,
-                    inputHigh, 
-                    inputLow, 
-                    inputClose, 
+                var chronologicalHigh = CopyToChronologicalOrder(inputHigh);
+                var chronologicalLow = CopyToChronologicalOrder(inputLow);
+                var chronologicalClose = CopyToChronologicalOrder(inputClose);
+                var output = new double[inputHigh.Length];
+
+                var range = TALib.Core.Default.Willr(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
+                    chronologicalClose,
                     period,
-                    out int outBeginIndex,
-                    out int outElementsCount,
                     output);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
                 {
-                    var outputValues = new double[outElementsCount];
-
-                    Array.Reverse(outputValues);
-                    Array.ConstrainedCopy(output, outBeginIndex, outputValues, 0, outElementsCount);
-                    Array.Reverse(outputValues);
-
-                    indicatorSignal = williamsRSignalLogic != null ?
-                            williamsRSignalLogic.Invoke(outputValues) :
-                            williamsRDefaultSignalLogic.Invoke(outputValues);
-
-                    return new WilliamsRResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        RangePercent = outputValues
-                    };
+                    indicatorSignal = williamsRSignalLogic != null
+                        ? williamsRSignalLogic.Invoke(output)
+                        : williamsRDefaultSignalLogic.Invoke(output);
                 }
-                else
+
+                return new WilliamsRResult
                 {
-                    return new WilliamsRResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    RangePercent = output
+                };
             }
             catch (Exception ex)
             {
