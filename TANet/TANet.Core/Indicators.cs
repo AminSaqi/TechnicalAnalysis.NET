@@ -263,6 +263,44 @@ namespace TANet.Core
 
         #endregion
 
+        #region MAMA
+
+        public static MamaResult Mama(double[] input, double fastLimit, double slowLimit)
+        {
+            return TANet.Util.StaticClasses.Indicators.Mama(input, fastLimit, slowLimit);
+        }
+        public static MamaResult Mama(double[] input, double fastLimit, double slowLimit, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return TANet.Util.StaticClasses.Indicators.Mama(input, fastLimit, slowLimit, signalLogic);
+        }
+        public static MamaResult Mama(List<Candle> input, double fastLimit, double slowLimit)
+        {
+            return Mama(input, fastLimit, slowLimit, IndicatorCalculationBase.Close, null);
+        }
+        public static MamaResult Mama(List<Candle> input, double fastLimit, double slowLimit, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return Mama(input, fastLimit, slowLimit, IndicatorCalculationBase.Close, signalLogic);
+        }
+        public static MamaResult Mama(List<Candle> input, double fastLimit, double slowLimit, IndicatorCalculationBase calculationBase)
+        {
+            return Mama(input, fastLimit, slowLimit, calculationBase, null);
+        }
+        public static MamaResult Mama(List<Candle> input, double fastLimit, double slowLimit, IndicatorCalculationBase calculationBase, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            var values = calculationBase switch
+            {
+                IndicatorCalculationBase.Open => input.Select(c => c.Open).ToArray(),
+                IndicatorCalculationBase.High => input.Select(c => c.High).ToArray(),
+                IndicatorCalculationBase.Low => input.Select(c => c.Low).ToArray(),
+                IndicatorCalculationBase.Volume => input.Select(c => c.Volume).ToArray(),
+                _ => input.Select(c => c.Close).ToArray()
+            };
+
+            return TANet.Util.StaticClasses.Indicators.Mama(values, fastLimit, slowLimit, signalLogic);
+        }
+
+        #endregion
+
         #region MACD
 
         public static MacdResult Macd(double[] input, int fastPeriod, int slowPeriod, int signalPeriod)

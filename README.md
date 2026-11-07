@@ -129,6 +129,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] HMA — Hull Moving Average
 - [x] KAMA
 - [x] MACD
+- [x] MAMA — MESA Adaptive Moving Average
 - [x] MFI
 - [x] Parabolic SAR
 - [x] RMA — Wilder's Smoothed Moving Average
@@ -209,7 +210,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] MA — Moving average (partially supported)
 - [ ] MACDFIX — Moving Average Convergence/Divergence Fix 12/26
 - [ ] MACDV — MACD-V, Volatility Normalised Momentum
-- [ ] MAMA — MESA Adaptive Moving Average
 - [ ] MARKETFI — Market Facilitation Index
 - [ ] MASSI — Mass Index
 - [ ] MAVP — Moving average with variable period
@@ -289,6 +289,11 @@ VWMA expects non-negative volumes aligned with the price series. For periods
 greater than one, an all-zero-volume window produces `NaN` even after warm-up;
 at period one, TA-Lib returns the input price regardless of volume. Its custom
 signal callback receives the price and VWMA output series.
+
+MAMA returns both the MAMA and FAMA series. Its default signal compares their
+latest values: MAMA above FAMA is `Buy`, below is `Sell`, and equal is `Stay`.
+This compares current values and does not detect a crossover event. Custom
+signal callbacks receive MAMA followed by FAMA.
 
 ## Migrating to 3.0
 

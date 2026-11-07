@@ -62,6 +62,11 @@ namespace TANet.Util.StaticClasses
             input[0] < output[0] ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
+        static Func<double[], double[], IndicatorSignal> mamaDefaultSignalLogic = (mama, fama) =>
+            mama[0] > fama[0] ? IndicatorSignal.Buy :
+            mama[0] < fama[0] ? IndicatorSignal.Sell :
+            IndicatorSignal.Stay;
+
         static Func<double[], IndicatorSignal> mfiDefaultSignalLogic = output =>
             output[0] < 20 ? IndicatorSignal.Buy :
             output[0] > 80 ? IndicatorSignal.Sell :
@@ -431,6 +436,59 @@ namespace TANet.Util.StaticClasses
                 };
             }
         }        
+
+        public static MamaResult Mama(
+            double[] input,
+            double fastLimit,
+            double slowLimit,
+            Func<double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var outputMama = new double[input.Length];
+                var outputFama = new double[input.Length];
+
+                var range = TALib.Core.Default.Mama(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
+                    fastLimit,
+                    slowLimit,
+                    outputMama,
+                    outputFama);
+
+                CompleteNewestFirstOutput(outputMama, range.Count);
+                CompleteNewestFirstOutput(outputFama, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (outputMama.HasValidData() && outputFama.HasValidData())
+                {
+                    indicatorSignal = signalLogic != null
+                        ? signalLogic.Invoke(outputMama, outputFama)
+                        : mamaDefaultSignalLogic.Invoke(outputMama, outputFama);
+                }
+
+                return new MamaResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Mama = outputMama,
+                    Fama = outputFama
+                };
+            }
+            catch (Exception ex)
+            {
+                return new MamaResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
 
         public static MovingAverageResult Hma(
             double[] input,
