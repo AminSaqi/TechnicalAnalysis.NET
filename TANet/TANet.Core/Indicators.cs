@@ -424,6 +424,44 @@ namespace TANet.Core
 
         #endregion
 
+        #region T3
+
+        public static MovingAverageResult T3(double[] input, int period, double vFactor)
+        {
+            return TANet.Util.StaticClasses.Indicators.T3(input, period, vFactor);
+        }
+        public static MovingAverageResult T3(double[] input, int period, double vFactor, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return TANet.Util.StaticClasses.Indicators.T3(input, period, vFactor, signalLogic);
+        }
+        public static MovingAverageResult T3(List<Candle> input, int period, double vFactor)
+        {
+            return T3(input, period, vFactor, IndicatorCalculationBase.Close, null);
+        }
+        public static MovingAverageResult T3(List<Candle> input, int period, double vFactor, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return T3(input, period, vFactor, IndicatorCalculationBase.Close, signalLogic);
+        }
+        public static MovingAverageResult T3(List<Candle> input, int period, double vFactor, IndicatorCalculationBase calculationBase)
+        {
+            return T3(input, period, vFactor, calculationBase, null);
+        }
+        public static MovingAverageResult T3(List<Candle> input, int period, double vFactor, IndicatorCalculationBase calculationBase, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            var values = calculationBase switch
+            {
+                IndicatorCalculationBase.Open => input.Select(c => c.Open).ToArray(),
+                IndicatorCalculationBase.High => input.Select(c => c.High).ToArray(),
+                IndicatorCalculationBase.Low => input.Select(c => c.Low).ToArray(),
+                IndicatorCalculationBase.Volume => input.Select(c => c.Volume).ToArray(),
+                _ => input.Select(c => c.Close).ToArray()
+            };
+
+            return TANet.Util.StaticClasses.Indicators.T3(values, period, vFactor, signalLogic);
+        }
+
+        #endregion
+
         #region TEMA
 
         public static MovingAverageResult Tema(double[] input, int period)

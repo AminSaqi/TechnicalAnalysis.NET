@@ -133,6 +133,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] RSI
 - [x] SMA
 - [x] Stochastic
+- [x] T3 — Triple Exponential Moving Average (Tillson's T3)
 - [x] TEMA
 - [x] Williams %R
 - [x] WMA
@@ -255,7 +256,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] SWAK_BUTTER — Swiss Army Knife - Butterworth Filter
 - [ ] SWAK_GAUSS — Swiss Army Knife - Gaussian Filter
 - [ ] SWAK_HP — Swiss Army Knife - High-Pass Filter
-- [ ] T3 — Triple Exponential Moving Average (T3)
 - [ ] TRANGE — True Range
 - [ ] TRIMA — Triangular Moving Average
 - [ ] TRIX — 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA
