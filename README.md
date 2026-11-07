@@ -119,13 +119,166 @@ Check `result.Success` and the relevant output series as in the SMA example.
 
 ## Implemented indicators
 
-- Aroon and Aroon Oscillator
-- ATR, Bollinger Bands and CCI
-- EMA, KAMA, SMA, TEMA and WMA
-- MACD and Extended MACD
-- MFI, Parabolic SAR and RSI
-- Stochastic (currently exposed as `Indicators.Stochsatic`)
-- Williams %R
+- [x] Aroon
+- [x] Aroon Oscillator
+- [x] ATR
+- [x] Bollinger Bands
+- [x] CCI
+- [x] EMA
+- [x] Extended MACD
+- [x] KAMA
+- [x] MACD
+- [x] MFI
+- [x] Parabolic SAR
+- [x] RSI
+- [x] SMA
+- [x] Stochastic (currently exposed as `Indicators.Stochsatic`)
+- [x] TEMA
+- [x] Williams %R
+- [x] WMA
+
+---
+
+- [ ] AC — Accelerator/Decelerator Oscillator
+- [ ] ACCBANDS — Acceleration Bands
+- [ ] AD — Chaikin A/D Line
+- [ ] ADOSC — Chaikin A/D Oscillator
+- [ ] ADR — Average Day Range
+- [ ] ADX — Average Directional Movement Index
+- [ ] ADXR — Average Directional Movement Index Rating
+- [ ] ALMA — Arnaud Legoux Moving Average
+- [ ] AO — Awesome Oscillator
+- [ ] APO — Absolute Price Oscillator
+- [ ] ASI — Wilder Accumulative Swing Index
+- [ ] AVGDEV — Average Deviation
+- [ ] AVGPRICE — Average Price
+- [ ] BBW — Bollinger BandWidth
+- [ ] BETA — Beta
+- [ ] BOP — Balance Of Power
+- [ ] CE — Chandelier Exit
+- [ ] CG — Center of Gravity Oscillator
+- [ ] CHOP — Choppiness Index
+- [ ] CHOPTR — Choppiness Index (True Range Box)
+- [ ] CKSP — Chande Kroll Stop
+- [ ] CMF — Chaikin Money Flow
+- [ ] CMO — Chande Momentum Oscillator
+- [ ] CMOU — Chande Momentum Oscillator (Unsmoothed)
+- [ ] COPPOCK — Coppock Curve
+- [ ] CORREL — Pearson's Correlation Coefficient (r)
+- [ ] CRSI — Connors Relative Strength Index
+- [ ] CTI — Correlation Trend Indicator
+- [ ] CVI — Chaikin's Volatility
+- [ ] DEMA — Double Exponential Moving Average
+- [ ] DONCHIAN — Donchian Channels
+- [ ] DOSC — Derivative Oscillator
+- [ ] DPO — Detrended Price Oscillator
+- [ ] DX — Directional Movement Index
+- [ ] EFI — Elder's Force Index
+- [ ] EMV — Arms Ease of Movement
+- [ ] ER — Kaufman Efficiency Ratio
+- [ ] ERI — Elder Ray Index (Bull Power / Bear Power)
+- [ ] FISHER — Fisher Transform
+- [ ] FOSC — Forecast Oscillator
+- [ ] FRACTAL — Williams Fractal
+- [ ] FRAMA — Fractal Adaptive Moving Average
+- [ ] HA — Heikin-Ashi Candles
+- [ ] HMA — Hull Moving Average
+- [ ] HT_DCPERIOD — Hilbert Transform - Dominant Cycle Period
+- [ ] HT_DCPHASE — Hilbert Transform - Dominant Cycle Phase
+- [ ] HT_PHASOR — Hilbert Transform - Phasor Components
+- [ ] HT_SINE — Hilbert Transform - SineWave
+- [ ] HT_TRENDLINE — Hilbert Transform - Instantaneous Trendline
+- [ ] HT_TRENDMODE — Hilbert Transform - Trend vs Cycle Mode
+- [ ] IBS — Internal Bar Strength
+- [ ] ICHIMOKU — Ichimoku Kinko Hyo
+- [ ] IMI — Intraday Momentum Index
+- [ ] KC — Keltner Channels
+- [ ] KDJ — KDJ Stochastic
+- [ ] KST — Know Sure Thing (Pring)
+- [ ] KSTEXT — Know Sure Thing with controllable MA type
+- [ ] KURTOSIS — Rolling Excess Kurtosis
+- [ ] KVO — Klinger Volume Oscillator
+- [ ] LINEARREG — Linear Regression
+- [ ] LINEARREG_ANGLE — Linear Regression Angle
+- [ ] LINEARREG_INTERCEPT — Linear Regression Intercept
+- [ ] LINEARREG_SLOPE — Linear Regression Slope
+- [ ] MA — Moving average (partially supported)
+- [ ] MACDFIX — Moving Average Convergence/Divergence Fix 12/26
+- [ ] MACDV — MACD-V, Volatility Normalised Momentum
+- [ ] MAMA — MESA Adaptive Moving Average
+- [ ] MARKETFI — Market Facilitation Index
+- [ ] MASSI — Mass Index
+- [ ] MAVP — Moving average with variable period
+- [ ] MCGD — McGinley Dynamic
+- [ ] MEDIAN — Rolling Median
+- [ ] MEDPRICE — Median Price
+- [ ] MIDPOINT — MidPoint over period
+- [ ] MIDPRICE — Midpoint Price over period
+- [ ] MINUS_DI — Minus Directional Indicator
+- [ ] MINUS_DM — Minus Directional Movement
+- [ ] MOM — Momentum
+- [ ] NATR — Normalized Average True Range
+- [ ] NVI — Negative Volume Index
+- [ ] OBV — On Balance Volume
+- [ ] PERCENTB — Bollinger Bands %B
+- [ ] PERCENTILE — Percentile (nearest rank)
+- [ ] PERCENTRANK — Percent Rank
+- [ ] PLUS_DI — Plus Directional Indicator
+- [ ] PLUS_DM — Plus Directional Movement
+- [ ] PPO — Percentage Price Oscillator
+- [ ] PSO — Premier Stochastic Oscillator
+- [ ] PVI — Positive Volume Index
+- [ ] PVO — Percentage Volume Oscillator
+- [ ] PVT — Price Volume Trend
+- [ ] QSTICK — Qstick
+- [ ] RMA — Wilder's Smoothed Moving Average
+- [ ] ROC — Rate of change : ((price/prevPrice)-1)*100
+- [ ] ROCP — Rate of change Percentage: (price-prevPrice)/prevPrice
+- [ ] ROCR — Rate of change ratio: (price/prevPrice)
+- [ ] ROCR100 — Rate of change ratio 100 scale: (price/prevPrice)*100
+- [ ] ROGERSSATCHELL — Rogers-Satchell Volatility
+- [ ] RVI — Relative Volatility Index
+- [ ] RVIR — Relative Volatility Index, refined high/low form
+- [ ] RVOL — Relative Volume
+- [ ] SAREXT — Parabolic SAR - Extended
+- [ ] SI — Wilder Swing Index
+- [ ] SKEW — Rolling Skewness
+- [ ] SMI — Stochastic Momentum Index
+- [ ] SQZMOM — Squeeze Momentum and Level
+- [ ] STC — Schaff Trend Cycle
+- [ ] STDDEV — Standard Deviation
+- [ ] STOCHF — Stochastic Fast
+- [ ] STOCHRSI — Stochastic Relative Strength Index
+- [ ] SUPERTREND — SuperTrend
+- [ ] SWAK_2PHP — Swiss Army Knife - Two-Pole High-Pass Filter
+- [ ] SWAK_BP — Swiss Army Knife - Band-Pass Filter
+- [ ] SWAK_BUTTER — Swiss Army Knife - Butterworth Filter
+- [ ] SWAK_GAUSS — Swiss Army Knife - Gaussian Filter
+- [ ] SWAK_HP — Swiss Army Knife - High-Pass Filter
+- [ ] T3 — Triple Exponential Moving Average (T3)
+- [ ] TRANGE — True Range
+- [ ] TRIMA — Triangular Moving Average
+- [ ] TRIX — 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA
+- [ ] TSF — Time Series Forecast
+- [ ] TSI — True Strength Index
+- [ ] TYPPRICE — Typical Price
+- [ ] ULTOSC — Ultimate Oscillator
+- [ ] VAR — Variance
+- [ ] VHF — Vertical Horizontal Filter
+- [ ] VIDYA — Variable Index Dynamic Average
+- [ ] VORTEX — Vortex Indicator
+- [ ] VWAP — Volume Weighted Average Price
+- [ ] VWMA — Volume Weighted Moving Average
+- [ ] WAD — Williams' Accumulation/Distribution
+- [ ] WAVETREND — WaveTrend Oscillator
+- [ ] WCLPRICE — Weighted Close Price
+- [ ] ZIGZAG — Zig Zag
+- [ ] ZLEMA — Zero-Lag Exponential Moving Average
+
+The list above follows the [TA-Lib function reference](https://ta-lib.org/functions/).
+`MA` is partially supported through the existing moving average methods; not all
+reference MA types are exposed. `CE` and `MACDV` appear in the current reference
+but not in the installed TA-Lib C# 0.8.3 API, so they require a dependency review.
 
 The array-based Williams %R overload currently requires a `volume` parameter
 for compatibility, although the calculation does not use it. TA-Lib's other
