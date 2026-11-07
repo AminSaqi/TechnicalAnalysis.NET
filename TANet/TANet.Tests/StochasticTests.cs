@@ -18,7 +18,7 @@ public class StochasticTests
         var originalLow = (double[])low.Clone();
         var originalClose = (double[])close.Clone();
 
-        var result = Indicators.Stochsatic(high, low, close, fastKPeriod: 2, slowKPeriod: 2, slowDPeriod: 2);
+        var result = Indicators.Stochastic(high, low, close, fastKPeriod: 2, slowKPeriod: 2, slowDPeriod: 2);
 
         Assert.True(result.Success, result.Message);
         // Chronological Fast K is 20, 30, 40, 50; aligned Slow K is 35, 45 and Slow D is 30, 40.
@@ -55,7 +55,7 @@ public class StochasticTests
         const int slowKPeriod = 3;
         const int slowDPeriod = 3;
 
-        var result = Indicators.Stochsatic(
+        var result = Indicators.Stochastic(
             high, low, close, fastKPeriod, slowKType, slowKPeriod, slowDType, slowDPeriod);
 
         Assert.True(result.Success, result.Message);
@@ -95,7 +95,7 @@ public class StochasticTests
         double[] low = [0, 0, 0, 0, 0];
         var close = Enumerable.Repeat(closeValue, high.Length).ToArray();
 
-        var result = Indicators.Stochsatic(high, low, close, fastKPeriod: 2, slowKPeriod: 2, slowDPeriod: 2);
+        var result = Indicators.Stochastic(high, low, close, fastKPeriod: 2, slowKPeriod: 2, slowDPeriod: 2);
 
         Assert.True(result.Success, result.Message);
         Assert.Equal(closeValue, result.SlowK[0], precision: 10);
@@ -108,7 +108,7 @@ public class StochasticTests
     {
         double[] prices = [10, 10, 10, 10, 10];
 
-        var result = Indicators.Stochsatic(prices, prices, prices, fastKPeriod: 2, slowKPeriod: 2, slowDPeriod: 2);
+        var result = Indicators.Stochastic(prices, prices, prices, fastKPeriod: 2, slowKPeriod: 2, slowDPeriod: 2);
 
         Assert.True(result.Success, result.Message);
         Assert.Equal(0d, result.SlowK[0]);
@@ -120,7 +120,7 @@ public class StochasticTests
     public void Stochastic_WhenHistoryIsTooShort_ReturnsNaNsWithoutCallingSignalLogic()
     {
         var invoked = false;
-        var result = Indicators.Stochsatic([10, 10], [0, 0], [5, 4], 2, 2, 2, (slowK, slowD) =>
+        var result = Indicators.Stochastic([10, 10], [0, 0], [5, 4], 2, 2, 2, (slowK, slowD) =>
         {
             invoked = true;
             return IndicatorSignal.Buy;
@@ -143,7 +143,7 @@ public class StochasticTests
     {
         double[]? callbackSlowK = null;
         double[]? callbackSlowD = null;
-        var result = Indicators.Stochsatic(
+        var result = Indicators.Stochastic(
             [10, 10, 10, 10, 10], [0, 0, 0, 0, 0], [5, 4, 3, 2, 1], 2, 2, 2,
             (slowK, slowD) =>
             {
@@ -168,7 +168,7 @@ public class StochasticTests
     [InlineData(2, 2, 0)]
     public void Stochastic_WhenPeriodIsInvalid_ReturnsFailure(int fastKPeriod, int slowKPeriod, int slowDPeriod)
     {
-        var result = Indicators.Stochsatic(
+        var result = Indicators.Stochastic(
             [10, 10, 10, 10], [0, 0, 0, 0], [4, 3, 2, 1], fastKPeriod, slowKPeriod, slowDPeriod);
 
         Assert.False(result.Success);
@@ -183,7 +183,7 @@ public class StochasticTests
     [InlineData(5, 6)]
     public void Stochastic_WhenSeriesLengthsDiffer_ReturnsFailure(int lowLength, int closeLength)
     {
-        var result = Indicators.Stochsatic(new double[5], new double[lowLength], new double[closeLength], 2, 2, 2);
+        var result = Indicators.Stochastic(new double[5], new double[lowLength], new double[closeLength], 2, 2, 2);
 
         Assert.False(result.Success);
         Assert.Equal(IndicatorSignal.Stay, result.IndicatorSignal);
@@ -202,7 +202,7 @@ public class StochasticTests
             new() { High = 10, Low = 0, Close = 1 }
         };
 
-        var result = Indicators.Stochsatic(candles, fastKPeriod: 2, slowKPeriod: 2, slowDPeriod: 2);
+        var result = Indicators.Stochastic(candles, fastKPeriod: 2, slowKPeriod: 2, slowDPeriod: 2);
 
         Assert.True(result.Success, result.Message);
         Assert.Equal([45d, 35d, double.NaN, double.NaN, double.NaN], result.SlowK);

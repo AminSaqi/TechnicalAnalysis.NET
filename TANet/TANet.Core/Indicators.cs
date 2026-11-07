@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TANet.Contracts.Enums;
@@ -348,35 +348,35 @@ namespace TANet.Core
 
         #region Stochastic
 
-        public static StochasticResult Stochsatic(List<Candle> candles, int fastKPeriod, int slowKPeriod, int slowDPeriod)
+        public static StochasticResult Stochastic(List<Candle> candles, int fastKPeriod, int slowKPeriod, int slowDPeriod)
         {
             return STOCH(candles, fastKPeriod, MovingAverageType.Sma, slowKPeriod, MovingAverageType.Sma, slowDPeriod);
         }
-        public static StochasticResult Stochsatic(List<Candle> candles, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod)
+        public static StochasticResult Stochastic(List<Candle> candles, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod)
         {
             return STOCH(candles, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod);
         }
-        public static StochasticResult Stochsatic(List<Candle> candles, int fastKPeriod, int slowKPeriod, int slowDPeriod, Func<double[], double[], IndicatorSignal> signalLogic)
+        public static StochasticResult Stochastic(List<Candle> candles, int fastKPeriod, int slowKPeriod, int slowDPeriod, Func<double[], double[], IndicatorSignal> signalLogic)
         {
             return STOCH(candles, fastKPeriod, MovingAverageType.Sma, slowKPeriod, MovingAverageType.Sma, slowDPeriod, signalLogic);
         }
-        public static StochasticResult Stochsatic(List<Candle> candles, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod, Func<double[], double[], IndicatorSignal> signalLogic)
+        public static StochasticResult Stochastic(List<Candle> candles, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod, Func<double[], double[], IndicatorSignal> signalLogic)
         {
             return STOCH(candles, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod, signalLogic);
         }
-        public static StochasticResult Stochsatic(double[] high, double[] low, double[] close, int fastKPeriod, int slowKPeriod, int slowDPeriod)
+        public static StochasticResult Stochastic(double[] high, double[] low, double[] close, int fastKPeriod, int slowKPeriod, int slowDPeriod)
         {
             return STOCH(high, low, close, fastKPeriod, MovingAverageType.Sma, slowKPeriod, MovingAverageType.Sma, slowDPeriod);
         }
-        public static StochasticResult Stochsatic(double[] high, double[] low, double[] close, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod)
+        public static StochasticResult Stochastic(double[] high, double[] low, double[] close, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod)
         {
             return STOCH(high, low, close, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod);
         }
-        public static StochasticResult Stochsatic(double[] high, double[] low, double[] close, int fastKPeriod, int slowKPeriod, int slowDPeriod, Func<double[], double[], IndicatorSignal> signalLogic)
+        public static StochasticResult Stochastic(double[] high, double[] low, double[] close, int fastKPeriod, int slowKPeriod, int slowDPeriod, Func<double[], double[], IndicatorSignal> signalLogic)
         {
             return STOCH(high, low, close, fastKPeriod, MovingAverageType.Sma, slowKPeriod, MovingAverageType.Sma, slowDPeriod, signalLogic);
         }
-        public static StochasticResult Stochsatic(double[] high, double[] low, double[] close, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod, Func<double[], double[], IndicatorSignal> signalLogic)
+        public static StochasticResult Stochastic(double[] high, double[] low, double[] close, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod, Func<double[], double[], IndicatorSignal> signalLogic)
         {
             return STOCH(high, low, close, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod, signalLogic);
         }
