@@ -131,6 +131,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] MACD
 - [x] MFI
 - [x] Parabolic SAR
+- [x] RMA — Wilder's Smoothed Moving Average
 - [x] RSI
 - [x] SMA
 - [x] Stochastic
@@ -233,7 +234,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] PVO — Percentage Volume Oscillator
 - [ ] PVT — Price Volume Trend
 - [ ] QSTICK — Qstick
-- [ ] RMA — Wilder's Smoothed Moving Average
 - [ ] ROC — Rate of change : ((price/prevPrice)-1)*100
 - [ ] ROCP — Rate of change Percentage: (price-prevPrice)/prevPrice
 - [ ] ROCR — Rate of change ratio: (price/prevPrice)

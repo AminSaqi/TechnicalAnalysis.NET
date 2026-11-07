@@ -334,6 +334,44 @@ namespace TANet.Core
 
         #endregion
 
+        #region RMA
+
+        public static MovingAverageResult Rma(double[] input, int period)
+        {
+            return TANet.Util.StaticClasses.Indicators.Rma(input, period);
+        }
+        public static MovingAverageResult Rma(double[] input, int period, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return TANet.Util.StaticClasses.Indicators.Rma(input, period, signalLogic);
+        }
+        public static MovingAverageResult Rma(List<Candle> input, int period)
+        {
+            return Rma(input, period, IndicatorCalculationBase.Close, null);
+        }
+        public static MovingAverageResult Rma(List<Candle> input, int period, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return Rma(input, period, IndicatorCalculationBase.Close, signalLogic);
+        }
+        public static MovingAverageResult Rma(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return Rma(input, period, calculationBase, null);
+        }
+        public static MovingAverageResult Rma(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            var values = calculationBase switch
+            {
+                IndicatorCalculationBase.Open => input.Select(c => c.Open).ToArray(),
+                IndicatorCalculationBase.High => input.Select(c => c.High).ToArray(),
+                IndicatorCalculationBase.Low => input.Select(c => c.Low).ToArray(),
+                IndicatorCalculationBase.Volume => input.Select(c => c.Volume).ToArray(),
+                _ => input.Select(c => c.Close).ToArray()
+            };
+
+            return TANet.Util.StaticClasses.Indicators.Rma(values, period, signalLogic);
+        }
+
+        #endregion
+
         #region RSI
 
         public static RsiResult Rsi(double[] input, int period)
