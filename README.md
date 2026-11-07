@@ -124,6 +124,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] ATR
 - [x] Bollinger Bands
 - [x] CCI
+- [x] DEMA — Double Exponential Moving Average
 - [x] EMA
 - [x] Extended MACD
 - [x] HMA — Hull Moving Average
@@ -174,7 +175,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] CRSI — Connors Relative Strength Index
 - [ ] CTI — Correlation Trend Indicator
 - [ ] CVI — Chaikin's Volatility
-- [ ] DEMA — Double Exponential Moving Average
 - [ ] DONCHIAN — Donchian Channels
 - [ ] DOSC — Derivative Oscillator
 - [ ] DPO — Detrended Price Oscillator
