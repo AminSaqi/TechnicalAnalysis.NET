@@ -381,6 +381,47 @@ namespace TANet.Core
             return STOCH(high, low, close, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod, signalLogic);
         }
 
+        [Obsolete("Use Stochastic instead.")]
+        public static StochasticResult Stochsatic(List<Candle> candles, int fastKPeriod, int slowKPeriod, int slowDPeriod)
+        {
+            return Stochastic(candles, fastKPeriod, slowKPeriod, slowDPeriod);
+        }
+        [Obsolete("Use Stochastic instead.")]
+        public static StochasticResult Stochsatic(List<Candle> candles, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod)
+        {
+            return Stochastic(candles, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod);
+        }
+        [Obsolete("Use Stochastic instead.")]
+        public static StochasticResult Stochsatic(List<Candle> candles, int fastKPeriod, int slowKPeriod, int slowDPeriod, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return Stochastic(candles, fastKPeriod, slowKPeriod, slowDPeriod, signalLogic);
+        }
+        [Obsolete("Use Stochastic instead.")]
+        public static StochasticResult Stochsatic(List<Candle> candles, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return Stochastic(candles, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod, signalLogic);
+        }
+        [Obsolete("Use Stochastic instead.")]
+        public static StochasticResult Stochsatic(double[] high, double[] low, double[] close, int fastKPeriod, int slowKPeriod, int slowDPeriod)
+        {
+            return Stochastic(high, low, close, fastKPeriod, slowKPeriod, slowDPeriod);
+        }
+        [Obsolete("Use Stochastic instead.")]
+        public static StochasticResult Stochsatic(double[] high, double[] low, double[] close, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod)
+        {
+            return Stochastic(high, low, close, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod);
+        }
+        [Obsolete("Use Stochastic instead.")]
+        public static StochasticResult Stochsatic(double[] high, double[] low, double[] close, int fastKPeriod, int slowKPeriod, int slowDPeriod, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return Stochastic(high, low, close, fastKPeriod, slowKPeriod, slowDPeriod, signalLogic);
+        }
+        [Obsolete("Use Stochastic instead.")]
+        public static StochasticResult Stochsatic(double[] high, double[] low, double[] close, int fastKPeriod, MovingAverageType slowKMaType, int slowKPeriod, MovingAverageType slowDMaType, int slowDPeriod, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return Stochastic(high, low, close, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod, signalLogic);
+        }
+
         #endregion
 
         #region TEMA
