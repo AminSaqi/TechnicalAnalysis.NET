@@ -479,6 +479,62 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static MovingAverageResult Vwma(
+            double[] input,
+            double[] volume,
+            int period,
+            Func<double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                ArgumentNullException.ThrowIfNull(volume);
+
+                if (input.Length != volume.Length)
+                {
+                    throw new ArgumentException("Input and volume series must have the same length.");
+                }
+
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var chronologicalVolume = CopyToChronologicalOrder(volume);
+                var output = new double[input.Length];
+
+                var range = TALib.Core.Default.Vwma(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
+                    chronologicalVolume,
+                    period,
+                    output);
+
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    indicatorSignal = signalLogic != null
+                        ? signalLogic.Invoke(input, output)
+                        : maDefaultSignalLogic.Invoke(input, output);
+                }
+
+                return new MovingAverageResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Ma = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new MovingAverageResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
         public static MovingAverageResult T3(
             double[] input,
             int period,

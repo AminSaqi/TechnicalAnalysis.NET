@@ -550,6 +550,45 @@ namespace TANet.Core
 
         #endregion
 
+        #region VWMA
+
+        public static MovingAverageResult Vwma(double[] input, double[] volume, int period)
+        {
+            return TANet.Util.StaticClasses.Indicators.Vwma(input, volume, period);
+        }
+        public static MovingAverageResult Vwma(double[] input, double[] volume, int period, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return TANet.Util.StaticClasses.Indicators.Vwma(input, volume, period, signalLogic);
+        }
+        public static MovingAverageResult Vwma(List<Candle> input, int period)
+        {
+            return Vwma(input, period, IndicatorCalculationBase.Close, null);
+        }
+        public static MovingAverageResult Vwma(List<Candle> input, int period, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return Vwma(input, period, IndicatorCalculationBase.Close, signalLogic);
+        }
+        public static MovingAverageResult Vwma(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return Vwma(input, period, calculationBase, null);
+        }
+        public static MovingAverageResult Vwma(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            var values = calculationBase switch
+            {
+                IndicatorCalculationBase.Open => input.Select(c => c.Open).ToArray(),
+                IndicatorCalculationBase.High => input.Select(c => c.High).ToArray(),
+                IndicatorCalculationBase.Low => input.Select(c => c.Low).ToArray(),
+                IndicatorCalculationBase.Volume => input.Select(c => c.Volume).ToArray(),
+                _ => input.Select(c => c.Close).ToArray()
+            };
+            var volume = input.Select(c => c.Volume).ToArray();
+
+            return TANet.Util.StaticClasses.Indicators.Vwma(values, volume, period, signalLogic);
+        }
+
+        #endregion
+
         #region WMA
 
         public static MovingAverageResult Wma(double[] input, int period)

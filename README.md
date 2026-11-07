@@ -136,6 +136,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] Stochastic
 - [x] T3 — Triple Exponential Moving Average (Tillson's T3)
 - [x] TEMA
+- [x] VWMA — Volume Weighted Moving Average
 - [x] Williams %R
 - [x] WMA
 
@@ -268,7 +269,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] VIDYA — Variable Index Dynamic Average
 - [ ] VORTEX — Vortex Indicator
 - [ ] VWAP — Volume Weighted Average Price
-- [ ] VWMA — Volume Weighted Moving Average
 - [ ] WAD — Williams' Accumulation/Distribution
 - [ ] WAVETREND — WaveTrend Oscillator
 - [ ] WCLPRICE — Weighted Close Price
@@ -284,6 +284,11 @@ The array-based Williams %R overload currently requires a `volume` parameter
 for compatibility, although the calculation does not use it. TA-Lib's other
 technical indicators are planned; candlestick patterns and mathematical
 functions are outside the current scope.
+
+VWMA expects non-negative volumes aligned with the price series. For periods
+greater than one, an all-zero-volume window produces `NaN` even after warm-up;
+at period one, TA-Lib returns the input price regardless of volume. Its custom
+signal callback receives the price and VWMA output series.
 
 ## Migrating to 3.0
 
