@@ -3,6 +3,6 @@ namespace TANet.Contracts.OperationResults.Indicators
 {
     public class MovingAverageResult : IndicatorResultBase
     {
-        public decimal[] Ma { get; set; }
+        public double[] Ma { get; set; }
     }
 }

@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.0.0</Version>
+    <TargetFramework>net10.0</TargetFramework>
+    <Version>3.0.0</Version>
     <PackageProjectUrl>https://github.com/AminSaqi/TechnicalAnalysis.NET</PackageProjectUrl>
-    <Copyright>Copyright (c) 2022 Amin Saqi</Copyright>
+    <Copyright>Copyright (c) 2019 Amin Saqi</Copyright>
     <Authors>Amin Saqi</Authors>
     <Product>TechnicalAnalysis.Net</Product>
     <PackageId>TechnicalAnalysis.Net.Util</PackageId>
@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cryptowatcher.TA-LIb-Core" Version="1.0.0" />
+    <PackageReference Include="TA-Lib" Version="0.8.3" />
   </ItemGroup>
 
   <ItemGroup>

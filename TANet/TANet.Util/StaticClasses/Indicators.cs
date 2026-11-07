@@ -2,122 +2,141 @@
 using TANet.Contracts.Enums;
 using TANet.Contracts.OperationResults.Indicators;
 using TANet.Util.StaticClasses.EnumConvertors;
-using TicTacTec.TA.Library;
+using TANet.Util.Extensions;
 
 namespace TANet.Util.StaticClasses
 {
     public static class Indicators
     {
+        #region helper methods
+
+        static double[] CopyToChronologicalOrder(double[] input)
+        {
+            var chronological = new double[input.Length];
+
+            for (var i = 0; i < input.Length; i++)
+            {
+                chronological[i] = input[input.Length - 1 - i];
+            }
+
+            return chronological;
+        }
+
+        static void CompleteNewestFirstOutput(double[] output, int writtenCount)
+        {
+            Array.Reverse(output, 0, writtenCount);
+
+            Array.Fill(
+                output,
+                double.NaN,
+                writtenCount,
+                output.Length - writtenCount);
+        }
+
+        #endregion
+
         #region Default Signal Logics
 
-        static Func<decimal[], IndicatorSignal> aroonOscDefaultSignalLogic = output =>
-            output[output.Length - 1] > 0 ? IndicatorSignal.Buy :
-            output[output.Length - 1] < 0 ? IndicatorSignal.Sell :
+        static Func<double[], IndicatorSignal> aroonOscDefaultSignalLogic = output =>
+            output[0] > 0 ? IndicatorSignal.Buy :
+            output[0] < 0 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], decimal[], IndicatorSignal> aroonDefaultSignalLogic = (outputAroonUp, outputAroonDown) =>
-            outputAroonUp[outputAroonUp.Length - 1] > 50 && outputAroonDown[outputAroonDown.Length - 1] < 50 ? IndicatorSignal.Buy :
-            outputAroonUp[outputAroonUp.Length - 1] < 50 && outputAroonDown[outputAroonDown.Length - 1] > 50 ? IndicatorSignal.Sell :
+        static Func<double[], double[], IndicatorSignal> aroonDefaultSignalLogic = (outputAroonUp, outputAroonDown) =>
+            outputAroonUp[0] > 50 && outputAroonDown[0] < 50 ? IndicatorSignal.Buy :
+            outputAroonUp[0] < 50 && outputAroonDown[0] > 50 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], IndicatorSignal> cciDefaultSignalLogic = output =>
-            output[output.Length - 1] > 100 ? IndicatorSignal.Buy :
-            output[output.Length - 1] < -100 ? IndicatorSignal.Sell :
+        static Func<double[], IndicatorSignal> cciDefaultSignalLogic = output =>
+            output[0] > 100 ? IndicatorSignal.Buy :
+            output[0] < -100 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], decimal[], decimal[], IndicatorSignal> macdDefaultSignalLogic = (outputMacd, outputSignal, outputHistogram) =>
-            outputMacd[outputMacd.Length - 1] > 0 ? IndicatorSignal.Buy :
-            outputMacd[outputMacd.Length - 1] < 0 ? IndicatorSignal.Sell :
+        static Func<double[], double[], double[], IndicatorSignal> macdDefaultSignalLogic = (outputMacd, outputSignal, outputHistogram) =>
+            outputMacd[0] > 0 ? IndicatorSignal.Buy :
+            outputMacd[0] < 0 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], decimal[], IndicatorSignal> maDefaultSignalLogic = (input, output) =>
-            input[input.Length - 1] > output[output.Length - 1] ? IndicatorSignal.Buy :
-            input[input.Length - 1] < output[output.Length - 1] ? IndicatorSignal.Sell :
+        static Func<double[], double[], IndicatorSignal> maDefaultSignalLogic = (input, output) =>
+            input[0] > output[0] ? IndicatorSignal.Buy :
+            input[0] < output[0] ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], IndicatorSignal> mfiDefaultSignalLogic = output =>
-            output[output.Length - 1] < 20 ? IndicatorSignal.Buy :
-            output[output.Length - 1] > 80 ? IndicatorSignal.Sell :
+        static Func<double[], IndicatorSignal> mfiDefaultSignalLogic = output =>
+            output[0] < 20 ? IndicatorSignal.Buy :
+            output[0] > 80 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], decimal[], decimal[], IndicatorSignal> pSarDefaultSignalLogic = (high, low, output) =>
-            low[low.Length - 1] > output[output.Length - 1] ? IndicatorSignal.Buy :
-            high[high.Length - 1] < output[output.Length - 1] ? IndicatorSignal.Sell :
+        static Func<double[], double[], double[], IndicatorSignal> pSarDefaultSignalLogic = (high, low, output) =>
+            low[0] > output[0] ? IndicatorSignal.Buy :
+            high[0] < output[0] ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], IndicatorSignal> rsiDefaultSignalLogic = output =>
-            output[output.Length - 1] <= 30 ? IndicatorSignal.Buy :
-            output[output.Length - 1] >= 70 ? IndicatorSignal.Sell :
+        static Func<double[], IndicatorSignal> rsiDefaultSignalLogic = output =>
+            output[0] <= 30 ? IndicatorSignal.Buy :
+            output[0] >= 70 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], decimal[], IndicatorSignal> stochDefaultSignalLogic = (slowK, slowD) =>
-            slowK[slowK.Length - 1] < 20 && slowD[slowD.Length -1] < 20 ? IndicatorSignal.Buy :
-            slowK[slowK.Length - 1] > 80 && slowD[slowD.Length - 1] > 80 ? IndicatorSignal.Sell :
+        static Func<double[], double[], IndicatorSignal> stochDefaultSignalLogic = (slowK, slowD) =>
+            slowK[0] < 20 && slowD[0] < 20 ? IndicatorSignal.Buy :
+            slowK[0] > 80 && slowD[0] > 80 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
-        static Func<decimal[], IndicatorSignal> williamsRDefaultSignalLogic = output =>
-            output[output.Length - 1] < -80 ? IndicatorSignal.Buy :
-            output[output.Length - 1] > -20 ? IndicatorSignal.Sell :
+        static Func<double[], IndicatorSignal> williamsRDefaultSignalLogic = output =>
+            output[0] < -80 ? IndicatorSignal.Buy :
+            output[0] > -20 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
         #endregion
 
-        public static AroonResult Aroon(decimal[] inputHigh,
-            decimal[] inputLow,            
+        public static AroonResult Aroon(
+            double[] inputHigh,
+            double[] inputLow,
             int period,
-            Func<decimal[], decimal[], IndicatorSignal> aroonSignalLogic = null)
+            Func<double[], double[], IndicatorSignal> aroonSignalLogic = null)
         {
             try
             {
-                var indicatorSignal = IndicatorSignal.Stay;
+                ArgumentNullException.ThrowIfNull(inputHigh);
+                ArgumentNullException.ThrowIfNull(inputLow);
 
-                double[] outputUp = new double[inputHigh.Length];
-                double[] outputDown = new double[inputHigh.Length];
+                if (inputHigh.Length != inputLow.Length)
+                {
+                    throw new ArgumentException("High and low series must have the same length.");
+                }
 
-                var result = Core.Aroon(0,
-                    inputHigh.Length - 1,
-                    Array.ConvertAll(inputHigh, item => (double)item),
-                    Array.ConvertAll(inputLow, item => (double)item),                    
+                var chronologicalHigh = CopyToChronologicalOrder(inputHigh);
+                var chronologicalLow = CopyToChronologicalOrder(inputLow);
+                var outputUp = new double[inputHigh.Length];
+                var outputDown = new double[inputHigh.Length];
+
+                var range = TALib.Core.Default.Aroon(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
                     period,
-                    out int outBeginIndex,
-                    out int outElementsCount,
                     outputDown,
                     outputUp);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(outputUp, range.Count);
+                CompleteNewestFirstOutput(outputDown, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (outputUp.HasValidData() && outputDown.HasValidData())
                 {
-                    var outputUpDecimal = new decimal[outElementsCount];
-                    var outputDownDecimal = new decimal[outElementsCount];
-
-                    Array.Reverse(outputUpDecimal);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputUp, item => (decimal)item), outBeginIndex, outputUpDecimal, 0, outElementsCount);
-                    Array.Reverse(outputUpDecimal);
-
-                    Array.Reverse(outputDownDecimal);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputDown, item => (decimal)item), outBeginIndex, outputDownDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDownDecimal);
-
-                    indicatorSignal = aroonSignalLogic != null ?
-                            aroonSignalLogic.Invoke(outputUpDecimal, outputDownDecimal) :
-                            aroonDefaultSignalLogic.Invoke(outputUpDecimal, outputDownDecimal);
-
-                    return new AroonResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        AroonUp = outputUpDecimal,
-                        AroonDown = outputDownDecimal
-                    };
+                    indicatorSignal = aroonSignalLogic != null
+                        ? aroonSignalLogic.Invoke(outputUp, outputDown)
+                        : aroonDefaultSignalLogic.Invoke(outputUp, outputDown);
                 }
-                else
+
+                return new AroonResult
                 {
-                    return new AroonResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    AroonUp = outputUp,
+                    AroonDown = outputDown
+                };
             }
             catch (Exception ex)
             {
@@ -130,54 +149,50 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static AroonOscillatorResult AroonOscillator(decimal[] inputHigh,
-            decimal[] inputLow,
+        public static AroonOscillatorResult AroonOscillator(
+            double[] inputHigh,
+            double[] inputLow,
             int period,
-            Func<decimal[], IndicatorSignal> aroonOscSignalLogic = null)
+            Func<double[], IndicatorSignal> aroonOscSignalLogic = null)
         {
             try
             {
-                var indicatorSignal = IndicatorSignal.Stay;
+                ArgumentNullException.ThrowIfNull(inputHigh);
+                ArgumentNullException.ThrowIfNull(inputLow);
 
-                double[] output = new double[inputHigh.Length];  
+                if (inputHigh.Length != inputLow.Length)
+                {
+                    throw new ArgumentException("High and low series must have the same length.");
+                }
 
-                var result = Core.AroonOsc(0,
-                    inputHigh.Length - 1,
-                    Array.ConvertAll(inputHigh, item => (double)item),
-                    Array.ConvertAll(inputLow, item => (double)item),
+                var chronologicalHigh = CopyToChronologicalOrder(inputHigh);
+                var chronologicalLow = CopyToChronologicalOrder(inputLow);
+                var output = new double[inputHigh.Length];
+
+                var range = TALib.Core.Default.Aroonosc(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
                     period,
-                    out int outBeginIndex,
-                    out int outElementsCount,
                     output);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
                 {
-                    var outputDecimal = new decimal[outElementsCount];                    
-
-                    Array.Reverse(outputDecimal);
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDecimal);          
-
-                    indicatorSignal = aroonOscSignalLogic != null ?
-                            aroonOscSignalLogic.Invoke(outputDecimal) :
-                            aroonOscDefaultSignalLogic.Invoke(outputDecimal);
-
-                    return new AroonOscillatorResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        AroonOscillator = outputDecimal
-                    };
+                    indicatorSignal = aroonOscSignalLogic != null
+                        ? aroonOscSignalLogic.Invoke(output)
+                        : aroonOscDefaultSignalLogic.Invoke(output);
                 }
-                else
+
+                return new AroonOscillatorResult
                 {
-                    return new AroonOscillatorResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    AroonOscillator = output
+                };
             }
             catch (Exception ex)
             {
@@ -190,55 +205,52 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static AtrResult Atr(decimal[] inputHigh,
-            decimal[] inputLow,
-            decimal[] inputClose, 
+        public static AtrResult Atr(
+            double[] inputHigh,
+            double[] inputLow,
+            double[] inputClose,
             int period,
-            Func<decimal[], IndicatorSignal> atrSignalLogic = null)
+            Func<double[], IndicatorSignal> atrSignalLogic = null)
         {
             try
             {
-                var indicatorSignal = IndicatorSignal.Stay;
+                ArgumentNullException.ThrowIfNull(inputHigh);
+                ArgumentNullException.ThrowIfNull(inputLow);
+                ArgumentNullException.ThrowIfNull(inputClose);
 
-                double[] output = new double[inputHigh.Length];                
+                if (inputHigh.Length != inputLow.Length || inputHigh.Length != inputClose.Length)
+                {
+                    throw new ArgumentException("High, low and close series must have the same length.");
+                }
 
-                var result = Core.Atr(0, 
-                    inputHigh.Length - 1,
-                    Array.ConvertAll(inputHigh, item => (double)item),
-                    Array.ConvertAll(inputLow, item => (double)item),
-                    Array.ConvertAll(inputClose, item => (double)item),
-                    period, 
-                    out int outBeginIndex,
-                    out int outElementsCount, 
+                var chronologicalHigh = CopyToChronologicalOrder(inputHigh);
+                var chronologicalLow = CopyToChronologicalOrder(inputLow);
+                var chronologicalClose = CopyToChronologicalOrder(inputClose);
+                var output = new double[inputHigh.Length];
+
+                var range = TALib.Core.Default.Atr(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
+                    chronologicalClose,
+                    period,
                     output);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData() && atrSignalLogic != null)
                 {
-                    var outputDecimal = new decimal[outElementsCount];                    
-
-                    Array.Reverse(outputDecimal);                    
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);                    
-                    Array.Reverse(outputDecimal);
-
-                    indicatorSignal = atrSignalLogic != null ?
-                            atrSignalLogic.Invoke(outputDecimal) : IndicatorSignal.Stay;
-
-                    return new AtrResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        Atr = outputDecimal
-                    };
+                    indicatorSignal = atrSignalLogic.Invoke(output);
                 }
-                else
+
+                return new AtrResult
                 {
-                    return new AtrResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Atr = output
+                };
             }
             catch (Exception ex)
             {
@@ -248,77 +260,57 @@ namespace TANet.Util.StaticClasses
                     IndicatorSignal = IndicatorSignal.Stay,
                     Message = ex.ToString()
                 };
-            }            
+            }
         }
 
-        public static BollingerBandsResult BollingerBands(decimal[] input,
+        public static BollingerBandsResult BollingerBands(
+            double[] input,
             int period,
             double stdDevUp,
             double stdDevDown,
             MovingAverageType maType,            
-            Func<decimal[], decimal[], decimal[], decimal[], IndicatorSignal> bBandsSignalLogic = null)
+            Func<double[], double[], double[], double[], IndicatorSignal> bBandsSignalLogic = null)
         {
             try
-            {
-                var indicatorSignal = IndicatorSignal.Stay;
+            {       
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var outputUp = new double[input.Length];
+                var outputMiddle = new double[input.Length];
+                var outputDown = new double[input.Length];
 
-                double[] outputUp = new double[input.Length];
-                double[] outputMiddle = new double[input.Length];
-                double[] outputDown = new double[input.Length];
-
-                var result = Core.Bbands(0,
-                    input.Length - 1,
-                    Array.ConvertAll(input, item => (float)item),
+                var range = TALib.Core.Default.Bbands(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
                     period,
                     stdDevUp,
                     stdDevDown,
-                    MovingAverageTypes.ToTaLib(maType),                                        
-                    out int outBeginIndex,
-                    out int outElementsCount,
+                    MovingAverageTypes.ToOfficialTaLib(maType),
                     outputUp,
                     outputMiddle,
                     outputDown);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(outputUp, range.Count);
+                CompleteNewestFirstOutput(outputMiddle, range.Count);
+                CompleteNewestFirstOutput(outputDown, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+
+                if (outputUp.HasValidData() && outputMiddle.HasValidData() && outputDown.HasValidData())
                 {
-                    var outputUpDecimal = new decimal[outElementsCount];
-                    var outputMiddleDecimal = new decimal[outElementsCount];
-                    var outputDownDecimal = new decimal[outElementsCount];
-
-                    Array.Reverse(outputUp);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputUp, item => (decimal)item), outBeginIndex, outputUpDecimal, 0, outElementsCount);
-                    Array.Reverse(outputUpDecimal);
-
-                    Array.Reverse(outputMiddle);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputMiddle, item => (decimal)item), outBeginIndex, outputMiddleDecimal, 0, outElementsCount);
-                    Array.Reverse(outputMiddleDecimal);
-
-                    Array.Reverse(outputDown);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputDown, item => (decimal)item), outBeginIndex, outputDownDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDownDecimal);
-
                     indicatorSignal = bBandsSignalLogic != null ?
-                            bBandsSignalLogic.Invoke(input, outputUpDecimal, outputMiddleDecimal, outputDownDecimal) :
-                            IndicatorSignal.Stay;
+                        bBandsSignalLogic.Invoke(input, outputUp, outputMiddle, outputDown) :
+                        IndicatorSignal.Stay;
+                }
 
-                    return new BollingerBandsResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        UpperBand = outputUpDecimal,
-                        MiddleBand = outputMiddleDecimal,
-                        LowerBand = outputDownDecimal
-                    };
-                }
-                else
+                return new BollingerBandsResult
                 {
-                    return new BollingerBandsResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    UpperBand = outputUp,
+                    MiddleBand = outputMiddle,
+                    LowerBand = outputDown
+                };
             }
             catch (Exception ex)
             {
@@ -331,56 +323,54 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static CciResult Cci(decimal[] inputHigh,
-            decimal[] inputLow,
-            decimal[] inputClose,            
+        public static CciResult Cci(
+            double[] inputHigh,
+            double[] inputLow,
+            double[] inputClose,
             int period,
-            Func<decimal[], IndicatorSignal> cciSignalLogic = null)
+            Func<double[], IndicatorSignal> cciSignalLogic = null)
         {
             try
             {
-                var indicatorSignal = IndicatorSignal.Stay;
+                ArgumentNullException.ThrowIfNull(inputHigh);
+                ArgumentNullException.ThrowIfNull(inputLow);
+                ArgumentNullException.ThrowIfNull(inputClose);
 
-                double[] output = new double[inputHigh.Length];
+                if (inputHigh.Length != inputLow.Length || inputHigh.Length != inputClose.Length)
+                {
+                    throw new ArgumentException("High, low and close series must have the same length.");
+                }
 
-                var result = Core.Cci(0,
-                    inputHigh.Length - 1,
-                    Array.ConvertAll(inputHigh, item => (double)item),
-                    Array.ConvertAll(inputLow, item => (double)item),
-                    Array.ConvertAll(inputClose, item => (double)item),                    
+                var chronologicalHigh = CopyToChronologicalOrder(inputHigh);
+                var chronologicalLow = CopyToChronologicalOrder(inputLow);
+                var chronologicalClose = CopyToChronologicalOrder(inputClose);
+                var output = new double[inputHigh.Length];
+
+                var range = TALib.Core.Default.Cci(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
+                    chronologicalClose,
                     period,
-                    out int outBeginIndex,
-                    out int outElementsCount,
                     output);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
                 {
-                    var outputDecimal = new decimal[outElementsCount];
-
-                    Array.Reverse(outputDecimal);
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDecimal);
-
-                    indicatorSignal = cciSignalLogic != null ?
-                            cciSignalLogic.Invoke(outputDecimal) :
-                            cciDefaultSignalLogic.Invoke(outputDecimal);
-
-                    return new CciResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        Cci = outputDecimal
-                    };
+                    indicatorSignal = cciSignalLogic != null
+                        ? cciSignalLogic.Invoke(output)
+                        : cciDefaultSignalLogic.Invoke(output);
                 }
-                else
+
+                return new CciResult
                 {
-                    return new CciResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Cci = output
+                };
             }
             catch (Exception ex)
             {
@@ -393,48 +383,43 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static MovingAverageResult Ma(decimal[] input, 
+        public static MovingAverageResult Ma(
+            double[] input, 
             MovingAverageType maType, 
             int period, 
-            Func<decimal[], decimal[], IndicatorSignal> maSignalLogic = null)
+            Func<double[], double[], IndicatorSignal> maSignalLogic = null)
         {
             try
-            {
-                double[] output = new double[input.Length];
-                var result = Core.MovingAverage(0,
-                    input.Length - 1,
-                    Array.ConvertAll(input, item => (float)item),
+            {        
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+
+                var range = TALib.Core.Default.Ma(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
                     period,
-                    MovingAverageTypes.ToTaLib(maType),
-                    out int outBeginIndex,
-                    out int outElementsCount,
-                    output);
+                    MovingAverageTypes.ToOfficialTaLib(maType),
+                    output);                
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+
+                if (output.HasValidData())
                 {
-                    var outputDecimal = new decimal[outElementsCount];
-
-                    Array.Reverse(output);
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDecimal);
-
-                    return new MovingAverageResult
-                    {
-                        Success = true,
-                        IndicatorSignal = maSignalLogic != null ?
-                            maSignalLogic.Invoke(input, outputDecimal) : maDefaultSignalLogic.Invoke(input, outputDecimal),
-                        Ma = outputDecimal
-                    };
+                    indicatorSignal = maSignalLogic != null ?
+                        maSignalLogic.Invoke(input, output) :
+                        maDefaultSignalLogic.Invoke(input, output);
                 }
-                else
+
+                return new MovingAverageResult
                 {
-                    return new MovingAverageResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Ma = output
+                };
+
             }
             catch (Exception ex)
             {
@@ -447,139 +432,122 @@ namespace TANet.Util.StaticClasses
             }
         }        
 
-        public static MacdResult MacdExt(decimal[] input, 
+        public static MacdResult MacdExt(
+            double[] input, 
             MovingAverageType fastMaType, 
             int fastPeriod, 
             MovingAverageType slowMaType, 
             int slowPeriod, 
             MovingAverageType signalMaType, 
             int signalPeriod, 
-            Func<decimal[], decimal[], decimal[], IndicatorSignal> macdExtSignalLogic = null)
+            Func<double[], double[], double[], IndicatorSignal> macdExtSignalLogic = null)
         {
             try
             {
-                var indicatorSignal = IndicatorSignal.Stay;
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var outputMacd = new double[input.Length];
+                var outputSignal = new double[input.Length];
+                var outputHistogram = new double[input.Length];
 
-                double[] outputMacd = new double[input.Length];
-                double[] outputSignal = new double[input.Length];
-                double[] outputHistogram = new double[input.Length];
-                var result = Core.MacdExt(0,
-                    input.Length - 1,
-                    Array.ConvertAll(input, item => (float)item),
-                    fastPeriod, 
-                    MovingAverageTypes.ToTaLib(fastMaType),
-                    slowPeriod, 
-                    MovingAverageTypes.ToTaLib(slowMaType),
-                    signalPeriod, 
-                    MovingAverageTypes.ToTaLib(signalMaType),
-                    out int outBeginIndex, 
-                    out int outElementsCount,
-                    outputMacd, 
-                    outputSignal, 
+                var range = TALib.Core.Default.Macdext(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
+                    fastPeriod,
+                    MovingAverageTypes.ToOfficialTaLib(fastMaType),
+                    slowPeriod,
+                    MovingAverageTypes.ToOfficialTaLib(slowMaType),
+                    signalPeriod,
+                    MovingAverageTypes.ToOfficialTaLib(signalMaType),
+                    outputMacd,
+                    outputSignal,
                     outputHistogram);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(outputMacd, range.Count);
+                CompleteNewestFirstOutput(outputSignal, range.Count);
+                CompleteNewestFirstOutput(outputHistogram, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (outputMacd.HasValidData() && outputSignal.HasValidData() && outputHistogram.HasValidData())
                 {
-                    var outputMacdDecimal = new decimal[outElementsCount];
-                    var outputSignalDecimal = new decimal[outElementsCount];
-                    var outputHistogramDecimal = new decimal[outElementsCount];
-
-                    Array.Reverse(outputMacd);
-                    Array.Reverse(outputSignal);
-                    Array.Reverse(outputHistogram);
-
-                    Array.ConstrainedCopy(Array.ConvertAll(outputMacd, item => (decimal)item), outBeginIndex, outputMacdDecimal, 0, outElementsCount);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputSignal, item => (decimal)item), outBeginIndex, outputSignalDecimal, 0, outElementsCount);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputHistogram, item => (decimal)item), outBeginIndex, outputHistogramDecimal, 0, outElementsCount);
-
-                    Array.Reverse(outputMacdDecimal);
-                    Array.Reverse(outputSignalDecimal);
-                    Array.Reverse(outputHistogramDecimal);
-
-                    indicatorSignal = macdExtSignalLogic != null ?
-                            macdExtSignalLogic.Invoke(outputMacdDecimal, outputSignalDecimal, outputHistogramDecimal) : 
-                            macdDefaultSignalLogic.Invoke(outputMacdDecimal, outputSignalDecimal, outputHistogramDecimal);
-
-                    return new MacdResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        Macd = outputMacdDecimal,
-                        Signal = outputSignalDecimal,
-                        Histogram = outputHistogramDecimal
-                    };
+                    indicatorSignal = macdExtSignalLogic != null
+                        ? macdExtSignalLogic.Invoke(outputMacd, outputSignal, outputHistogram)
+                        : macdDefaultSignalLogic.Invoke(outputMacd, outputSignal, outputHistogram);
                 }
-                else
+
+                return new MacdResult
                 {
-                    return new MacdResult
-                    {
-                        Success = false,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Macd = outputMacd,
+                    Signal = outputSignal,
+                    Histogram = outputHistogram
+                };
             }
             catch (Exception ex)
             {
                 return new MacdResult
                 {
                     Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
                     Message = ex.ToString()
                 };
             }
         }
 
-        public static MfiResult Mfi(decimal[] inputHigh,
-            decimal[] inputLow,
-            decimal[] inputClose,
-            decimal[] inputVolume,
+        public static MfiResult Mfi(double[] inputHigh,
+            double[] inputLow,
+            double[] inputClose,
+            double[] inputVolume,
             int period,
-            Func<decimal[], IndicatorSignal> mfiSignalLogic = null)
+            Func<double[], IndicatorSignal> mfiSignalLogic = null)
         {
             try
             {
-                var indicatorSignal = IndicatorSignal.Stay;
+                ArgumentNullException.ThrowIfNull(inputHigh);
+                ArgumentNullException.ThrowIfNull(inputLow);
+                ArgumentNullException.ThrowIfNull(inputClose);
+                ArgumentNullException.ThrowIfNull(inputVolume);
 
-                double[] output = new double[inputHigh.Length];
+                if (inputHigh.Length != inputLow.Length ||
+                    inputHigh.Length != inputClose.Length ||
+                    inputHigh.Length != inputVolume.Length)
+                {
+                    throw new ArgumentException("High, low, close and volume series must have the same length.");
+                }
 
-                var result = Core.Mfi(0,
-                    inputHigh.Length - 1,
-                    Array.ConvertAll(inputHigh, item => (double)item),
-                    Array.ConvertAll(inputLow, item => (double)item),
-                    Array.ConvertAll(inputClose, item => (double)item),
-                    Array.ConvertAll(inputVolume, item => (double)item),
+                var chronologicalHigh = CopyToChronologicalOrder(inputHigh);
+                var chronologicalLow = CopyToChronologicalOrder(inputLow);
+                var chronologicalClose = CopyToChronologicalOrder(inputClose);
+                var chronologicalVolume = CopyToChronologicalOrder(inputVolume);
+                var output = new double[inputHigh.Length];
+
+                var range = TALib.Core.Default.Mfi(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
+                    chronologicalClose,
+                    chronologicalVolume,
                     period,
-                    out int outBeginIndex,
-                    out int outElementsCount,
                     output);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
                 {
-                    var outputDecimal = new decimal[outElementsCount];
-
-                    Array.Reverse(outputDecimal);
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDecimal);
-
-                    indicatorSignal = mfiSignalLogic != null ?
-                            mfiSignalLogic.Invoke(outputDecimal) : 
-                            mfiDefaultSignalLogic.Invoke(outputDecimal);
-
-                    return new MfiResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        Mfi = outputDecimal
-                    };
+                    indicatorSignal = mfiSignalLogic != null
+                        ? mfiSignalLogic.Invoke(output)
+                        : mfiDefaultSignalLogic.Invoke(output);
                 }
-                else
+
+                return new MfiResult
                 {
-                    return new MfiResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Mfi = output
+                };
             }
             catch (Exception ex)
             {
@@ -592,50 +560,52 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static ParabolicSarResult ParabolicSar(decimal[] high,
-            decimal[] low,
+        public static ParabolicSarResult ParabolicSar(
+            double[] high,
+            double[] low,
             double acceleration,
             double maximum,
-            Func<decimal[], decimal[], decimal[], IndicatorSignal> pSarSignalLogic = null)
+            Func<double[], double[], double[], IndicatorSignal> pSarSignalLogic = null)
         {
             try
             {
-                double[] output = new double[high.Length];
-                var result = Core.Sar(0,
-                    high.Length - 1,
-                    Array.ConvertAll(high, item => (float)item),
-                    Array.ConvertAll(low, item => (float)item),
+                ArgumentNullException.ThrowIfNull(high);
+                ArgumentNullException.ThrowIfNull(low);
+
+                if (high.Length != low.Length)
+                {
+                    throw new ArgumentException("High and low series must have the same length.");
+                }
+
+                var chronologicalHigh = CopyToChronologicalOrder(high);
+                var chronologicalLow = CopyToChronologicalOrder(low);
+                var output = new double[high.Length];
+
+                var range = TALib.Core.Default.Sar(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
                     acceleration,
                     maximum,
-                    out int outBeginIndex,
-                    out int outElementsCount,
                     output);
 
-                if (result == Core.RetCode.Success)
-                {
-                    var outputDecimal = new decimal[outElementsCount];
+                CompleteNewestFirstOutput(output, range.Count);
 
-                    Array.Reverse(output);
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDecimal);
-
-                    return new ParabolicSarResult
-                    {
-                        Success = true,
-                        IndicatorSignal = pSarSignalLogic != null ?
-                            pSarSignalLogic.Invoke(high, low, outputDecimal) : pSarDefaultSignalLogic.Invoke(high, low, outputDecimal),
-                        Sar = outputDecimal
-                    };
-                }
-                else
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
                 {
-                    return new ParabolicSarResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
+                    indicatorSignal = pSarSignalLogic != null
+                        ? pSarSignalLogic.Invoke(high, low, output)
+                        : pSarDefaultSignalLogic.Invoke(high, low, output);
                 }
+
+                return new ParabolicSarResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Sar = output
+                };
             }
             catch (Exception ex)
             {
@@ -648,44 +618,36 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static RsiResult Rsi(decimal[] input, int period, Func<decimal[], IndicatorSignal> rsiSignalLogic = null)
+        public static RsiResult Rsi(double[] input, int period, Func<double[], IndicatorSignal> rsiSignalLogic = null)
         {
             try
             {
-                double[] output = new double[input.Length];
-                var result = Core.Rsi(0, 
-                    input.Length - 1, 
-                    Array.ConvertAll(input, item => (double)item), 
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+
+                var range = TALib.Core.Default.Rsi(0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput, 
                     period, 
-                    out int outBeginIndex,
-                    out int outElementsCount,
-                    output);             
+                    output);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+
+                if (output.HasValidData())
                 {
-                    var outputDecimal = new decimal[outElementsCount];
-
-                    Array.Reverse(output);
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDecimal);
-
-                    return new RsiResult
-                    {
-                        Success = true,
-                        IndicatorSignal = rsiSignalLogic != null ? 
-                            rsiSignalLogic.Invoke(outputDecimal) : rsiDefaultSignalLogic.Invoke(outputDecimal),
-                        Rsi = outputDecimal
-                    };
+                    indicatorSignal = rsiSignalLogic != null ?
+                        rsiSignalLogic.Invoke(output) :
+                        rsiDefaultSignalLogic.Invoke(output);
                 }
-                else
+
+                return new RsiResult
                 {
-                    return new RsiResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Rsi = output
+                };                
             }
             catch (Exception ex)
             {
@@ -698,73 +660,66 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static StochasticResult Stochastic(decimal[] inputHigh, 
-            decimal[] inputLow, 
-            decimal[] inputClose, 
-            int fastKPeriod, 
-            MovingAverageType slowKMaType, 
-            int slowKPeriod, 
-            MovingAverageType slowDMaType, 
-            int slowDPeriod, 
-            Func<decimal[], decimal[], IndicatorSignal> stochSignalLogic = null)
-        {            
+        public static StochasticResult Stochastic(
+            double[] inputHigh,
+            double[] inputLow,
+            double[] inputClose,
+            int fastKPeriod,
+            MovingAverageType slowKMaType,
+            int slowKPeriod,
+            MovingAverageType slowDMaType,
+            int slowDPeriod,
+            Func<double[], double[], IndicatorSignal> stochSignalLogic = null)
+        {
             try
             {
-                var indicatorSignal = IndicatorSignal.Stay;
+                ArgumentNullException.ThrowIfNull(inputHigh);
+                ArgumentNullException.ThrowIfNull(inputLow);
+                ArgumentNullException.ThrowIfNull(inputClose);
 
-                double[] outputSlowK = new double[inputHigh.Length];
-                double[] outputSlowD = new double[inputHigh.Length];
+                if (inputHigh.Length != inputLow.Length || inputHigh.Length != inputClose.Length)
+                {
+                    throw new ArgumentException("High, low and close series must have the same length.");
+                }
 
-                var result = Core.Stoch(0, 
-                    inputHigh.Length - 1,
-                    Array.ConvertAll(inputHigh, item => (double)item),
-                    Array.ConvertAll(inputLow, item => (double)item),
-                    Array.ConvertAll(inputClose, item => (double)item), 
-                    fastKPeriod, 
+                var chronologicalHigh = CopyToChronologicalOrder(inputHigh);
+                var chronologicalLow = CopyToChronologicalOrder(inputLow);
+                var chronologicalClose = CopyToChronologicalOrder(inputClose);
+                var outputSlowK = new double[inputHigh.Length];
+                var outputSlowD = new double[inputHigh.Length];
+
+                var range = TALib.Core.Default.Stoch(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
+                    chronologicalClose,
+                    fastKPeriod,
                     slowKPeriod,
-                    MovingAverageTypes.ToTaLib(slowKMaType), 
+                    MovingAverageTypes.ToOfficialTaLib(slowKMaType),
                     slowDPeriod,
-                    MovingAverageTypes.ToTaLib(slowDMaType), 
-                    out int outBeginIndex,
-                    out int outElementsCount, 
-                    outputSlowK, 
+                    MovingAverageTypes.ToOfficialTaLib(slowDMaType),
+                    outputSlowK,
                     outputSlowD);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(outputSlowK, range.Count);
+                CompleteNewestFirstOutput(outputSlowD, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (outputSlowK.HasValidData() && outputSlowD.HasValidData())
                 {
-                    var outputSlowKDecimal = new decimal[outElementsCount];
-                    var outputSlowDDecimal = new decimal[outElementsCount];                    
-
-                    Array.Reverse(outputSlowKDecimal);
-                    Array.Reverse(outputSlowDDecimal);                    
-
-                    Array.ConstrainedCopy(Array.ConvertAll(outputSlowK, item => (decimal)item), outBeginIndex, outputSlowKDecimal, 0, outElementsCount);
-                    Array.ConstrainedCopy(Array.ConvertAll(outputSlowD, item => (decimal)item), outBeginIndex, outputSlowDDecimal, 0, outElementsCount);                    
-
-                    Array.Reverse(outputSlowKDecimal);
-                    Array.Reverse(outputSlowDDecimal);
-
-                    indicatorSignal = stochSignalLogic != null ?
-                            stochSignalLogic.Invoke(outputSlowKDecimal, outputSlowDDecimal) :
-                            stochDefaultSignalLogic.Invoke(outputSlowKDecimal, outputSlowDDecimal);
-
-                    return new StochasticResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        SlowK = outputSlowKDecimal,
-                        SlowD = outputSlowDDecimal
-                    };
+                    indicatorSignal = stochSignalLogic != null
+                        ? stochSignalLogic.Invoke(outputSlowK, outputSlowD)
+                        : stochDefaultSignalLogic.Invoke(outputSlowK, outputSlowD);
                 }
-                else
+
+                return new StochasticResult
                 {
-                    return new StochasticResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    SlowK = outputSlowK,
+                    SlowD = outputSlowD
+                };
             }
             catch (Exception ex)
             {
@@ -777,56 +732,54 @@ namespace TANet.Util.StaticClasses
             }
         }
 
-        public static WilliamsRResult WilliamsR(decimal[] inputHigh,
-            decimal[] inputLow,
-            decimal[] inputClose,
+        public static WilliamsRResult WilliamsR(
+            double[] inputHigh,
+            double[] inputLow,
+            double[] inputClose,
             int period,
-            Func<decimal[], IndicatorSignal> williamsRSignalLogic = null)
+            Func<double[], IndicatorSignal> williamsRSignalLogic = null)
         {
             try
             {
-                var indicatorSignal = IndicatorSignal.Stay;
+                ArgumentNullException.ThrowIfNull(inputHigh);
+                ArgumentNullException.ThrowIfNull(inputLow);
+                ArgumentNullException.ThrowIfNull(inputClose);
 
-                double[] output = new double[inputHigh.Length];
+                if (inputHigh.Length != inputLow.Length || inputHigh.Length != inputClose.Length)
+                {
+                    throw new ArgumentException("High, low and close series must have the same length.");
+                }
 
-                var result = Core.WillR(0,
-                    inputHigh.Length - 1,
-                    Array.ConvertAll(inputHigh, item => (double)item),
-                    Array.ConvertAll(inputLow, item => (double)item),
-                    Array.ConvertAll(inputClose, item => (double)item),                    
+                var chronologicalHigh = CopyToChronologicalOrder(inputHigh);
+                var chronologicalLow = CopyToChronologicalOrder(inputLow);
+                var chronologicalClose = CopyToChronologicalOrder(inputClose);
+                var output = new double[inputHigh.Length];
+
+                var range = TALib.Core.Default.Willr(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
+                    chronologicalClose,
                     period,
-                    out int outBeginIndex,
-                    out int outElementsCount,
                     output);
 
-                if (result == Core.RetCode.Success)
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
                 {
-                    var outputDecimal = new decimal[outElementsCount];
-
-                    Array.Reverse(outputDecimal);
-                    Array.ConstrainedCopy(Array.ConvertAll(output, item => (decimal)item), outBeginIndex, outputDecimal, 0, outElementsCount);
-                    Array.Reverse(outputDecimal);
-
-                    indicatorSignal = williamsRSignalLogic != null ?
-                            williamsRSignalLogic.Invoke(outputDecimal) :
-                            williamsRDefaultSignalLogic.Invoke(outputDecimal);
-
-                    return new WilliamsRResult
-                    {
-                        Success = true,
-                        IndicatorSignal = indicatorSignal,
-                        RangePercent = outputDecimal
-                    };
+                    indicatorSignal = williamsRSignalLogic != null
+                        ? williamsRSignalLogic.Invoke(output)
+                        : williamsRDefaultSignalLogic.Invoke(output);
                 }
-                else
+
+                return new WilliamsRResult
                 {
-                    return new WilliamsRResult
-                    {
-                        Success = false,
-                        IndicatorSignal = IndicatorSignal.Stay,
-                        Message = result.ToString()
-                    };
-                }
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    RangePercent = output
+                };
             }
             catch (Exception ex)
             {

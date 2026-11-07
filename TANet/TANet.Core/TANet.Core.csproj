@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.0.0</Version>
+    <TargetFramework>net10.0</TargetFramework>
+    <Version>3.0.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageId>TechnicalAnalysis.Net</PackageId>
@@ -10,16 +10,12 @@
     <Product>TechnicalAnalysis.Net</Product>
     <Description>Simple use of technical analysis indicators for C#, based on TALib.</Description>
     <PackageTags>TechnicalAnalysis Trade FinancialMarkets TechnicalIndicators C# Crypto AlgorithmicTrading</PackageTags>
-    <Copyright>Copyright (c) 2022 Amin Saqi</Copyright>
+    <Copyright>Copyright (c) 2019 Amin Saqi</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/AminSaqi/TechnicalAnalysis.NET</PackageProjectUrl>
     <RepositoryUrl>https://github.com/AminSaqi/TechnicalAnalysis.NET</RepositoryUrl>
     <Title>TechnicalAnalysis.Net</Title>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Cryptowatcher.TA-LIb-Core" Version="1.0.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TANet.Contracts\TANet.Contracts.csproj" />
