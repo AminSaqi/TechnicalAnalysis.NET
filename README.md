@@ -126,6 +126,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] CCI
 - [x] EMA
 - [x] Extended MACD
+- [x] HMA — Hull Moving Average
 - [x] KAMA
 - [x] MACD
 - [x] MFI
@@ -183,7 +184,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] FRACTAL — Williams Fractal
 - [ ] FRAMA — Fractal Adaptive Moving Average
 - [ ] HA — Heikin-Ashi Candles
-- [ ] HMA — Hull Moving Average
 - [ ] HT_DCPERIOD — Hilbert Transform - Dominant Cycle Period
 - [ ] HT_DCPHASE — Hilbert Transform - Dominant Cycle Phase
 - [ ] HT_PHASOR — Hilbert Transform - Phasor Components

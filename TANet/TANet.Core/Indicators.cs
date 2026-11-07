@@ -196,6 +196,44 @@ namespace TANet.Core
 
         #endregion        
 
+        #region HMA
+
+        public static MovingAverageResult Hma(double[] input, int period)
+        {
+            return TANet.Util.StaticClasses.Indicators.Hma(input, period);
+        }
+        public static MovingAverageResult Hma(double[] input, int period, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return TANet.Util.StaticClasses.Indicators.Hma(input, period, signalLogic);
+        }
+        public static MovingAverageResult Hma(List<Candle> input, int period)
+        {
+            return Hma(input, period, IndicatorCalculationBase.Close, null);
+        }
+        public static MovingAverageResult Hma(List<Candle> input, int period, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return Hma(input, period, IndicatorCalculationBase.Close, signalLogic);
+        }
+        public static MovingAverageResult Hma(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return Hma(input, period, calculationBase, null);
+        }
+        public static MovingAverageResult Hma(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            var values = calculationBase switch
+            {
+                IndicatorCalculationBase.Open => input.Select(c => c.Open).ToArray(),
+                IndicatorCalculationBase.High => input.Select(c => c.High).ToArray(),
+                IndicatorCalculationBase.Low => input.Select(c => c.Low).ToArray(),
+                IndicatorCalculationBase.Volume => input.Select(c => c.Volume).ToArray(),
+                _ => input.Select(c => c.Close).ToArray()
+            };
+
+            return TANet.Util.StaticClasses.Indicators.Hma(values, period, signalLogic);
+        }
+
+        #endregion
+
         #region KAMA
 
         public static MovingAverageResult Kama(double[] input, int period)
