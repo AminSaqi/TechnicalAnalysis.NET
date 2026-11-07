@@ -16,8 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cryptowatcher.TA-LIb-Core" Version="1.0.0" />
-	<PackageReference Include="TA-Lib" Version="0.8.3" />
+    <PackageReference Include="TA-Lib" Version="0.8.3" />
   </ItemGroup>
 
   <ItemGroup>

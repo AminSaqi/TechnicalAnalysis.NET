@@ -3,7 +3,6 @@ using TANet.Contracts.Enums;
 using TANet.Contracts.OperationResults.Indicators;
 using TANet.Util.StaticClasses.EnumConvertors;
 using TANet.Util.Extensions;
-using TicTacTec.TA.Library;
 
 namespace TANet.Util.StaticClasses
 {
