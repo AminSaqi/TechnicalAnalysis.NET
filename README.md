@@ -132,7 +132,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] Parabolic SAR
 - [x] RSI
 - [x] SMA
-- [x] Stochastic (currently exposed as `Indicators.Stochsatic`)
+- [x] Stochastic
 - [x] TEMA
 - [x] Williams %R
 - [x] WMA
