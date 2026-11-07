@@ -137,6 +137,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] Stochastic
 - [x] T3 — Triple Exponential Moving Average (Tillson's T3)
 - [x] TEMA
+- [x] TRIMA — Triangular Moving Average
 - [x] VWMA — Volume Weighted Moving Average
 - [x] Williams %R
 - [x] WMA
@@ -258,7 +259,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] SWAK_GAUSS — Swiss Army Knife - Gaussian Filter
 - [ ] SWAK_HP — Swiss Army Knife - High-Pass Filter
 - [ ] TRANGE — True Range
-- [ ] TRIMA — Triangular Moving Average
 - [ ] TRIX — 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA
 - [ ] TSF — Time Series Forecast
 - [ ] TSI — True Strength Index

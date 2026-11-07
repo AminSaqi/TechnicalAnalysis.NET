@@ -567,6 +567,44 @@ namespace TANet.Core
 
         #endregion
 
+        #region TRIMA
+
+        public static MovingAverageResult Trima(double[] input, int period)
+        {
+            return TANet.Util.StaticClasses.Indicators.Trima(input, period);
+        }
+        public static MovingAverageResult Trima(double[] input, int period, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return TANet.Util.StaticClasses.Indicators.Trima(input, period, signalLogic);
+        }
+        public static MovingAverageResult Trima(List<Candle> input, int period)
+        {
+            return Trima(input, period, IndicatorCalculationBase.Close, null);
+        }
+        public static MovingAverageResult Trima(List<Candle> input, int period, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return Trima(input, period, IndicatorCalculationBase.Close, signalLogic);
+        }
+        public static MovingAverageResult Trima(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return Trima(input, period, calculationBase, null);
+        }
+        public static MovingAverageResult Trima(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            var values = calculationBase switch
+            {
+                IndicatorCalculationBase.Open => input.Select(c => c.Open).ToArray(),
+                IndicatorCalculationBase.High => input.Select(c => c.High).ToArray(),
+                IndicatorCalculationBase.Low => input.Select(c => c.Low).ToArray(),
+                IndicatorCalculationBase.Volume => input.Select(c => c.Volume).ToArray(),
+                _ => input.Select(c => c.Close).ToArray()
+            };
+
+            return TANet.Util.StaticClasses.Indicators.Trima(values, period, signalLogic);
+        }
+
+        #endregion
+
         #region WilliamsR
 
         public static WilliamsRResult WilliamsR(double[] high, double[] low, double[] close, double[] volume, int period)
