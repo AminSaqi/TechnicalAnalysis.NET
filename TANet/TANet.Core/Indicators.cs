@@ -770,6 +770,44 @@ namespace TANet.Core
 
         #endregion
 
+        #region ZLEMA
+
+        public static MovingAverageResult Zlema(double[] input, int period)
+        {
+            return TANet.Util.StaticClasses.Indicators.Zlema(input, period);
+        }
+        public static MovingAverageResult Zlema(double[] input, int period, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return TANet.Util.StaticClasses.Indicators.Zlema(input, period, signalLogic);
+        }
+        public static MovingAverageResult Zlema(List<Candle> input, int period)
+        {
+            return Zlema(input, period, IndicatorCalculationBase.Close, null);
+        }
+        public static MovingAverageResult Zlema(List<Candle> input, int period, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return Zlema(input, period, IndicatorCalculationBase.Close, signalLogic);
+        }
+        public static MovingAverageResult Zlema(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return Zlema(input, period, calculationBase, null);
+        }
+        public static MovingAverageResult Zlema(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            var values = calculationBase switch
+            {
+                IndicatorCalculationBase.Open => input.Select(c => c.Open).ToArray(),
+                IndicatorCalculationBase.High => input.Select(c => c.High).ToArray(),
+                IndicatorCalculationBase.Low => input.Select(c => c.Low).ToArray(),
+                IndicatorCalculationBase.Volume => input.Select(c => c.Volume).ToArray(),
+                _ => input.Select(c => c.Close).ToArray()
+            };
+
+            return TANet.Util.StaticClasses.Indicators.Zlema(values, period, signalLogic);
+        }
+
+        #endregion
+
         #region Private Methods
 
         /* AROON */

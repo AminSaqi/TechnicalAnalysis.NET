@@ -143,6 +143,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] VWMA — Volume Weighted Moving Average
 - [x] Williams %R
 - [x] WMA
+- [x] ZLEMA — Zero-Lag Exponential Moving Average
 
 ---
 
@@ -273,7 +274,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] WAVETREND — WaveTrend Oscillator
 - [ ] WCLPRICE — Weighted Close Price
 - [ ] ZIGZAG — Zig Zag
-- [ ] ZLEMA — Zero-Lag Exponential Moving Average
 
 The list above follows the [TA-Lib function reference](https://ta-lib.org/functions/).
 `MA` is partially supported through the existing moving average methods; not all
