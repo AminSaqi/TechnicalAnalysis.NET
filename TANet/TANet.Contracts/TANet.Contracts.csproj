@@ -9,6 +9,7 @@
     <Copyright>Copyright (c) 2019 Amin Saqi</Copyright>
     <PackageId>TechnicalAnalysis.Net.Contracts</PackageId>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Description>Core types of TechnicalAnalysis.Net.</Description>
@@ -16,6 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Update="README.md" Pack="true" PackagePath="\" />
     <None Include="..\..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
