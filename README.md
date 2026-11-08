@@ -119,6 +119,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 
 ## Implemented indicators
 
+- [x] ALMA — Arnaud Legoux Moving Average
 - [x] Aroon
 - [x] Aroon Oscillator
 - [x] ATR
@@ -154,7 +155,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] ADR — Average Day Range
 - [ ] ADX — Average Directional Movement Index
 - [ ] ADXR — Average Directional Movement Index Rating
-- [ ] ALMA — Arnaud Legoux Moving Average
 - [ ] AO — Awesome Oscillator
 - [ ] APO — Absolute Price Oscillator
 - [ ] ASI — Wilder Accumulative Swing Index
@@ -294,6 +294,10 @@ MAMA returns both the MAMA and FAMA series. Its default signal compares their
 latest values: MAMA above FAMA is `Buy`, below is `Sell`, and equal is `Stay`.
 This compares current values and does not detect a crossover event. Custom
 signal callbacks receive MAMA followed by FAMA.
+
+ALMA takes `period`, `sigma`, and `offset`, in that order. TA-Lib accepts a
+minimum sigma of 0.01 and an offset from 0 to 1; its usual values are 6 and
+0.85, respectively.
 
 ## Migrating to 3.0
 

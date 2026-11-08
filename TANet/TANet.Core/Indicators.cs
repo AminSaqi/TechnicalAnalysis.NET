@@ -9,6 +9,44 @@ namespace TANet.Core
 {
     public static class Indicators
     {
+        #region ALMA
+
+        public static MovingAverageResult Alma(double[] input, int period, double sigma, double offset)
+        {
+            return TANet.Util.StaticClasses.Indicators.Alma(input, period, sigma, offset);
+        }
+        public static MovingAverageResult Alma(double[] input, int period, double sigma, double offset, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return TANet.Util.StaticClasses.Indicators.Alma(input, period, sigma, offset, signalLogic);
+        }
+        public static MovingAverageResult Alma(List<Candle> input, int period, double sigma, double offset)
+        {
+            return Alma(input, period, sigma, offset, IndicatorCalculationBase.Close, null);
+        }
+        public static MovingAverageResult Alma(List<Candle> input, int period, double sigma, double offset, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return Alma(input, period, sigma, offset, IndicatorCalculationBase.Close, signalLogic);
+        }
+        public static MovingAverageResult Alma(List<Candle> input, int period, double sigma, double offset, IndicatorCalculationBase calculationBase)
+        {
+            return Alma(input, period, sigma, offset, calculationBase, null);
+        }
+        public static MovingAverageResult Alma(List<Candle> input, int period, double sigma, double offset, IndicatorCalculationBase calculationBase, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            var values = calculationBase switch
+            {
+                IndicatorCalculationBase.Open => input.Select(c => c.Open).ToArray(),
+                IndicatorCalculationBase.High => input.Select(c => c.High).ToArray(),
+                IndicatorCalculationBase.Low => input.Select(c => c.Low).ToArray(),
+                IndicatorCalculationBase.Volume => input.Select(c => c.Volume).ToArray(),
+                _ => input.Select(c => c.Close).ToArray()
+            };
+
+            return TANet.Util.StaticClasses.Indicators.Alma(values, period, sigma, offset, signalLogic);
+        }
+
+        #endregion
+
         #region Aroon
 
         public static AroonResult Aroon(double[] high, double[] low, int period)

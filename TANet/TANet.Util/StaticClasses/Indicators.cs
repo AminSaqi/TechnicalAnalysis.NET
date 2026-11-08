@@ -437,6 +437,57 @@ namespace TANet.Util.StaticClasses
             }
         }        
 
+        public static MovingAverageResult Alma(
+            double[] input,
+            int period,
+            double sigma,
+            double offset,
+            Func<double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+
+                var range = TALib.Core.Default.Alma(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
+                    period,
+                    sigma,
+                    offset,
+                    output);
+
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    indicatorSignal = signalLogic != null
+                        ? signalLogic.Invoke(input, output)
+                        : maDefaultSignalLogic.Invoke(input, output);
+                }
+
+                return new MovingAverageResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Ma = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new MovingAverageResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
         public static MovingAverageResult Zlema(
             double[] input,
             int period,
