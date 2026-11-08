@@ -4,22 +4,21 @@ TechnicalAnalysis.NET provides a C# API for technical indicators calculated by
 [TA-Lib](https://ta-lib.org/). It accepts price arrays or candle data and can
 produce a signal using either the indicator's default logic or your own.
 
-This branch contains the next major version, 3.0.0, with breaking API and data
-ordering changes. See [Migrating to 3.0](#migrating-to-30) before upgrading.
+Version 3.0 introduced breaking API and data ordering changes. If you are
+upgrading from an earlier major version, see [Migrating to 3.0](#migrating-to-30).
 
 ## Requirements and installation
 
 The main `TechnicalAnalysis.Net` package targets .NET 10. Its separate
 `TechnicalAnalysis.Net.Contracts` project targets .NET Standard 2.0.
 
-Once version 3.0.0 is published to NuGet, install it with:
+Install version 3.1.0 with:
 
 ```bash
-dotnet add package TechnicalAnalysis.Net --version 3.0.0
+dotnet add package TechnicalAnalysis.Net --version 3.1.0
 ```
 
-Until then, build and reference the projects in this repository to use the
-version described here. Merely merging this branch does not publish a package.
+The examples and API described here target version 3.1.0.
 
 ## Data ordering and results
 
@@ -326,6 +325,15 @@ indicator because it also needs a volume series.
 
 For compatibility with existing releases, an undefined `MovingAverageType`
 value currently falls back to SMA.
+
+## Upgrading from 3.0 to 3.1
+
+- The previously published misspelled Stochastic overloads remain available but
+  are marked obsolete. Migrate to `Indicators.Stochastic`; projects that treat
+  warnings as errors may need to update their calls when upgrading.
+- The original `MovingAverageType` members retain their numeric values. Values
+  5 through 15 now identify new members; if an application previously cast
+  these undefined numbers to the enum, they no longer fall back to SMA.
 
 ## Migrating to 3.0
 
