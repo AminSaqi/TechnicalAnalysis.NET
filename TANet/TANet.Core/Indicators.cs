@@ -740,6 +740,44 @@ namespace TANet.Core
 
         #endregion
 
+        #region VIDYA
+
+        public static MovingAverageResult Vidya(double[] input, int period, int cmoPeriod)
+        {
+            return TANet.Util.StaticClasses.Indicators.Vidya(input, period, cmoPeriod);
+        }
+        public static MovingAverageResult Vidya(double[] input, int period, int cmoPeriod, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return TANet.Util.StaticClasses.Indicators.Vidya(input, period, cmoPeriod, signalLogic);
+        }
+        public static MovingAverageResult Vidya(List<Candle> input, int period, int cmoPeriod)
+        {
+            return Vidya(input, period, cmoPeriod, IndicatorCalculationBase.Close, null);
+        }
+        public static MovingAverageResult Vidya(List<Candle> input, int period, int cmoPeriod, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            return Vidya(input, period, cmoPeriod, IndicatorCalculationBase.Close, signalLogic);
+        }
+        public static MovingAverageResult Vidya(List<Candle> input, int period, int cmoPeriod, IndicatorCalculationBase calculationBase)
+        {
+            return Vidya(input, period, cmoPeriod, calculationBase, null);
+        }
+        public static MovingAverageResult Vidya(List<Candle> input, int period, int cmoPeriod, IndicatorCalculationBase calculationBase, Func<double[], double[], IndicatorSignal> signalLogic)
+        {
+            var values = calculationBase switch
+            {
+                IndicatorCalculationBase.Open => input.Select(c => c.Open).ToArray(),
+                IndicatorCalculationBase.High => input.Select(c => c.High).ToArray(),
+                IndicatorCalculationBase.Low => input.Select(c => c.Low).ToArray(),
+                IndicatorCalculationBase.Volume => input.Select(c => c.Volume).ToArray(),
+                _ => input.Select(c => c.Close).ToArray()
+            };
+
+            return TANet.Util.StaticClasses.Indicators.Vidya(values, period, cmoPeriod, signalLogic);
+        }
+
+        #endregion
+
         #region VWMA
 
         public static MovingAverageResult Vwma(double[] input, double[] volume, int period)

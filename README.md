@@ -141,6 +141,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] T3 — Triple Exponential Moving Average (Tillson's T3)
 - [x] TEMA
 - [x] TRIMA — Triangular Moving Average
+- [x] VIDYA — Variable Index Dynamic Average
 - [x] VWMA — Volume Weighted Moving Average
 - [x] Williams %R
 - [x] WMA
@@ -267,7 +268,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] ULTOSC — Ultimate Oscillator
 - [ ] VAR — Variance
 - [ ] VHF — Vertical Horizontal Filter
-- [ ] VIDYA — Variable Index Dynamic Average
 - [ ] VORTEX — Vortex Indicator
 - [ ] VWAP — Volume Weighted Average Price
 - [ ] WAD — Williams' Accumulation/Distribution
@@ -298,6 +298,10 @@ signal callbacks receive MAMA followed by FAMA.
 ALMA takes `period`, `sigma`, and `offset`, in that order. TA-Lib accepts a
 minimum sigma of 0.01 and an offset from 0 to 1; its usual values are 6 and
 0.85, respectively.
+
+VIDYA takes `period` for the EMA smoothing factor and `cmoPeriod` for the
+unsmoothed Chande Momentum Oscillator. TA-Lib requires at least 1 and 2,
+respectively; its usual values are 12 and 9.
 
 ## Migrating to 3.0
 
