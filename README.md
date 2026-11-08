@@ -4,22 +4,21 @@ TechnicalAnalysis.NET provides a C# API for technical indicators calculated by
 [TA-Lib](https://ta-lib.org/). It accepts price arrays or candle data and can
 produce a signal using either the indicator's default logic or your own.
 
-This branch contains the next major version, 3.0.0, with breaking API and data
-ordering changes. See [Migrating to 3.0](#migrating-to-30) before upgrading.
+Version 3.0 introduced breaking API and data ordering changes. If you are
+upgrading from an earlier major version, see [Migrating to 3.0](#migrating-to-30).
 
 ## Requirements and installation
 
 The main `TechnicalAnalysis.Net` package targets .NET 10. Its separate
 `TechnicalAnalysis.Net.Contracts` project targets .NET Standard 2.0.
 
-Once version 3.0.0 is published to NuGet, install it with:
+Install version 3.1.0 with:
 
 ```bash
-dotnet add package TechnicalAnalysis.Net --version 3.0.0
+dotnet add package TechnicalAnalysis.Net --version 3.1.0
 ```
 
-Until then, build and reference the projects in this repository to use the
-version described here. Merely merging this branch does not publish a package.
+The examples and API described here target version 3.1.0.
 
 ## Data ordering and results
 
@@ -119,23 +118,34 @@ Check `result.Success` and the relevant output series as in the SMA example.
 
 ## Implemented indicators
 
+- [x] ALMA — Arnaud Legoux Moving Average
 - [x] Aroon
 - [x] Aroon Oscillator
 - [x] ATR
 - [x] Bollinger Bands
 - [x] CCI
+- [x] DEMA — Double Exponential Moving Average
 - [x] EMA
 - [x] Extended MACD
+- [x] HMA — Hull Moving Average
 - [x] KAMA
+- [x] MA — Moving Average
 - [x] MACD
+- [x] MAMA — MESA Adaptive Moving Average
 - [x] MFI
 - [x] Parabolic SAR
+- [x] RMA — Wilder's Smoothed Moving Average
 - [x] RSI
 - [x] SMA
 - [x] Stochastic
+- [x] T3 — Triple Exponential Moving Average (Tillson's T3)
 - [x] TEMA
+- [x] TRIMA — Triangular Moving Average
+- [x] VIDYA — Variable Index Dynamic Average
+- [x] VWMA — Volume Weighted Moving Average
 - [x] Williams %R
 - [x] WMA
+- [x] ZLEMA — Zero-Lag Exponential Moving Average
 
 ---
 
@@ -146,7 +156,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] ADR — Average Day Range
 - [ ] ADX — Average Directional Movement Index
 - [ ] ADXR — Average Directional Movement Index Rating
-- [ ] ALMA — Arnaud Legoux Moving Average
 - [ ] AO — Awesome Oscillator
 - [ ] APO — Absolute Price Oscillator
 - [ ] ASI — Wilder Accumulative Swing Index
@@ -168,7 +177,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] CRSI — Connors Relative Strength Index
 - [ ] CTI — Correlation Trend Indicator
 - [ ] CVI — Chaikin's Volatility
-- [ ] DEMA — Double Exponential Moving Average
 - [ ] DONCHIAN — Donchian Channels
 - [ ] DOSC — Derivative Oscillator
 - [ ] DPO — Detrended Price Oscillator
@@ -182,7 +190,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] FRACTAL — Williams Fractal
 - [ ] FRAMA — Fractal Adaptive Moving Average
 - [ ] HA — Heikin-Ashi Candles
-- [ ] HMA — Hull Moving Average
 - [ ] HT_DCPERIOD — Hilbert Transform - Dominant Cycle Period
 - [ ] HT_DCPHASE — Hilbert Transform - Dominant Cycle Phase
 - [ ] HT_PHASOR — Hilbert Transform - Phasor Components
@@ -202,10 +209,8 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] LINEARREG_ANGLE — Linear Regression Angle
 - [ ] LINEARREG_INTERCEPT — Linear Regression Intercept
 - [ ] LINEARREG_SLOPE — Linear Regression Slope
-- [ ] MA — Moving average (partially supported)
 - [ ] MACDFIX — Moving Average Convergence/Divergence Fix 12/26
 - [ ] MACDV — MACD-V, Volatility Normalised Momentum
-- [ ] MAMA — MESA Adaptive Moving Average
 - [ ] MARKETFI — Market Facilitation Index
 - [ ] MASSI — Mass Index
 - [ ] MAVP — Moving average with variable period
@@ -231,7 +236,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] PVO — Percentage Volume Oscillator
 - [ ] PVT — Price Volume Trend
 - [ ] QSTICK — Qstick
-- [ ] RMA — Wilder's Smoothed Moving Average
 - [ ] ROC — Rate of change : ((price/prevPrice)-1)*100
 - [ ] ROCP — Rate of change Percentage: (price-prevPrice)/prevPrice
 - [ ] ROCR — Rate of change ratio: (price/prevPrice)
@@ -255,9 +259,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] SWAK_BUTTER — Swiss Army Knife - Butterworth Filter
 - [ ] SWAK_GAUSS — Swiss Army Knife - Gaussian Filter
 - [ ] SWAK_HP — Swiss Army Knife - High-Pass Filter
-- [ ] T3 — Triple Exponential Moving Average (T3)
 - [ ] TRANGE — True Range
-- [ ] TRIMA — Triangular Moving Average
 - [ ] TRIX — 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA
 - [ ] TSF — Time Series Forecast
 - [ ] TSI — True Strength Index
@@ -265,25 +267,73 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] ULTOSC — Ultimate Oscillator
 - [ ] VAR — Variance
 - [ ] VHF — Vertical Horizontal Filter
-- [ ] VIDYA — Variable Index Dynamic Average
 - [ ] VORTEX — Vortex Indicator
 - [ ] VWAP — Volume Weighted Average Price
-- [ ] VWMA — Volume Weighted Moving Average
 - [ ] WAD — Williams' Accumulation/Distribution
 - [ ] WAVETREND — WaveTrend Oscillator
 - [ ] WCLPRICE — Weighted Close Price
 - [ ] ZIGZAG — Zig Zag
-- [ ] ZLEMA — Zero-Lag Exponential Moving Average
 
 The list above follows the [TA-Lib function reference](https://ta-lib.org/functions/).
-`MA` is partially supported through the existing moving average methods; not all
-reference MA types are exposed. `CE` and `MACDV` appear in the current reference
+`CE` and `MACDV` appear in the current reference
 but not in the installed TA-Lib C# 0.8.3 API, so they require a dependency review.
 
 The array-based Williams %R overload currently requires a `volume` parameter
 for compatibility, although the calculation does not use it. TA-Lib's other
 technical indicators are planned; candlestick patterns and mathematical
 functions are outside the current scope.
+
+VWMA expects non-negative volumes aligned with the price series. For periods
+greater than one, an all-zero-volume window produces `NaN` even after warm-up;
+at period one, TA-Lib returns the input price regardless of volume. Its custom
+signal callback receives the price and VWMA output series.
+
+MAMA returns both the MAMA and FAMA series. Its default signal compares their
+latest values: MAMA above FAMA is `Buy`, below is `Sell`, and equal is `Stay`.
+This compares current values and does not detect a crossover event. Custom
+signal callbacks receive MAMA followed by FAMA.
+
+ALMA takes `period`, `sigma`, and `offset`, in that order. TA-Lib accepts a
+minimum sigma of 0.01 and an offset from 0 to 1; its usual values are 6 and
+0.85, respectively.
+
+VIDYA takes `period` for the EMA smoothing factor and `cmoPeriod` for the
+unsmoothed Chande Momentum Oscillator. TA-Lib requires at least 1 and 2,
+respectively; its usual values are 12 and 9.
+
+The generic `Indicators.Ma` accepts a `MovingAverageType` supported by the
+installed TA-Lib version. `Default` delegates the type choice to the underlying
+function, while `Disabled` bypasses smoothing. For example:
+
+```csharp
+using TANet.Contracts.Enums;
+using TANet.Core;
+
+double[] close = [10, 9, 8, 7, 6]; // newest first
+var result = Indicators.Ma(close, MovingAverageType.Hma, period: 3);
+```
+
+The generic TA-Lib MA interface accepts only a period and a type. It returns one
+series and uses fixed or derived settings for types with additional parameters:
+T3 uses `vFactor = 0.7`, ALMA uses `sigma = 6` and `offset = 0.85`, MAMA uses
+`fastLimit = 0.5` and `slowLimit = 0.05`, and VIDYA derives its CMO period as
+`(3 * period + 2) / 4` using integer division. Use the standalone T3, ALMA,
+MAMA, or VIDYA APIs to specify those parameters; standalone MAMA also returns
+FAMA. With MAMA selected as an MA type, TA-Lib ignores the period for periods
+greater than one; period one copies the input. VWMA remains a separate
+indicator because it also needs a volume series.
+
+For compatibility with existing releases, an undefined `MovingAverageType`
+value currently falls back to SMA.
+
+## Upgrading from 3.0 to 3.1
+
+- The previously published misspelled Stochastic overloads remain available but
+  are marked obsolete. Migrate to `Indicators.Stochastic`; projects that treat
+  warnings as errors may need to update their calls when upgrading.
+- The original `MovingAverageType` members retain their numeric values. Values
+  5 through 15 now identify new members; if an application previously cast
+  these undefined numbers to the enum, they no longer fall back to SMA.
 
 ## Migrating to 3.0
 
