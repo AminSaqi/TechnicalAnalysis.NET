@@ -130,6 +130,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] Extended MACD
 - [x] HMA — Hull Moving Average
 - [x] KAMA
+- [x] MA — Moving Average
 - [x] MACD
 - [x] MAMA — MESA Adaptive Moving Average
 - [x] MFI
@@ -209,7 +210,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] LINEARREG_ANGLE — Linear Regression Angle
 - [ ] LINEARREG_INTERCEPT — Linear Regression Intercept
 - [ ] LINEARREG_SLOPE — Linear Regression Slope
-- [ ] MA — Moving average (partially supported)
 - [ ] MACDFIX — Moving Average Convergence/Divergence Fix 12/26
 - [ ] MACDV — MACD-V, Volatility Normalised Momentum
 - [ ] MARKETFI — Market Facilitation Index
@@ -276,8 +276,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] ZIGZAG — Zig Zag
 
 The list above follows the [TA-Lib function reference](https://ta-lib.org/functions/).
-`MA` is partially supported through the existing moving average methods; not all
-reference MA types are exposed. `CE` and `MACDV` appear in the current reference
+`CE` and `MACDV` appear in the current reference
 but not in the installed TA-Lib C# 0.8.3 API, so they require a dependency review.
 
 The array-based Williams %R overload currently requires a `volume` parameter
@@ -302,6 +301,31 @@ minimum sigma of 0.01 and an offset from 0 to 1; its usual values are 6 and
 VIDYA takes `period` for the EMA smoothing factor and `cmoPeriod` for the
 unsmoothed Chande Momentum Oscillator. TA-Lib requires at least 1 and 2,
 respectively; its usual values are 12 and 9.
+
+The generic `Indicators.Ma` accepts a `MovingAverageType` supported by the
+installed TA-Lib version. `Default` delegates the type choice to the underlying
+function, while `Disabled` bypasses smoothing. For example:
+
+```csharp
+using TANet.Contracts.Enums;
+using TANet.Core;
+
+double[] close = [10, 9, 8, 7, 6]; // newest first
+var result = Indicators.Ma(close, MovingAverageType.Hma, period: 3);
+```
+
+The generic TA-Lib MA interface accepts only a period and a type. It returns one
+series and uses fixed or derived settings for types with additional parameters:
+T3 uses `vFactor = 0.7`, ALMA uses `sigma = 6` and `offset = 0.85`, MAMA uses
+`fastLimit = 0.5` and `slowLimit = 0.05`, and VIDYA derives its CMO period as
+`(3 * period + 2) / 4` using integer division. Use the standalone T3, ALMA,
+MAMA, or VIDYA APIs to specify those parameters; standalone MAMA also returns
+FAMA. With MAMA selected as an MA type, TA-Lib ignores the period for periods
+greater than one; period one copies the input. VWMA remains a separate
+indicator because it also needs a volume series.
+
+For compatibility with existing releases, an undefined `MovingAverageType`
+value currently falls back to SMA.
 
 ## Migrating to 3.0
 
