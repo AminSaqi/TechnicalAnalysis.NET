@@ -133,6 +133,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] MACD
 - [x] MAMA — MESA Adaptive Moving Average
 - [x] MFI
+- [x] MOM — Momentum
 - [x] Parabolic SAR
 - [x] RMA — Wilder's Smoothed Moving Average
 - [x] RSI
@@ -221,7 +222,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] MIDPRICE — Midpoint Price over period
 - [ ] MINUS_DI — Minus Directional Indicator
 - [ ] MINUS_DM — Minus Directional Movement
-- [ ] MOM — Momentum
 - [ ] NATR — Normalized Average True Range
 - [ ] NVI — Negative Volume Index
 - [ ] OBV — On Balance Volume
@@ -292,6 +292,11 @@ MAMA returns both the MAMA and FAMA series. Its default signal compares their
 latest values: MAMA above FAMA is `Buy`, below is `Sell`, and equal is `Stay`.
 This compares current values and does not detect a crossover event. Custom
 signal callbacks receive MAMA followed by FAMA.
+
+MOM measures the difference between the current value and the value `period`
+bars ago. Its default signal is `Buy` for positive momentum, `Sell` for
+negative momentum, and `Stay` for zero. This reflects the current value, not a
+zero-line crossing. Custom signal callbacks receive the MOM output series.
 
 ALMA takes `period`, `sigma`, and `offset`, in that order. TA-Lib accepts a
 minimum sigma of 0.01 and an offset from 0 to 1; its usual values are 6 and

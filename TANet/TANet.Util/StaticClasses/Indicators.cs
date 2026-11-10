@@ -72,6 +72,11 @@ namespace TANet.Util.StaticClasses
             output[0] > 80 ? IndicatorSignal.Sell :
             IndicatorSignal.Stay;
 
+        static Func<double[], IndicatorSignal> momDefaultSignalLogic = output =>
+            output[0] > 0 ? IndicatorSignal.Buy :
+            output[0] < 0 ? IndicatorSignal.Sell :
+            IndicatorSignal.Stay;
+
         static Func<double[], double[], double[], IndicatorSignal> pSarDefaultSignalLogic = (high, low, output) =>
             low[0] > output[0] ? IndicatorSignal.Buy :
             high[0] < output[0] ? IndicatorSignal.Sell :
@@ -1050,6 +1055,49 @@ namespace TANet.Util.StaticClasses
             catch (Exception ex)
             {
                 return new MfiResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
+        public static MomResult Mom(double[] input, int period, Func<double[], IndicatorSignal> momSignalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+
+                var range = TALib.Core.Default.Mom(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
+                    period,
+                    output);
+
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    indicatorSignal = momSignalLogic != null
+                        ? momSignalLogic.Invoke(output)
+                        : momDefaultSignalLogic.Invoke(output);
+                }
+
+                return new MomResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Mom = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new MomResult
                 {
                     Success = false,
                     IndicatorSignal = IndicatorSignal.Stay,

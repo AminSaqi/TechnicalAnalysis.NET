@@ -420,6 +420,35 @@ namespace TANet.Core
 
         #endregion
 
+        #region MOM
+
+        public static MomResult Mom(double[] input, int period)
+        {
+            return MOM(input, period);
+        }
+        public static MomResult Mom(double[] input, int period, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return MOM(input, period, signalLogic);
+        }
+        public static MomResult Mom(List<Candle> input, int period)
+        {
+            return MOM(input, period);
+        }
+        public static MomResult Mom(List<Candle> input, int period, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return MOM(input, period, signalLogic: signalLogic);
+        }
+        public static MomResult Mom(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return MOM(input, period, calculationBase);
+        }
+        public static MomResult Mom(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return MOM(input, period, calculationBase, signalLogic);
+        }
+
+        #endregion
+
         #region ParabolicSar
 
         public static ParabolicSarResult ParabolicSar(double[] high, double[] low, double acceleration, double maximum)
@@ -1086,6 +1115,22 @@ namespace TANet.Core
             Func<double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Mfi(high, low, close, volume, period, signalLogic);
+        }
+
+        /* MOM */
+
+        private static MomResult MOM(
+            List<Candle> candles,
+            int period,
+            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return MOM(GetValuesFromCandles(candles, calculationBase), period, signalLogic);
+        }
+
+        private static MomResult MOM(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Mom(input, period, signalLogic);
         }
 
         /* P_SAR */
