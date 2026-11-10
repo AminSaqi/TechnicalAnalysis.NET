@@ -304,6 +304,27 @@ namespace TANet.Core
 
         #endregion
 
+        #region Ichimoku
+
+        public static IchimokuResult Ichimoku(double[] high, double[] low, int tenkanPeriod, int kijunPeriod, int senkouBPeriod)
+        {
+            return ICHIMOKU(high, low, tenkanPeriod, kijunPeriod, senkouBPeriod);
+        }
+        public static IchimokuResult Ichimoku(double[] high, double[] low, int tenkanPeriod, int kijunPeriod, int senkouBPeriod, Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return ICHIMOKU(high, low, tenkanPeriod, kijunPeriod, senkouBPeriod, signalLogic);
+        }
+        public static IchimokuResult Ichimoku(List<Candle> candles, int tenkanPeriod, int kijunPeriod, int senkouBPeriod)
+        {
+            return ICHIMOKU(candles, tenkanPeriod, kijunPeriod, senkouBPeriod);
+        }
+        public static IchimokuResult Ichimoku(List<Candle> candles, int tenkanPeriod, int kijunPeriod, int senkouBPeriod, Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return ICHIMOKU(candles, tenkanPeriod, kijunPeriod, senkouBPeriod, signalLogic);
+        }
+
+        #endregion
+
         #region KAMA
 
         public static MovingAverageResult Kama(double[] input, int period)
@@ -1048,6 +1069,31 @@ namespace TANet.Core
             Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Donchian(high, low, period, signalLogic);
+        }
+
+        /* ICHIMOKU */
+
+        private static IchimokuResult ICHIMOKU(
+            List<Candle> candles,
+            int tenkanPeriod,
+            int kijunPeriod,
+            int senkouBPeriod,
+            Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            return ICHIMOKU(high, low, tenkanPeriod, kijunPeriod, senkouBPeriod, signalLogic);
+        }
+
+        private static IchimokuResult ICHIMOKU(
+            double[] high,
+            double[] low,
+            int tenkanPeriod,
+            int kijunPeriod,
+            int senkouBPeriod,
+            Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Ichimoku(high, low, tenkanPeriod, kijunPeriod, senkouBPeriod, signalLogic);
         }
 
         /* MA */

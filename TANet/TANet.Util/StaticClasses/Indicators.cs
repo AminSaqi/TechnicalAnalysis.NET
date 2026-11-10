@@ -455,6 +455,82 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static IchimokuResult Ichimoku(
+            double[] high,
+            double[] low,
+            int tenkanPeriod,
+            int kijunPeriod,
+            int senkouBPeriod,
+            Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(high);
+                ArgumentNullException.ThrowIfNull(low);
+                if (high.Length != low.Length)
+                {
+                    throw new ArgumentException("High and low series must have the same length.");
+                }
+
+                // MIDPRICE has a different default period from each Ichimoku line.
+                tenkanPeriod = tenkanPeriod == int.MinValue ? 9 : tenkanPeriod;
+                kijunPeriod = kijunPeriod == int.MinValue ? 26 : kijunPeriod;
+                senkouBPeriod = senkouBPeriod == int.MinValue ? 52 : senkouBPeriod;
+                var chronologicalHigh = CopyToChronologicalOrder(high);
+                var chronologicalLow = CopyToChronologicalOrder(low);
+
+                double[] Midpoint(int period, out int count)
+                {
+                    var output = new double[high.Length];
+                    var range = TALib.Core.Default.Midprice(
+                        0, high.Length - 1, chronologicalHigh, chronologicalLow, period, output);
+                    count = range.Count;
+                    CompleteNewestFirstOutput(output, count);
+                    return output;
+                }
+
+                var tenkan = Midpoint(tenkanPeriod, out var tenkanCount);
+                var kijun = Midpoint(kijunPeriod, out var kijunCount);
+                var spanB = Midpoint(senkouBPeriod, out _);
+                var spanA = new double[high.Length];
+                var spanACount = Math.Min(tenkanCount, kijunCount);
+                if (spanACount > 0)
+                {
+                    var range = TALib.Core.Default.Medprice(
+                        high.Length - spanACount, high.Length - 1,
+                        CopyToChronologicalOrder(tenkan), CopyToChronologicalOrder(kijun), spanA);
+                    spanACount = range.Count;
+                }
+                CompleteNewestFirstOutput(spanA, spanACount);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (signalLogic != null && tenkan.HasValidData() && kijun.HasValidData() &&
+                    spanA.HasValidData() && spanB.HasValidData())
+                {
+                    indicatorSignal = signalLogic.Invoke(high, low, tenkan, kijun, spanA, spanB);
+                }
+
+                return new IchimokuResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    TenkanSen = tenkan,
+                    KijunSen = kijun,
+                    SenkouSpanA = spanA,
+                    SenkouSpanB = spanB
+                };
+            }
+            catch (Exception ex)
+            {
+                return new IchimokuResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
         public static MovingAverageResult Ma(
             double[] input, 
             MovingAverageType maType, 

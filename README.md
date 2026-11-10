@@ -129,6 +129,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] EMA
 - [x] Extended MACD
 - [x] HMA — Hull Moving Average
+- [x] ICHIMOKU — Ichimoku Kinko Hyo
 - [x] KAMA
 - [x] MA — Moving Average
 - [x] MACD
@@ -198,7 +199,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] HT_TRENDLINE — Hilbert Transform - Instantaneous Trendline
 - [ ] HT_TRENDMODE — Hilbert Transform - Trend vs Cycle Mode
 - [ ] IBS — Internal Bar Strength
-- [ ] ICHIMOKU — Ichimoku Kinko Hyo
 - [ ] IMI — Intraday Momentum Index
 - [ ] KC — Keltner Channels
 - [ ] KDJ — KDJ Stochastic
@@ -298,6 +298,17 @@ over the period, including the current bar. The default signal is `Stay`.
 Custom signal callbacks receive the high, low, upper, middle, and lower series,
 in that order. A breakout strategy should compare the current price with the
 previous band's value, checking that the previous value is finite first.
+
+Ichimoku returns Tenkan-sen, Kijun-sen, Senkou Span A and Senkou Span B.
+Each series becomes available as soon as its own required history exists;
+this differs from the TA-Lib Ichimoku function's shared longest-period warm-up.
+Values are aligned with the bars that computed them and are not shifted. To
+draw the cloud, plot both Senkou spans `kijunPeriod` bars forward; for the
+cloud displayed at the current bar, inspect index `kijunPeriod` after checking
+that it exists and is finite. Chikou is the close plotted `kijunPeriod` bars
+back and is not returned. The default signal is `Stay`; a custom callback
+receives high, low, Tenkan, Kijun, Span A and Span B, in that order, once all
+four current outputs are finite.
 
 MOM measures the difference between the current value and the value `period`
 bars ago. Its default signal is `Buy` for positive momentum, `Sell` for
