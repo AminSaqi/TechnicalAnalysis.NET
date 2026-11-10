@@ -393,6 +393,68 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static DonchianResult Donchian(
+            double[] high,
+            double[] low,
+            int period,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(high);
+                ArgumentNullException.ThrowIfNull(low);
+
+                if (high.Length != low.Length)
+                {
+                    throw new ArgumentException("High and low series must have the same length.");
+                }
+
+                var chronologicalHigh = CopyToChronologicalOrder(high);
+                var chronologicalLow = CopyToChronologicalOrder(low);
+                var upper = new double[high.Length];
+                var middle = new double[high.Length];
+                var lower = new double[high.Length];
+
+                var range = TALib.Core.Default.Donchian(
+                    0,
+                    chronologicalHigh.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
+                    period,
+                    upper,
+                    middle,
+                    lower);
+
+                CompleteNewestFirstOutput(upper, range.Count);
+                CompleteNewestFirstOutput(middle, range.Count);
+                CompleteNewestFirstOutput(lower, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (signalLogic != null && upper.HasValidData() && middle.HasValidData() && lower.HasValidData())
+                {
+                    indicatorSignal = signalLogic.Invoke(high, low, upper, middle, lower);
+                }
+
+                return new DonchianResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    UpperBand = upper,
+                    MiddleBand = middle,
+                    LowerBand = lower
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DonchianResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
         public static MovingAverageResult Ma(
             double[] input, 
             MovingAverageType maType, 

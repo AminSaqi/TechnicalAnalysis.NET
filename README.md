@@ -125,6 +125,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] Bollinger Bands
 - [x] CCI
 - [x] DEMA — Double Exponential Moving Average
+- [x] DONCHIAN — Donchian Channels
 - [x] EMA
 - [x] Extended MACD
 - [x] HMA — Hull Moving Average
@@ -178,7 +179,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] CRSI — Connors Relative Strength Index
 - [ ] CTI — Correlation Trend Indicator
 - [ ] CVI — Chaikin's Volatility
-- [ ] DONCHIAN — Donchian Channels
 - [ ] DOSC — Derivative Oscillator
 - [ ] DPO — Detrended Price Oscillator
 - [ ] DX — Directional Movement Index
@@ -292,6 +292,12 @@ MAMA returns both the MAMA and FAMA series. Its default signal compares their
 latest values: MAMA above FAMA is `Buy`, below is `Sell`, and equal is `Stay`.
 This compares current values and does not detect a crossover event. Custom
 signal callbacks receive MAMA followed by FAMA.
+
+Donchian Channels return the highest high, the midpoint, and the lowest low
+over the period, including the current bar. The default signal is `Stay`.
+Custom signal callbacks receive the high, low, upper, middle, and lower series,
+in that order. A breakout strategy should compare the current price with the
+previous band's value, checking that the previous value is finite first.
 
 MOM measures the difference between the current value and the value `period`
 bars ago. Its default signal is `Buy` for positive momentum, `Sell` for

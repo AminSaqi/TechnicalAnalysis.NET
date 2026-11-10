@@ -196,6 +196,27 @@ namespace TANet.Core
 
         #endregion
 
+        #region Donchian
+
+        public static DonchianResult Donchian(double[] high, double[] low, int period)
+        {
+            return DONCHIAN(high, low, period);
+        }
+        public static DonchianResult Donchian(double[] high, double[] low, int period, Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return DONCHIAN(high, low, period, signalLogic);
+        }
+        public static DonchianResult Donchian(List<Candle> candles, int period)
+        {
+            return DONCHIAN(candles, period);
+        }
+        public static DonchianResult Donchian(List<Candle> candles, int period, Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return DONCHIAN(candles, period, signalLogic);
+        }
+
+        #endregion
+
         #region EMA
 
         public static MovingAverageResult Ema(double[] input, int period)
@@ -1006,6 +1027,27 @@ namespace TANet.Core
             Func<double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Cci(high, low, close, period, signalLogic);
+        }
+
+        /* DONCHIAN */
+
+        private static DonchianResult DONCHIAN(
+            List<Candle> candles,
+            int period,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            return DONCHIAN(high, low, period, signalLogic);
+        }
+
+        private static DonchianResult DONCHIAN(
+            double[] high,
+            double[] low,
+            int period,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Donchian(high, low, period, signalLogic);
         }
 
         /* MA */
