@@ -512,6 +512,35 @@ namespace TANet.Core
 
         #endregion
 
+        #region OBV
+
+        public static ObvResult Obv(double[] input, double[] volume)
+        {
+            return OBV(input, volume);
+        }
+        public static ObvResult Obv(double[] input, double[] volume, Func<double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return OBV(input, volume, signalLogic);
+        }
+        public static ObvResult Obv(List<Candle> candles)
+        {
+            return OBV(candles);
+        }
+        public static ObvResult Obv(List<Candle> candles, Func<double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return OBV(candles, signalLogic: signalLogic);
+        }
+        public static ObvResult Obv(List<Candle> candles, IndicatorCalculationBase calculationBase)
+        {
+            return OBV(candles, calculationBase);
+        }
+        public static ObvResult Obv(List<Candle> candles, IndicatorCalculationBase calculationBase, Func<double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return OBV(candles, calculationBase, signalLogic);
+        }
+
+        #endregion
+
         #region ParabolicSar
 
         public static ParabolicSarResult ParabolicSar(double[] high, double[] low, double acceleration, double maximum)
@@ -1309,6 +1338,26 @@ namespace TANet.Core
         private static MomResult MOM(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Mom(input, period, signalLogic);
+        }
+
+        /* OBV */
+
+        private static ObvResult OBV(
+            List<Candle> candles,
+            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            Func<double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            var input = GetValuesFromCandles(candles, calculationBase);
+            var volume = candles.Select(c => c.Volume).ToArray();
+            return OBV(input, volume, signalLogic);
+        }
+
+        private static ObvResult OBV(
+            double[] input,
+            double[] volume,
+            Func<double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Obv(input, volume, signalLogic);
         }
 
         /* P_SAR */

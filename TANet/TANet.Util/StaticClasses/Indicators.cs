@@ -1373,6 +1373,51 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static ObvResult Obv(
+            double[] input,
+            double[] volume,
+            Func<double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                ArgumentNullException.ThrowIfNull(volume);
+                if (input.Length != volume.Length)
+                {
+                    throw new ArgumentException("Price and volume series must have the same length.");
+                }
+
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var chronologicalVolume = CopyToChronologicalOrder(volume);
+                var output = new double[input.Length];
+                var range = TALib.Core.Default.Obv(0, input.Length - 1,
+                    chronologicalInput, chronologicalVolume, output);
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (signalLogic != null && output.HasValidData())
+                {
+                    indicatorSignal = signalLogic.Invoke(input, volume, output);
+                }
+
+                return new ObvResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Obv = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ObvResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
         public static ParabolicSarResult ParabolicSar(
             double[] high,
             double[] low,

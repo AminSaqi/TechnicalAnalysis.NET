@@ -137,6 +137,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] MAMA — MESA Adaptive Moving Average
 - [x] MFI
 - [x] MOM — Momentum
+- [x] OBV — On Balance Volume
 - [x] Parabolic SAR
 - [x] RMA — Wilder's Smoothed Moving Average
 - [x] RSI
@@ -226,7 +227,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] MINUS_DM — Minus Directional Movement
 - [ ] NATR — Normalized Average True Range
 - [ ] NVI — Negative Volume Index
-- [ ] OBV — On Balance Volume
 - [ ] PERCENTB — Bollinger Bands %B
 - [ ] PERCENTILE — Percentile (nearest rank)
 - [ ] PERCENTRANK — Percent Rank
@@ -292,6 +292,13 @@ zero: `HasValidData()` therefore returns true even though the weighted average i
 not yet defined. The default signal is `Stay`. Custom callbacks receive high,
 low, close, volume and VWAP, in that order, when the latest output is finite;
 they must check volume themselves if their strategy needs traded volume.
+
+OBV starts with the volume of the oldest supplied bar and accumulates volume
+according to price direction. Its absolute values depend on the chosen starting
+bar, and it does not reset automatically across sessions. Candle input uses
+close by default; an `IndicatorCalculationBase` can select another series.
+The default signal is `Stay`. Custom callbacks receive price, volume and OBV,
+in that order, when the latest OBV value is finite.
 
 VWMA expects non-negative volumes aligned with the price series. For periods
 greater than one, an all-zero-volume window produces `NaN` even after warm-up;
