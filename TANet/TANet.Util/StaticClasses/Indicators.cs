@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TANet.Contracts.Enums;
 using TANet.Contracts.OperationResults.Indicators;
 using TANet.Util.StaticClasses.EnumConvertors;
@@ -150,6 +150,57 @@ namespace TANet.Util.StaticClasses
             catch (Exception ex)
             {
                 return new AdxResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
+        public static MovingAverageResult Alma(
+            double[] input,
+            int period,
+            double sigma,
+            double offset,
+            Func<double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+
+                var range = TALib.Core.Default.Alma(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
+                    period,
+                    sigma,
+                    offset,
+                    output);
+
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    indicatorSignal = signalLogic != null
+                        ? signalLogic.Invoke(input, output)
+                        : maDefaultSignalLogic.Invoke(input, output);
+                }
+
+                return new MovingAverageResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Ma = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new MovingAverageResult
                 {
                     Success = false,
                     IndicatorSignal = IndicatorSignal.Stay,
@@ -452,6 +503,53 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static MovingAverageResult Dema(
+            double[] input,
+            int period,
+            Func<double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+
+                var range = TALib.Core.Default.Dema(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
+                    period,
+                    output);
+
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    indicatorSignal = signalLogic != null
+                        ? signalLogic.Invoke(input, output)
+                        : maDefaultSignalLogic.Invoke(input, output);
+                }
+
+                return new MovingAverageResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Ma = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new MovingAverageResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
         public static DonchianResult Donchian(
             double[] high,
             double[] low,
@@ -506,6 +604,53 @@ namespace TANet.Util.StaticClasses
             catch (Exception ex)
             {
                 return new DonchianResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
+        public static MovingAverageResult Hma(
+            double[] input,
+            int period,
+            Func<double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+
+                var range = TALib.Core.Default.Hma(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
+                    period,
+                    output);
+
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    indicatorSignal = signalLogic != null
+                        ? signalLogic.Invoke(input, output)
+                        : maDefaultSignalLogic.Invoke(input, output);
+                }
+
+                return new MovingAverageResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Ma = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new MovingAverageResult
                 {
                     Success = false,
                     IndicatorSignal = IndicatorSignal.Stay,
@@ -699,143 +844,61 @@ namespace TANet.Util.StaticClasses
             }
         }        
 
-        public static MovingAverageResult Alma(
+        public static MacdResult MacdExt(
             double[] input,
-            int period,
-            double sigma,
-            double offset,
-            Func<double[], double[], IndicatorSignal> signalLogic = null)
+            MovingAverageType fastMaType,
+            int fastPeriod,
+            MovingAverageType slowMaType,
+            int slowPeriod,
+            MovingAverageType signalMaType,
+            int signalPeriod,
+            Func<double[], double[], double[], IndicatorSignal> macdExtSignalLogic = null)
         {
             try
             {
-                ArgumentNullException.ThrowIfNull(input);
-
                 var chronologicalInput = CopyToChronologicalOrder(input);
-                var output = new double[input.Length];
+                var outputMacd = new double[input.Length];
+                var outputSignal = new double[input.Length];
+                var outputHistogram = new double[input.Length];
 
-                var range = TALib.Core.Default.Alma(
+                var range = TALib.Core.Default.Macdext(
                     0,
                     chronologicalInput.Length - 1,
                     chronologicalInput,
-                    period,
-                    sigma,
-                    offset,
-                    output);
+                    fastPeriod,
+                    MovingAverageTypes.ToOfficialTaLib(fastMaType),
+                    slowPeriod,
+                    MovingAverageTypes.ToOfficialTaLib(slowMaType),
+                    signalPeriod,
+                    MovingAverageTypes.ToOfficialTaLib(signalMaType),
+                    outputMacd,
+                    outputSignal,
+                    outputHistogram);
 
-                CompleteNewestFirstOutput(output, range.Count);
+                CompleteNewestFirstOutput(outputMacd, range.Count);
+                CompleteNewestFirstOutput(outputSignal, range.Count);
+                CompleteNewestFirstOutput(outputHistogram, range.Count);
 
                 var indicatorSignal = IndicatorSignal.Stay;
-                if (output.HasValidData())
+                if (outputMacd.HasValidData() && outputSignal.HasValidData() && outputHistogram.HasValidData())
                 {
-                    indicatorSignal = signalLogic != null
-                        ? signalLogic.Invoke(input, output)
-                        : maDefaultSignalLogic.Invoke(input, output);
+                    indicatorSignal = macdExtSignalLogic != null
+                        ? macdExtSignalLogic.Invoke(outputMacd, outputSignal, outputHistogram)
+                        : macdDefaultSignalLogic.Invoke(outputMacd, outputSignal, outputHistogram);
                 }
 
-                return new MovingAverageResult
+                return new MacdResult
                 {
                     Success = true,
                     IndicatorSignal = indicatorSignal,
-                    Ma = output
+                    Macd = outputMacd,
+                    Signal = outputSignal,
+                    Histogram = outputHistogram
                 };
             }
             catch (Exception ex)
             {
-                return new MovingAverageResult
-                {
-                    Success = false,
-                    IndicatorSignal = IndicatorSignal.Stay,
-                    Message = ex.ToString()
-                };
-            }
-        }
-
-        public static MovingAverageResult Zlema(
-            double[] input,
-            int period,
-            Func<double[], double[], IndicatorSignal> signalLogic = null)
-        {
-            try
-            {
-                ArgumentNullException.ThrowIfNull(input);
-
-                var chronologicalInput = CopyToChronologicalOrder(input);
-                var output = new double[input.Length];
-
-                var range = TALib.Core.Default.Zlema(
-                    0,
-                    chronologicalInput.Length - 1,
-                    chronologicalInput,
-                    period,
-                    output);
-
-                CompleteNewestFirstOutput(output, range.Count);
-
-                var indicatorSignal = IndicatorSignal.Stay;
-                if (output.HasValidData())
-                {
-                    indicatorSignal = signalLogic != null
-                        ? signalLogic.Invoke(input, output)
-                        : maDefaultSignalLogic.Invoke(input, output);
-                }
-
-                return new MovingAverageResult
-                {
-                    Success = true,
-                    IndicatorSignal = indicatorSignal,
-                    Ma = output
-                };
-            }
-            catch (Exception ex)
-            {
-                return new MovingAverageResult
-                {
-                    Success = false,
-                    IndicatorSignal = IndicatorSignal.Stay,
-                    Message = ex.ToString()
-                };
-            }
-        }
-
-        public static MovingAverageResult Dema(
-            double[] input,
-            int period,
-            Func<double[], double[], IndicatorSignal> signalLogic = null)
-        {
-            try
-            {
-                ArgumentNullException.ThrowIfNull(input);
-
-                var chronologicalInput = CopyToChronologicalOrder(input);
-                var output = new double[input.Length];
-
-                var range = TALib.Core.Default.Dema(
-                    0,
-                    chronologicalInput.Length - 1,
-                    chronologicalInput,
-                    period,
-                    output);
-
-                CompleteNewestFirstOutput(output, range.Count);
-
-                var indicatorSignal = IndicatorSignal.Stay;
-                if (output.HasValidData())
-                {
-                    indicatorSignal = signalLogic != null
-                        ? signalLogic.Invoke(input, output)
-                        : maDefaultSignalLogic.Invoke(input, output);
-                }
-
-                return new MovingAverageResult
-                {
-                    Success = true,
-                    IndicatorSignal = indicatorSignal,
-                    Ma = output
-                };
-            }
-            catch (Exception ex)
-            {
-                return new MovingAverageResult
+                return new MacdResult
                 {
                     Success = false,
                     IndicatorSignal = IndicatorSignal.Stay,
@@ -889,423 +952,6 @@ namespace TANet.Util.StaticClasses
             catch (Exception ex)
             {
                 return new MamaResult
-                {
-                    Success = false,
-                    IndicatorSignal = IndicatorSignal.Stay,
-                    Message = ex.ToString()
-                };
-            }
-        }
-
-        public static MovingAverageResult Hma(
-            double[] input,
-            int period,
-            Func<double[], double[], IndicatorSignal> signalLogic = null)
-        {
-            try
-            {
-                ArgumentNullException.ThrowIfNull(input);
-
-                var chronologicalInput = CopyToChronologicalOrder(input);
-                var output = new double[input.Length];
-
-                var range = TALib.Core.Default.Hma(
-                    0,
-                    chronologicalInput.Length - 1,
-                    chronologicalInput,
-                    period,
-                    output);
-
-                CompleteNewestFirstOutput(output, range.Count);
-
-                var indicatorSignal = IndicatorSignal.Stay;
-                if (output.HasValidData())
-                {
-                    indicatorSignal = signalLogic != null
-                        ? signalLogic.Invoke(input, output)
-                        : maDefaultSignalLogic.Invoke(input, output);
-                }
-
-                return new MovingAverageResult
-                {
-                    Success = true,
-                    IndicatorSignal = indicatorSignal,
-                    Ma = output
-                };
-            }
-            catch (Exception ex)
-            {
-                return new MovingAverageResult
-                {
-                    Success = false,
-                    IndicatorSignal = IndicatorSignal.Stay,
-                    Message = ex.ToString()
-                };
-            }
-        }
-
-        public static MovingAverageResult Rma(
-            double[] input,
-            int period,
-            Func<double[], double[], IndicatorSignal> signalLogic = null)
-        {
-            try
-            {
-                ArgumentNullException.ThrowIfNull(input);
-
-                var chronologicalInput = CopyToChronologicalOrder(input);
-                var output = new double[input.Length];
-
-                var range = TALib.Core.Default.Rma(
-                    0,
-                    chronologicalInput.Length - 1,
-                    chronologicalInput,
-                    period,
-                    output);
-
-                CompleteNewestFirstOutput(output, range.Count);
-
-                var indicatorSignal = IndicatorSignal.Stay;
-                if (output.HasValidData())
-                {
-                    indicatorSignal = signalLogic != null
-                        ? signalLogic.Invoke(input, output)
-                        : maDefaultSignalLogic.Invoke(input, output);
-                }
-
-                return new MovingAverageResult
-                {
-                    Success = true,
-                    IndicatorSignal = indicatorSignal,
-                    Ma = output
-                };
-            }
-            catch (Exception ex)
-            {
-                return new MovingAverageResult
-                {
-                    Success = false,
-                    IndicatorSignal = IndicatorSignal.Stay,
-                    Message = ex.ToString()
-                };
-            }
-        }
-
-        public static MovingAverageResult Trima(
-            double[] input,
-            int period,
-            Func<double[], double[], IndicatorSignal> signalLogic = null)
-        {
-            try
-            {
-                ArgumentNullException.ThrowIfNull(input);
-
-                var chronologicalInput = CopyToChronologicalOrder(input);
-                var output = new double[input.Length];
-
-                var range = TALib.Core.Default.Trima(
-                    0,
-                    chronologicalInput.Length - 1,
-                    chronologicalInput,
-                    period,
-                    output);
-
-                CompleteNewestFirstOutput(output, range.Count);
-
-                var indicatorSignal = IndicatorSignal.Stay;
-                if (output.HasValidData())
-                {
-                    indicatorSignal = signalLogic != null
-                        ? signalLogic.Invoke(input, output)
-                        : maDefaultSignalLogic.Invoke(input, output);
-                }
-
-                return new MovingAverageResult
-                {
-                    Success = true,
-                    IndicatorSignal = indicatorSignal,
-                    Ma = output
-                };
-            }
-            catch (Exception ex)
-            {
-                return new MovingAverageResult
-                {
-                    Success = false,
-                    IndicatorSignal = IndicatorSignal.Stay,
-                    Message = ex.ToString()
-                };
-            }
-        }
-
-        public static MovingAverageResult Vidya(
-            double[] input,
-            int period,
-            int cmoPeriod,
-            Func<double[], double[], IndicatorSignal> signalLogic = null)
-        {
-            try
-            {
-                ArgumentNullException.ThrowIfNull(input);
-
-                var chronologicalInput = CopyToChronologicalOrder(input);
-                var output = new double[input.Length];
-
-                var range = TALib.Core.Default.Vidya(
-                    0,
-                    chronologicalInput.Length - 1,
-                    chronologicalInput,
-                    period,
-                    cmoPeriod,
-                    output);
-
-                CompleteNewestFirstOutput(output, range.Count);
-
-                var indicatorSignal = IndicatorSignal.Stay;
-                if (output.HasValidData())
-                {
-                    indicatorSignal = signalLogic != null
-                        ? signalLogic.Invoke(input, output)
-                        : maDefaultSignalLogic.Invoke(input, output);
-                }
-
-                return new MovingAverageResult
-                {
-                    Success = true,
-                    IndicatorSignal = indicatorSignal,
-                    Ma = output
-                };
-            }
-            catch (Exception ex)
-            {
-                return new MovingAverageResult
-                {
-                    Success = false,
-                    IndicatorSignal = IndicatorSignal.Stay,
-                    Message = ex.ToString()
-                };
-            }
-        }
-
-        public static VwapResult Vwap(
-            double[] high,
-            double[] low,
-            double[] close,
-            double[] volume,
-            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
-        {
-            try
-            {
-                ArgumentNullException.ThrowIfNull(high);
-                ArgumentNullException.ThrowIfNull(low);
-                ArgumentNullException.ThrowIfNull(close);
-                ArgumentNullException.ThrowIfNull(volume);
-                if (high.Length != low.Length || high.Length != close.Length || high.Length != volume.Length)
-                {
-                    throw new ArgumentException("High, low, close and volume series must have the same length.");
-                }
-
-                var chronologicalHigh = CopyToChronologicalOrder(high);
-                var chronologicalLow = CopyToChronologicalOrder(low);
-                var chronologicalClose = CopyToChronologicalOrder(close);
-                var chronologicalVolume = CopyToChronologicalOrder(volume);
-                var output = new double[high.Length];
-
-                var range = TALib.Core.Default.Vwap(
-                    0, 
-                    high.Length - 1,
-                    chronologicalHigh, 
-                    chronologicalLow, 
-                    chronologicalClose, 
-                    chronologicalVolume, 
-                    output);
-
-                CompleteNewestFirstOutput(output, range.Count);
-
-                var indicatorSignal = IndicatorSignal.Stay;
-                if (signalLogic != null && output.HasValidData())
-                {
-                    indicatorSignal = signalLogic.Invoke(high, low, close, volume, output);
-                }
-
-                return new VwapResult
-                {
-                    Success = true,
-                    IndicatorSignal = indicatorSignal,
-                    Vwap = output
-                };
-            }
-            catch (Exception ex)
-            {
-                return new VwapResult
-                {
-                    Success = false,
-                    IndicatorSignal = IndicatorSignal.Stay,
-                    Message = ex.ToString()
-                };
-            }
-        }
-
-        public static MovingAverageResult Vwma(
-            double[] input,
-            double[] volume,
-            int period,
-            Func<double[], double[], IndicatorSignal> signalLogic = null)
-        {
-            try
-            {
-                ArgumentNullException.ThrowIfNull(input);
-                ArgumentNullException.ThrowIfNull(volume);
-
-                if (input.Length != volume.Length)
-                {
-                    throw new ArgumentException("Input and volume series must have the same length.");
-                }
-
-                var chronologicalInput = CopyToChronologicalOrder(input);
-                var chronologicalVolume = CopyToChronologicalOrder(volume);
-                var output = new double[input.Length];
-
-                var range = TALib.Core.Default.Vwma(
-                    0,
-                    chronologicalInput.Length - 1,
-                    chronologicalInput,
-                    chronologicalVolume,
-                    period,
-                    output);
-
-                CompleteNewestFirstOutput(output, range.Count);
-
-                var indicatorSignal = IndicatorSignal.Stay;
-                if (output.HasValidData())
-                {
-                    indicatorSignal = signalLogic != null
-                        ? signalLogic.Invoke(input, output)
-                        : maDefaultSignalLogic.Invoke(input, output);
-                }
-
-                return new MovingAverageResult
-                {
-                    Success = true,
-                    IndicatorSignal = indicatorSignal,
-                    Ma = output
-                };
-            }
-            catch (Exception ex)
-            {
-                return new MovingAverageResult
-                {
-                    Success = false,
-                    IndicatorSignal = IndicatorSignal.Stay,
-                    Message = ex.ToString()
-                };
-            }
-        }
-
-        public static MovingAverageResult T3(
-            double[] input,
-            int period,
-            double vFactor,
-            Func<double[], double[], IndicatorSignal> signalLogic = null)
-        {
-            try
-            {
-                ArgumentNullException.ThrowIfNull(input);
-
-                var chronologicalInput = CopyToChronologicalOrder(input);
-                var output = new double[input.Length];
-
-                var range = TALib.Core.Default.T3(
-                    0,
-                    chronologicalInput.Length - 1,
-                    chronologicalInput,
-                    period,
-                    vFactor,
-                    output);
-
-                CompleteNewestFirstOutput(output, range.Count);
-
-                var indicatorSignal = IndicatorSignal.Stay;
-                if (output.HasValidData())
-                {
-                    indicatorSignal = signalLogic != null
-                        ? signalLogic.Invoke(input, output)
-                        : maDefaultSignalLogic.Invoke(input, output);
-                }
-
-                return new MovingAverageResult
-                {
-                    Success = true,
-                    IndicatorSignal = indicatorSignal,
-                    Ma = output
-                };
-            }
-            catch (Exception ex)
-            {
-                return new MovingAverageResult
-                {
-                    Success = false,
-                    IndicatorSignal = IndicatorSignal.Stay,
-                    Message = ex.ToString()
-                };
-            }
-        }
-
-        public static MacdResult MacdExt(
-            double[] input, 
-            MovingAverageType fastMaType, 
-            int fastPeriod, 
-            MovingAverageType slowMaType, 
-            int slowPeriod, 
-            MovingAverageType signalMaType, 
-            int signalPeriod, 
-            Func<double[], double[], double[], IndicatorSignal> macdExtSignalLogic = null)
-        {
-            try
-            {
-                var chronologicalInput = CopyToChronologicalOrder(input);
-                var outputMacd = new double[input.Length];
-                var outputSignal = new double[input.Length];
-                var outputHistogram = new double[input.Length];
-
-                var range = TALib.Core.Default.Macdext(
-                    0,
-                    chronologicalInput.Length - 1,
-                    chronologicalInput,
-                    fastPeriod,
-                    MovingAverageTypes.ToOfficialTaLib(fastMaType),
-                    slowPeriod,
-                    MovingAverageTypes.ToOfficialTaLib(slowMaType),
-                    signalPeriod,
-                    MovingAverageTypes.ToOfficialTaLib(signalMaType),
-                    outputMacd,
-                    outputSignal,
-                    outputHistogram);
-
-                CompleteNewestFirstOutput(outputMacd, range.Count);
-                CompleteNewestFirstOutput(outputSignal, range.Count);
-                CompleteNewestFirstOutput(outputHistogram, range.Count);
-
-                var indicatorSignal = IndicatorSignal.Stay;
-                if (outputMacd.HasValidData() && outputSignal.HasValidData() && outputHistogram.HasValidData())
-                {
-                    indicatorSignal = macdExtSignalLogic != null
-                        ? macdExtSignalLogic.Invoke(outputMacd, outputSignal, outputHistogram)
-                        : macdDefaultSignalLogic.Invoke(outputMacd, outputSignal, outputHistogram);
-                }
-
-                return new MacdResult
-                {
-                    Success = true,
-                    IndicatorSignal = indicatorSignal,
-                    Macd = outputMacd,
-                    Signal = outputSignal,
-                    Histogram = outputHistogram
-                };
-            }
-            catch (Exception ex)
-            {
-                return new MacdResult
                 {
                     Success = false,
                     IndicatorSignal = IndicatorSignal.Stay,
@@ -1525,6 +1171,53 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static MovingAverageResult Rma(
+            double[] input,
+            int period,
+            Func<double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+
+                var range = TALib.Core.Default.Rma(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
+                    period,
+                    output);
+
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    indicatorSignal = signalLogic != null
+                        ? signalLogic.Invoke(input, output)
+                        : maDefaultSignalLogic.Invoke(input, output);
+                }
+
+                return new MovingAverageResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Ma = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new MovingAverageResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
         public static RsiResult Rsi(double[] input, int period, Func<double[], IndicatorSignal> rsiSignalLogic = null)
         {
             try
@@ -1534,8 +1227,8 @@ namespace TANet.Util.StaticClasses
 
                 var range = TALib.Core.Default.Rsi(0,
                     chronologicalInput.Length - 1,
-                    chronologicalInput, 
-                    period, 
+                    chronologicalInput,
+                    period,
                     output);
 
                 CompleteNewestFirstOutput(output, range.Count);
@@ -1554,78 +1247,11 @@ namespace TANet.Util.StaticClasses
                     Success = true,
                     IndicatorSignal = indicatorSignal,
                     Rsi = output
-                };                
+                };
             }
             catch (Exception ex)
             {
                 return new RsiResult
-                {
-                    Success = false,
-                    IndicatorSignal = IndicatorSignal.Stay,
-                    Message = ex.ToString()
-                };
-            }
-        }
-
-        public static SupertrendResult Supertrend(
-            double[] high,
-            double[] low,
-            double[] close,
-            int period,
-            double multiplier,
-            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
-        {
-            try
-            {
-                ArgumentNullException.ThrowIfNull(high);
-                ArgumentNullException.ThrowIfNull(low);
-                ArgumentNullException.ThrowIfNull(close);
-                if (high.Length != low.Length || high.Length != close.Length)
-                {
-                    throw new ArgumentException("High, low and close series must have the same length.");
-                }
-
-                var chronologicalHigh = CopyToChronologicalOrder(high);
-                var chronologicalLow = CopyToChronologicalOrder(low);
-                var chronologicalClose = CopyToChronologicalOrder(close);
-                var line = new double[high.Length];
-                var rawTrend = new int[high.Length];
-
-                var range = TALib.Core.Default.Supertrend(
-                    0, 
-                    high.Length - 1,
-                    chronologicalHigh, 
-                    chronologicalLow, 
-                    chronologicalClose,
-                    period, 
-                    multiplier, 
-                    line, 
-                    rawTrend);
-
-                CompleteNewestFirstOutput(line, range.Count);
-                var trend = CompleteNewestFirstOutput(rawTrend, range.Count);
-
-                var indicatorSignal = IndicatorSignal.Stay;
-                if (line.HasValidData() && trend.HasValidData())
-                {
-                    indicatorSignal = signalLogic != null
-                        ? signalLogic.Invoke(high, low, close, line, trend)
-                        : trend[0] > 0 ? IndicatorSignal.Buy
-                        : trend[0] < 0 ? IndicatorSignal.Sell
-                        : IndicatorSignal.Stay;
-                }
-
-                return new SupertrendResult
-                {
-                    Success = true,
-                    IndicatorSignal = indicatorSignal,
-                    Supertrend = line,
-                    Trend = trend
-                };
-            }
-            catch (Exception ex)
-            {
-                return new SupertrendResult
                 {
                     Success = false,
                     IndicatorSignal = IndicatorSignal.Stay,
@@ -1706,6 +1332,333 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static SupertrendResult Supertrend(
+            double[] high,
+            double[] low,
+            double[] close,
+            int period,
+            double multiplier,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(high);
+                ArgumentNullException.ThrowIfNull(low);
+                ArgumentNullException.ThrowIfNull(close);
+                if (high.Length != low.Length || high.Length != close.Length)
+                {
+                    throw new ArgumentException("High, low and close series must have the same length.");
+                }
+
+                var chronologicalHigh = CopyToChronologicalOrder(high);
+                var chronologicalLow = CopyToChronologicalOrder(low);
+                var chronologicalClose = CopyToChronologicalOrder(close);
+                var line = new double[high.Length];
+                var rawTrend = new int[high.Length];
+
+                var range = TALib.Core.Default.Supertrend(
+                    0,
+                    high.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
+                    chronologicalClose,
+                    period,
+                    multiplier,
+                    line,
+                    rawTrend);
+
+                CompleteNewestFirstOutput(line, range.Count);
+                var trend = CompleteNewestFirstOutput(rawTrend, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (line.HasValidData() && trend.HasValidData())
+                {
+                    indicatorSignal = signalLogic != null
+                        ? signalLogic.Invoke(high, low, close, line, trend)
+                        : trend[0] > 0 ? IndicatorSignal.Buy
+                        : trend[0] < 0 ? IndicatorSignal.Sell
+                        : IndicatorSignal.Stay;
+                }
+
+                return new SupertrendResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Supertrend = line,
+                    Trend = trend
+                };
+            }
+            catch (Exception ex)
+            {
+                return new SupertrendResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
+        public static MovingAverageResult T3(
+            double[] input,
+            int period,
+            double vFactor,
+            Func<double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+
+                var range = TALib.Core.Default.T3(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
+                    period,
+                    vFactor,
+                    output);
+
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    indicatorSignal = signalLogic != null
+                        ? signalLogic.Invoke(input, output)
+                        : maDefaultSignalLogic.Invoke(input, output);
+                }
+
+                return new MovingAverageResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Ma = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new MovingAverageResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
+        public static MovingAverageResult Trima(
+            double[] input,
+            int period,
+            Func<double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+
+                var range = TALib.Core.Default.Trima(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
+                    period,
+                    output);
+
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    indicatorSignal = signalLogic != null
+                        ? signalLogic.Invoke(input, output)
+                        : maDefaultSignalLogic.Invoke(input, output);
+                }
+
+                return new MovingAverageResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Ma = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new MovingAverageResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
+        public static MovingAverageResult Vidya(
+            double[] input,
+            int period,
+            int cmoPeriod,
+            Func<double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+
+                var range = TALib.Core.Default.Vidya(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
+                    period,
+                    cmoPeriod,
+                    output);
+
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    indicatorSignal = signalLogic != null
+                        ? signalLogic.Invoke(input, output)
+                        : maDefaultSignalLogic.Invoke(input, output);
+                }
+
+                return new MovingAverageResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Ma = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new MovingAverageResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
+        public static VwapResult Vwap(
+            double[] high,
+            double[] low,
+            double[] close,
+            double[] volume,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(high);
+                ArgumentNullException.ThrowIfNull(low);
+                ArgumentNullException.ThrowIfNull(close);
+                ArgumentNullException.ThrowIfNull(volume);
+                if (high.Length != low.Length || high.Length != close.Length || high.Length != volume.Length)
+                {
+                    throw new ArgumentException("High, low, close and volume series must have the same length.");
+                }
+
+                var chronologicalHigh = CopyToChronologicalOrder(high);
+                var chronologicalLow = CopyToChronologicalOrder(low);
+                var chronologicalClose = CopyToChronologicalOrder(close);
+                var chronologicalVolume = CopyToChronologicalOrder(volume);
+                var output = new double[high.Length];
+
+                var range = TALib.Core.Default.Vwap(
+                    0,
+                    high.Length - 1,
+                    chronologicalHigh,
+                    chronologicalLow,
+                    chronologicalClose,
+                    chronologicalVolume,
+                    output);
+
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (signalLogic != null && output.HasValidData())
+                {
+                    indicatorSignal = signalLogic.Invoke(high, low, close, volume, output);
+                }
+
+                return new VwapResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Vwap = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new VwapResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
+        public static MovingAverageResult Vwma(
+            double[] input,
+            double[] volume,
+            int period,
+            Func<double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                ArgumentNullException.ThrowIfNull(volume);
+
+                if (input.Length != volume.Length)
+                {
+                    throw new ArgumentException("Input and volume series must have the same length.");
+                }
+
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var chronologicalVolume = CopyToChronologicalOrder(volume);
+                var output = new double[input.Length];
+
+                var range = TALib.Core.Default.Vwma(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
+                    chronologicalVolume,
+                    period,
+                    output);
+
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    indicatorSignal = signalLogic != null
+                        ? signalLogic.Invoke(input, output)
+                        : maDefaultSignalLogic.Invoke(input, output);
+                }
+
+                return new MovingAverageResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Ma = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new MovingAverageResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
         public static WilliamsRResult WilliamsR(
             double[] inputHigh,
             double[] inputLow,
@@ -1758,6 +1711,53 @@ namespace TANet.Util.StaticClasses
             catch (Exception ex)
             {
                 return new WilliamsRResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
+        public static MovingAverageResult Zlema(
+            double[] input,
+            int period,
+            Func<double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+
+                var range = TALib.Core.Default.Zlema(
+                    0,
+                    chronologicalInput.Length - 1,
+                    chronologicalInput,
+                    period,
+                    output);
+
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    indicatorSignal = signalLogic != null
+                        ? signalLogic.Invoke(input, output)
+                        : maDefaultSignalLogic.Invoke(input, output);
+                }
+
+                return new MovingAverageResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Ma = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new MovingAverageResult
                 {
                     Success = false,
                     IndicatorSignal = IndicatorSignal.Stay,
