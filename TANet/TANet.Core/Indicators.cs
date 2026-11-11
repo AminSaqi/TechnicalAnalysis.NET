@@ -354,6 +354,27 @@ namespace TANet.Core
 
         #endregion
 
+        #region KeltnerChannels
+
+        public static KeltnerChannelsResult KeltnerChannels(double[] high, double[] low, double[] close, int period, int atrPeriod, double multiplier)
+        {
+            return KC(high, low, close, period, atrPeriod, multiplier);
+        }
+        public static KeltnerChannelsResult KeltnerChannels(double[] high, double[] low, double[] close, int period, int atrPeriod, double multiplier, Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return KC(high, low, close, period, atrPeriod, multiplier, signalLogic);
+        }
+        public static KeltnerChannelsResult KeltnerChannels(List<Candle> candles, int period, int atrPeriod, double multiplier)
+        {
+            return KC(candles, period, atrPeriod, multiplier);
+        }
+        public static KeltnerChannelsResult KeltnerChannels(List<Candle> candles, int period, int atrPeriod, double multiplier, Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return KC(candles, period, atrPeriod, multiplier, signalLogic);
+        }
+
+        #endregion
+
         #region MA
 
         public static MovingAverageResult Ma(double[] input, MovingAverageType maType, int period)
@@ -1094,6 +1115,33 @@ namespace TANet.Core
             Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Ichimoku(high, low, tenkanPeriod, kijunPeriod, senkouBPeriod, signalLogic);
+        }
+
+        /* KC */
+
+        private static KeltnerChannelsResult KC(
+            List<Candle> candles,
+            int period,
+            int atrPeriod,
+            double multiplier,
+            Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            var close = candles.Select(c => c.Close).ToArray();
+            return KC(high, low, close, period, atrPeriod, multiplier, signalLogic);
+        }
+
+        private static KeltnerChannelsResult KC(
+            double[] high,
+            double[] low,
+            double[] close,
+            int period,
+            int atrPeriod,
+            double multiplier,
+            Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.KeltnerChannels(high, low, close, period, atrPeriod, multiplier, signalLogic);
         }
 
         /* MA */

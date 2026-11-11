@@ -131,6 +131,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] HMA — Hull Moving Average
 - [x] ICHIMOKU — Ichimoku Kinko Hyo
 - [x] KAMA
+- [x] KC — Keltner Channels
 - [x] MA — Moving Average
 - [x] MACD
 - [x] MAMA — MESA Adaptive Moving Average
@@ -200,7 +201,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] HT_TRENDMODE — Hilbert Transform - Trend vs Cycle Mode
 - [ ] IBS — Internal Bar Strength
 - [ ] IMI — Intraday Momentum Index
-- [ ] KC — Keltner Channels
 - [ ] KDJ — KDJ Stochastic
 - [ ] KST — Know Sure Thing (Pring)
 - [ ] KSTEXT — Know Sure Thing with controllable MA type
@@ -309,6 +309,14 @@ that it exists and is finite. Chikou is the close plotted `kijunPeriod` bars
 back and is not returned. The default signal is `Stay`; a custom callback
 receives high, low, Tenkan, Kijun, Span A and Span B, in that order, once all
 four current outputs are finite.
+
+Keltner Channels use TA-Lib's variant: the middle band is an EMA of typical
+price `(high + low + close) / 3`, while the upper and lower bands are the middle
+band plus or minus `multiplier` times Wilder's ATR. The EMA and ATR periods are
+independent. All three bands follow TA-Lib's shared KC warm-up; computing the
+EMA separately may produce different values due to its initialization.
+The default signal is `Stay`. Custom callbacks receive high, low, close, upper,
+middle and lower series, in that order, once all current band values are finite.
 
 MOM measures the difference between the current value and the value `period`
 bars ago. Its default signal is `Buy` for positive momentum, `Sell` for

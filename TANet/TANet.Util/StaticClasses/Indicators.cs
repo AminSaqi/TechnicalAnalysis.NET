@@ -531,6 +531,66 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static KeltnerChannelsResult KeltnerChannels(
+            double[] high,
+            double[] low,
+            double[] close,
+            int period,
+            int atrPeriod,
+            double multiplier,
+            Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(high);
+                ArgumentNullException.ThrowIfNull(low);
+                ArgumentNullException.ThrowIfNull(close);
+                if (high.Length != low.Length || high.Length != close.Length)
+                {
+                    throw new ArgumentException("High, low and close series must have the same length.");
+                }
+
+                var chronologicalHigh = CopyToChronologicalOrder(high);
+                var chronologicalLow = CopyToChronologicalOrder(low);
+                var chronologicalClose = CopyToChronologicalOrder(close);
+                var upper = new double[high.Length];
+                var middle = new double[high.Length];
+                var lower = new double[high.Length];
+
+                var range = TALib.Core.Default.Kc(0, high.Length - 1,
+                    chronologicalHigh, chronologicalLow, chronologicalClose,
+                    period, atrPeriod, multiplier, upper, middle, lower);
+
+                CompleteNewestFirstOutput(upper, range.Count);
+                CompleteNewestFirstOutput(middle, range.Count);
+                CompleteNewestFirstOutput(lower, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (signalLogic != null && upper.HasValidData() && middle.HasValidData() && lower.HasValidData())
+                {
+                    indicatorSignal = signalLogic.Invoke(high, low, close, upper, middle, lower);
+                }
+
+                return new KeltnerChannelsResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    UpperBand = upper,
+                    MiddleBand = middle,
+                    LowerBand = lower
+                };
+            }
+            catch (Exception ex)
+            {
+                return new KeltnerChannelsResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
         public static MovingAverageResult Ma(
             double[] input, 
             MovingAverageType maType, 
