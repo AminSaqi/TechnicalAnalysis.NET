@@ -109,6 +109,55 @@ namespace TANet.Util.StaticClasses
 
         #endregion
 
+        public static AdxResult Adx(
+            double[] high,
+            double[] low,
+            double[] close,
+            int period,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(high);
+                ArgumentNullException.ThrowIfNull(low);
+                ArgumentNullException.ThrowIfNull(close);
+                if (high.Length != low.Length || high.Length != close.Length)
+                {
+                    throw new ArgumentException("High, low and close series must have the same length.");
+                }
+
+                var chronologicalHigh = CopyToChronologicalOrder(high);
+                var chronologicalLow = CopyToChronologicalOrder(low);
+                var chronologicalClose = CopyToChronologicalOrder(close);
+                var output = new double[high.Length];
+                var range = TALib.Core.Default.Adx(0, high.Length - 1,
+                    chronologicalHigh, chronologicalLow, chronologicalClose, period, output);
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (signalLogic != null && output.HasValidData())
+                {
+                    indicatorSignal = signalLogic.Invoke(output);
+                }
+
+                return new AdxResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Adx = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new AdxResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
         public static AroonResult Aroon(
             double[] inputHigh,
             double[] inputLow,

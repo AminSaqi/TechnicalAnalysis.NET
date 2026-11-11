@@ -9,6 +9,27 @@ namespace TANet.Core
 {
     public static class Indicators
     {
+        #region ADX
+
+        public static AdxResult Adx(double[] high, double[] low, double[] close, int period)
+        {
+            return ADX(high, low, close, period);
+        }
+        public static AdxResult Adx(double[] high, double[] low, double[] close, int period, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return ADX(high, low, close, period, signalLogic);
+        }
+        public static AdxResult Adx(List<Candle> candles, int period)
+        {
+            return ADX(candles, period);
+        }
+        public static AdxResult Adx(List<Candle> candles, int period, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return ADX(candles, period, signalLogic);
+        }
+
+        #endregion
+
         #region ALMA
 
         public static MovingAverageResult Alma(double[] input, int period, double sigma, double offset)
@@ -997,6 +1018,29 @@ namespace TANet.Core
                 IndicatorCalculationBase.Volume => [.. candles.Select(c => c.Volume)],
                 _ => [.. candles.Select(c => c.Close)]
             };
+        }
+
+        /* ADX */
+
+        private static AdxResult ADX(
+            List<Candle> candles,
+            int period,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            var close = candles.Select(c => c.Close).ToArray();
+            return ADX(high, low, close, period, signalLogic);
+        }
+
+        private static AdxResult ADX(
+            double[] high,
+            double[] low,
+            double[] close,
+            int period,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Adx(high, low, close, period, signalLogic);
         }
 
         /* ALMA */

@@ -118,6 +118,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 
 ## Implemented indicators
 
+- [x] ADX — Average Directional Movement Index
 - [x] ALMA — Arnaud Legoux Moving Average
 - [x] Aroon
 - [x] Aroon Oscillator
@@ -161,7 +162,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] AD — Chaikin A/D Line
 - [ ] ADOSC — Chaikin A/D Oscillator
 - [ ] ADR — Average Day Range
-- [ ] ADX — Average Directional Movement Index
 - [ ] ADXR — Average Directional Movement Index Rating
 - [ ] AO — Awesome Oscillator
 - [ ] APO — Absolute Price Oscillator
@@ -282,6 +282,11 @@ The array-based Williams %R overload currently requires a `volume` parameter
 for compatibility, although the calculation does not use it. TA-Lib's other
 technical indicators are planned; candlestick patterns and mathematical
 functions are outside the current scope.
+
+ADX measures the strength of a trend, not its direction. Its default signal is
+`Stay`; a custom callback receives the newest-first ADX series when its latest
+value is finite. The warm-up follows the TA-Lib ADX lookback, including its
+configured unstable period.
 
 VWAP accumulates typical price weighted by volume from the oldest supplied bar.
 It does not reset at session or date boundaries, including for candle input;
