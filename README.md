@@ -142,6 +142,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] RSI
 - [x] SMA
 - [x] Stochastic
+- [x] SUPERTREND — SuperTrend
 - [x] T3 — Triple Exponential Moving Average (Tillson's T3)
 - [x] TEMA
 - [x] TRIMA — Triangular Moving Average
@@ -253,7 +254,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] STDDEV — Standard Deviation
 - [ ] STOCHF — Stochastic Fast
 - [ ] STOCHRSI — Stochastic Relative Strength Index
-- [ ] SUPERTREND — SuperTrend
 - [ ] SWAK_2PHP — Swiss Army Knife - Two-Pole High-Pass Filter
 - [ ] SWAK_BP — Swiss Army Knife - Band-Pass Filter
 - [ ] SWAK_BUTTER — Swiss Army Knife - Butterworth Filter
@@ -317,6 +317,15 @@ independent. All three bands follow TA-Lib's shared KC warm-up; computing the
 EMA separately may produce different values due to its initialization.
 The default signal is `Stay`. Custom callbacks receive high, low, close, upper,
 middle and lower series, in that order, once all current band values are finite.
+
+SuperTrend returns the trailing line and a `Trend` series: `+1` for an uptrend
+and `-1` for a downtrend. Both series use `NaN` during warm-up; `Trend` is a
+`double[]` to support this convention, although TA-Lib returns integer signs.
+TA-Lib seeds the first valid direction as up, and its signs are opposite to
+TradingView's built-in Supertrend direction. The default signal follows the
+current direction (`Buy` for up, `Sell` for down); it does not detect a flip.
+Custom callbacks receive high, low, close, SuperTrend and Trend, in that order,
+once both current outputs are finite.
 
 MOM measures the difference between the current value and the value `period`
 bars ago. Its default signal is `Buy` for positive momentum, `Sell` for

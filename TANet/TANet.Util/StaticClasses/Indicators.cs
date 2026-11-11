@@ -33,6 +33,16 @@ namespace TANet.Util.StaticClasses
                 output.Length - writtenCount);
         }
 
+        static double[] CompleteNewestFirstOutput(int[] output, int writtenCount)
+        {
+            var convertedOutput = new double[output.Length];
+
+            Array.Copy(output, convertedOutput, writtenCount);
+            CompleteNewestFirstOutput(convertedOutput, writtenCount);
+
+            return convertedOutput;
+        }
+
         #endregion
 
         #region Default Signal Logics
@@ -1396,6 +1406,73 @@ namespace TANet.Util.StaticClasses
             catch (Exception ex)
             {
                 return new RsiResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
+        public static SupertrendResult Supertrend(
+            double[] high,
+            double[] low,
+            double[] close,
+            int period,
+            double multiplier,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(high);
+                ArgumentNullException.ThrowIfNull(low);
+                ArgumentNullException.ThrowIfNull(close);
+                if (high.Length != low.Length || high.Length != close.Length)
+                {
+                    throw new ArgumentException("High, low and close series must have the same length.");
+                }
+
+                var chronologicalHigh = CopyToChronologicalOrder(high);
+                var chronologicalLow = CopyToChronologicalOrder(low);
+                var chronologicalClose = CopyToChronologicalOrder(close);
+                var line = new double[high.Length];
+                var rawTrend = new int[high.Length];
+
+                var range = TALib.Core.Default.Supertrend(
+                    0, 
+                    high.Length - 1,
+                    chronologicalHigh, 
+                    chronologicalLow, 
+                    chronologicalClose,
+                    period, 
+                    multiplier, 
+                    line, 
+                    rawTrend);
+
+                CompleteNewestFirstOutput(line, range.Count);
+                var trend = CompleteNewestFirstOutput(rawTrend, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (line.HasValidData() && trend.HasValidData())
+                {
+                    indicatorSignal = signalLogic != null
+                        ? signalLogic.Invoke(high, low, close, line, trend)
+                        : trend[0] > 0 ? IndicatorSignal.Buy
+                        : trend[0] < 0 ? IndicatorSignal.Sell
+                        : IndicatorSignal.Stay;
+                }
+
+                return new SupertrendResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Supertrend = line,
+                    Trend = trend
+                };
+            }
+            catch (Exception ex)
+            {
+                return new SupertrendResult
                 {
                     Success = false,
                     IndicatorSignal = IndicatorSignal.Stay,

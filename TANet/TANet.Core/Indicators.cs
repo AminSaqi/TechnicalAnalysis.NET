@@ -690,6 +690,27 @@ namespace TANet.Core
 
         #endregion
 
+        #region Supertrend
+
+        public static SupertrendResult Supertrend(double[] high, double[] low, double[] close, int period, double multiplier)
+        {
+            return SUPERTREND(high, low, close, period, multiplier);
+        }
+        public static SupertrendResult Supertrend(double[] high, double[] low, double[] close, int period, double multiplier, Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return SUPERTREND(high, low, close, period, multiplier, signalLogic);
+        }
+        public static SupertrendResult Supertrend(List<Candle> candles, int period, double multiplier)
+        {
+            return SUPERTREND(candles, period, multiplier);
+        }
+        public static SupertrendResult Supertrend(List<Candle> candles, int period, double multiplier, Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return SUPERTREND(candles, period, multiplier, signalLogic);
+        }
+
+        #endregion
+
         #region T3
 
         public static MovingAverageResult T3(double[] input, int period, double vFactor)
@@ -1356,6 +1377,31 @@ namespace TANet.Core
         {
             return TANet.Util.StaticClasses.Indicators.Stochastic(high, 
                 low, close, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod, signalLogic);
+        }
+
+        /* SUPERTREND */
+
+        private static SupertrendResult SUPERTREND(
+            List<Candle> candles,
+            int period,
+            double multiplier,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            var close = candles.Select(c => c.Close).ToArray();
+            return SUPERTREND(high, low, close, period, multiplier, signalLogic);
+        }
+
+        private static SupertrendResult SUPERTREND(
+            double[] high,
+            double[] low,
+            double[] close,
+            int period,
+            double multiplier,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Supertrend(high, low, close, period, multiplier, signalLogic);
         }
 
         /* T3Core */
