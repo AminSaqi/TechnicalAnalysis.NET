@@ -147,6 +147,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] TEMA
 - [x] TRIMA — Triangular Moving Average
 - [x] VIDYA — Variable Index Dynamic Average
+- [x] VWAP — Volume Weighted Average Price
 - [x] VWMA — Volume Weighted Moving Average
 - [x] Williams %R
 - [x] WMA
@@ -268,7 +269,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] VAR — Variance
 - [ ] VHF — Vertical Horizontal Filter
 - [ ] VORTEX — Vortex Indicator
-- [ ] VWAP — Volume Weighted Average Price
 - [ ] WAD — Williams' Accumulation/Distribution
 - [ ] WAVETREND — WaveTrend Oscillator
 - [ ] WCLPRICE — Weighted Close Price
@@ -282,6 +282,16 @@ The array-based Williams %R overload currently requires a `volume` parameter
 for compatibility, although the calculation does not use it. TA-Lib's other
 technical indicators are planned; candlestick patterns and mathematical
 functions are outside the current scope.
+
+VWAP accumulates typical price weighted by volume from the oldest supplied bar.
+It does not reset at session or date boundaries, including for candle input;
+pass one session at a time when session-anchored VWAP is required. TA-Lib expects
+non-negative volume, skips bars with non-finite price or volume, and carries the
+previous output across zero-volume bars. Before any volume has traded, it returns
+zero: `HasValidData()` therefore returns true even though the weighted average is
+not yet defined. The default signal is `Stay`. Custom callbacks receive high,
+low, close, volume and VWAP, in that order, when the latest output is finite;
+they must check volume themselves if their strategy needs traded volume.
 
 VWMA expects non-negative volumes aligned with the price series. For periods
 greater than one, an all-zero-volume window produces `NaN` even after warm-up;

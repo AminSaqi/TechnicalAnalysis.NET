@@ -1038,6 +1038,65 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static VwapResult Vwap(
+            double[] high,
+            double[] low,
+            double[] close,
+            double[] volume,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(high);
+                ArgumentNullException.ThrowIfNull(low);
+                ArgumentNullException.ThrowIfNull(close);
+                ArgumentNullException.ThrowIfNull(volume);
+                if (high.Length != low.Length || high.Length != close.Length || high.Length != volume.Length)
+                {
+                    throw new ArgumentException("High, low, close and volume series must have the same length.");
+                }
+
+                var chronologicalHigh = CopyToChronologicalOrder(high);
+                var chronologicalLow = CopyToChronologicalOrder(low);
+                var chronologicalClose = CopyToChronologicalOrder(close);
+                var chronologicalVolume = CopyToChronologicalOrder(volume);
+                var output = new double[high.Length];
+
+                var range = TALib.Core.Default.Vwap(
+                    0, 
+                    high.Length - 1,
+                    chronologicalHigh, 
+                    chronologicalLow, 
+                    chronologicalClose, 
+                    chronologicalVolume, 
+                    output);
+
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (signalLogic != null && output.HasValidData())
+                {
+                    indicatorSignal = signalLogic.Invoke(high, low, close, volume, output);
+                }
+
+                return new VwapResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Vwap = output
+                };
+            }
+            catch (Exception ex)
+            {
+                return new VwapResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
         public static MovingAverageResult Vwma(
             double[] input,
             double[] volume,

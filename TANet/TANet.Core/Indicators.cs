@@ -848,6 +848,27 @@ namespace TANet.Core
 
         #endregion
 
+        #region VWAP
+
+        public static VwapResult Vwap(double[] high, double[] low, double[] close, double[] volume)
+        {
+            return VWAP(high, low, close, volume);
+        }
+        public static VwapResult Vwap(double[] high, double[] low, double[] close, double[] volume, Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return VWAP(high, low, close, volume, signalLogic);
+        }
+        public static VwapResult Vwap(List<Candle> candles)
+        {
+            return VWAP(candles);
+        }
+        public static VwapResult Vwap(List<Candle> candles, Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return VWAP(candles, signalLogic);
+        }
+
+        #endregion
+
         #region VWMA
 
         public static MovingAverageResult Vwma(double[] input, double[] volume, int period)
@@ -1448,6 +1469,29 @@ namespace TANet.Core
             Func<double[], double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Vidya(input, period, cmoPeriod, signalLogic);
+        }
+
+        /* VWAP */
+
+        private static VwapResult VWAP(
+            List<Candle> candles,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            var close = candles.Select(c => c.Close).ToArray();
+            var volume = candles.Select(c => c.Volume).ToArray();
+            return VWAP(high, low, close, volume, signalLogic);
+        }
+
+        private static VwapResult VWAP(
+            double[] high,
+            double[] low,
+            double[] close,
+            double[] volume,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Vwap(high, low, close, volume, signalLogic);
         }
 
         /* VWMA */
