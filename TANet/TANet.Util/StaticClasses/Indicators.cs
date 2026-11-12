@@ -1023,6 +1023,30 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static MedianResult Median(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                foreach (var value in input)
+                {
+                    if (!double.IsFinite(value))
+                        throw new ArgumentException("Median input values must be finite.", nameof(input));
+                }
+
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+                var range = TALib.Core.Default.Median(0, input.Length - 1, chronologicalInput, period, output);
+                CompleteNewestFirstOutput(output, range.Count);
+                var signal = signalLogic != null && output.HasValidData() ? signalLogic.Invoke(output) : IndicatorSignal.Stay;
+                return new MedianResult { Success = true, IndicatorSignal = signal, Median = output };
+            }
+            catch (Exception ex)
+            {
+                return new MedianResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
+            }
+        }
+
         public static MfiResult Mfi(double[] inputHigh,
             double[] inputLow,
             double[] inputClose,

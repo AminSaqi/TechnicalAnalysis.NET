@@ -504,6 +504,17 @@ namespace TANet.Core
 
         #endregion
 
+        #region MEDIAN
+
+        public static MedianResult Median(double[] input, int period) => MEDIAN(input, period);
+        public static MedianResult Median(double[] input, int period, Func<double[], IndicatorSignal> signalLogic) => MEDIAN(input, period, signalLogic);
+        public static MedianResult Median(List<Candle> input, int period) => MEDIAN(input, period);
+        public static MedianResult Median(List<Candle> input, int period, Func<double[], IndicatorSignal> signalLogic) => MEDIAN(input, period, signalLogic: signalLogic);
+        public static MedianResult Median(List<Candle> input, int period, IndicatorCalculationBase calculationBase) => MEDIAN(input, period, calculationBase);
+        public static MedianResult Median(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<double[], IndicatorSignal> signalLogic) => MEDIAN(input, period, calculationBase, signalLogic);
+
+        #endregion
+
         #region MFI
 
         public static MfiResult Mfi(double[] high, double[] low, double[] close, double[] volume, int period)
@@ -1443,6 +1454,20 @@ namespace TANet.Core
             Func<double[], double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Mama(input, fastLimit, slowLimit, signalLogic);
+        }
+
+        /* MEDIAN */
+
+        private static MedianResult MEDIAN(List<Candle> candles, int period,
+            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return MEDIAN(GetValuesFromCandles(candles, calculationBase), period, signalLogic);
+        }
+
+        private static MedianResult MEDIAN(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Median(input, period, signalLogic);
         }
 
         /* MFI */

@@ -144,6 +144,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] MA — Moving Average
 - [x] MACD
 - [x] MAMA — MESA Adaptive Moving Average
+- [x] MEDIAN — Rolling Median (unreleased)
 - [x] MFI
 - [x] MOM — Momentum
 - [x] OBV — On Balance Volume
@@ -228,7 +229,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] MASSI — Mass Index
 - [ ] MAVP — Moving average with variable period
 - [ ] MCGD — McGinley Dynamic
-- [ ] MEDIAN — Rolling Median
 - [ ] MEDPRICE — Median Price
 - [ ] MIDPOINT — MidPoint over period
 - [ ] MIDPRICE — Midpoint Price over period
@@ -302,6 +302,11 @@ the newest-first STDDEV output when its latest value is finite.
 VAR returns TA-Lib's rolling population variance. The reference API accepts a
 deviation-count parameter that has no effect; TANet does not expose it. The
 default signal is `Stay` and a custom callback receives the VAR output.
+
+MEDIAN returns the middle value of each rolling window, or the mean of its two
+middle values for an even window. TANet rejects non-finite input because TA-Lib
+cannot reliably maintain the ordering in their presence. The default signal is
+`Stay`; custom callbacks receive the MEDIAN series.
 
 Heikin-Ashi transforms OHLC prices into four synthetic OHLC series. Its first
 open is the midpoint of the oldest supplied bar's open and close; later opens
