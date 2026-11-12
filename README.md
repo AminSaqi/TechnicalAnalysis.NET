@@ -152,6 +152,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] RMA — Wilder's Smoothed Moving Average
 - [x] ROC — Rate of change : ((price/prevPrice)-1)*100 (unreleased)
 - [x] ROCP — Rate of change Percentage: (price-prevPrice)/prevPrice (unreleased)
+- [x] ROCR — Rate of change ratio: (price/prevPrice) (unreleased)
 - [x] RSI
 - [x] SMA
 - [x] STDDEV — Standard Deviation (unreleased)
@@ -249,7 +250,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] PVO — Percentage Volume Oscillator
 - [ ] PVT — Price Volume Trend
 - [ ] QSTICK — Qstick
-- [ ] ROCR — Rate of change ratio: (price/prevPrice)
 - [ ] ROCR100 — Rate of change ratio 100 scale: (price/prevPrice)*100
 - [ ] ROGERSSATCHELL — Rogers-Satchell Volatility
 - [ ] RVI — Relative Volatility Index
@@ -304,6 +304,9 @@ current value; an exactly zero reference price yields zero as in TA-Lib.
 
 ROCP returns fractional price change (multiply by 100 for a percentage). Its
 default signal follows its sign; zero reference prices yield zero as in TA-Lib.
+
+ROCR is centered at 1. When the reference price is zero, TA-Lib returns zero;
+the default signal is `Stay` in that case, while a custom callback can still run.
 
 VAR returns TA-Lib's rolling population variance. The reference API accepts a
 deviation-count parameter that has no effect; TANet does not expose it. The

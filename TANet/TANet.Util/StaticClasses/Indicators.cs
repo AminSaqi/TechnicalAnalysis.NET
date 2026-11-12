@@ -1349,6 +1349,29 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static RocrResult Rocr(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+                var range = TALib.Core.Default.Rocr(0, input.Length - 1, chronologicalInput, period, output);
+                CompleteNewestFirstOutput(output, range.Count);
+                var signal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    signal = signalLogic != null ? signalLogic.Invoke(output) : (input[period == int.MinValue ? 10 : period] == 0 ? IndicatorSignal.Stay :
+                        output[0] > 1 ? IndicatorSignal.Buy : output[0] < 1 ? IndicatorSignal.Sell : IndicatorSignal.Stay);
+                }
+                return new RocrResult { Success = true, IndicatorSignal = signal, Rocr = output };
+            }
+            catch (Exception ex)
+            {
+                return new RocrResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
+            }
+        }
+
         public static RsiResult Rsi(double[] input, int period, Func<double[], IndicatorSignal> rsiSignalLogic = null)
         {
             try
