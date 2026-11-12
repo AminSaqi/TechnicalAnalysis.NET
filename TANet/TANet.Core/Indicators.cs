@@ -929,6 +929,15 @@ namespace TANet.Core
 
         #endregion
 
+        #region TRANGE
+
+        public static TrangeResult Trange(double[] high, double[] low, double[] close) => TRANGE(high, low, close);
+        public static TrangeResult Trange(double[] high, double[] low, double[] close, Func<double[], IndicatorSignal> signalLogic) => TRANGE(high, low, close, signalLogic);
+        public static TrangeResult Trange(List<Candle> candles) => TRANGE(candles);
+        public static TrangeResult Trange(List<Candle> candles, Func<double[], IndicatorSignal> signalLogic) => TRANGE(candles, signalLogic);
+
+        #endregion
+
         #region TRIMA
 
         public static MovingAverageResult Trima(double[] input, int period)
@@ -1754,6 +1763,21 @@ namespace TANet.Core
             Func<double[], double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.T3(input, period, vFactor, signalLogic);
+        }
+
+        /* TRANGE */
+
+        private static TrangeResult TRANGE(List<Candle> candles, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            var close = candles.Select(c => c.Close).ToArray();
+            return TRANGE(high, low, close, signalLogic);
+        }
+
+        private static TrangeResult TRANGE(double[] high, double[] low, double[] close, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Trange(high, low, close, signalLogic);
         }
 
         /* VAR */

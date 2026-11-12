@@ -1627,6 +1627,32 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static TrangeResult Trange(double[] high, double[] low, double[] close, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(high);
+                ArgumentNullException.ThrowIfNull(low);
+                ArgumentNullException.ThrowIfNull(close);
+                if (high.Length != low.Length || high.Length != close.Length)
+                    throw new ArgumentException("High, low and close series must have the same length.");
+
+                var chronologicalHigh = CopyToChronologicalOrder(high);
+                var chronologicalLow = CopyToChronologicalOrder(low);
+                var chronologicalClose = CopyToChronologicalOrder(close);
+                var output = new double[high.Length];
+                var range = TALib.Core.Default.Trange(0, high.Length - 1,
+                    chronologicalHigh, chronologicalLow, chronologicalClose, output);
+                CompleteNewestFirstOutput(output, range.Count);
+                var signal = signalLogic != null && output.HasValidData() ? signalLogic.Invoke(output) : IndicatorSignal.Stay;
+                return new TrangeResult { Success = true, IndicatorSignal = signal, Trange = output };
+            }
+            catch (Exception ex)
+            {
+                return new TrangeResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
+            }
+        }
+
         public static MovingAverageResult Trima(
             double[] input,
             int period,

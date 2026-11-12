@@ -160,6 +160,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] SUPERTREND — SuperTrend
 - [x] T3 — Triple Exponential Moving Average (Tillson's T3)
 - [x] TEMA
+- [x] TRANGE — True Range (unreleased)
 - [x] TRIMA — Triangular Moving Average
 - [x] VAR — Variance (unreleased)
 - [x] VIDYA — Variable Index Dynamic Average
@@ -268,7 +269,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] SWAK_BUTTER — Swiss Army Knife - Butterworth Filter
 - [ ] SWAK_GAUSS — Swiss Army Knife - Gaussian Filter
 - [ ] SWAK_HP — Swiss Army Knife - High-Pass Filter
-- [ ] TRANGE — True Range
 - [ ] TRIX — 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA
 - [ ] TSF — Time Series Forecast
 - [ ] TSI — True Strength Index
@@ -307,6 +307,10 @@ default signal follows its sign; zero reference prices yield zero as in TA-Lib.
 
 ROCR is centered at 1. When the reference price is zero, TA-Lib returns zero;
 the default signal is `Stay` in that case, while a custom callback can still run.
+
+TRANGE reports true range without smoothing. The oldest bar is `NaN` because it
+has no previous close. The default signal is `Stay`; custom callbacks receive
+the newest-first TRANGE series.
 
 VAR returns TA-Lib's rolling population variance. The reference API accepts a
 deviation-count parameter that has no effect; TANet does not expose it. The
