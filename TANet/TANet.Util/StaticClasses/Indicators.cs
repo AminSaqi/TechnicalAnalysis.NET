@@ -1323,6 +1323,31 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static StddevResult Stddev(double[] input, int period, double multiplier = 1,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+                var range = TALib.Core.Default.Stddev(0, input.Length - 1, chronologicalInput, period, multiplier, output);
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (signalLogic != null && output.HasValidData())
+                {
+                    indicatorSignal = signalLogic.Invoke(output);
+                }
+
+                return new StddevResult { Success = true, IndicatorSignal = indicatorSignal, Stddev = output };
+            }
+            catch (Exception ex)
+            {
+                return new StddevResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
+            }
+        }
+
         public static StochasticResult Stochastic(
             double[] inputHigh,
             double[] inputLow,

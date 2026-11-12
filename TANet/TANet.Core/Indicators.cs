@@ -683,6 +683,51 @@ namespace TANet.Core
 
         #endregion
 
+        #region STDDEV
+
+        public static StddevResult Stddev(double[] input, int period, double multiplier = 1)
+        {
+            return STDDEV(input, period, multiplier);
+        }
+        public static StddevResult Stddev(double[] input, int period, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return STDDEV(input, period, 1, signalLogic);
+        }
+        public static StddevResult Stddev(double[] input, int period, double multiplier, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return STDDEV(input, period, multiplier, signalLogic);
+        }
+        public static StddevResult Stddev(List<Candle> input, int period, double multiplier = 1)
+        {
+            return STDDEV(input, period, multiplier);
+        }
+        public static StddevResult Stddev(List<Candle> input, int period, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return STDDEV(input, period, 1, signalLogic: signalLogic);
+        }
+        public static StddevResult Stddev(List<Candle> input, int period, double multiplier, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return STDDEV(input, period, multiplier, signalLogic: signalLogic);
+        }
+        public static StddevResult Stddev(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return STDDEV(input, period, 1, calculationBase);
+        }
+        public static StddevResult Stddev(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return STDDEV(input, period, 1, calculationBase, signalLogic);
+        }
+        public static StddevResult Stddev(List<Candle> input, int period, double multiplier, IndicatorCalculationBase calculationBase)
+        {
+            return STDDEV(input, period, multiplier, calculationBase);
+        }
+        public static StddevResult Stddev(List<Candle> input, int period, double multiplier, IndicatorCalculationBase calculationBase, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return STDDEV(input, period, multiplier, calculationBase, signalLogic);
+        }
+
+        #endregion
+
         #region Stochastic
 
         public static StochasticResult Stochastic(List<Candle> candles, int fastKPeriod, int slowKPeriod, int slowDPeriod)
@@ -1504,6 +1549,21 @@ namespace TANet.Core
             Func<double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Rsi(input, period, signalLogic);
+        }
+
+        /* STDDEV */
+
+        private static StddevResult STDDEV(List<Candle> candles, int period, double multiplier,
+            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return STDDEV(GetValuesFromCandles(candles, calculationBase), period, multiplier, signalLogic);
+        }
+
+        private static StddevResult STDDEV(double[] input, int period, double multiplier,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Stddev(input, period, multiplier, signalLogic);
         }
 
         /* STOCH */

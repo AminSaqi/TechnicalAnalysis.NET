@@ -151,6 +151,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] RMA — Wilder's Smoothed Moving Average
 - [x] RSI
 - [x] SMA
+- [x] STDDEV — Standard Deviation (unreleased)
 - [x] Stochastic
 - [x] SUPERTREND — SuperTrend
 - [x] T3 — Triple Exponential Moving Average (Tillson's T3)
@@ -259,7 +260,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] SMI — Stochastic Momentum Index
 - [ ] SQZMOM — Squeeze Momentum and Level
 - [ ] STC — Schaff Trend Cycle
-- [ ] STDDEV — Standard Deviation
 - [ ] STOCHF — Stochastic Fast
 - [ ] STOCHRSI — Stochastic Relative Strength Index
 - [ ] SWAK_2PHP — Swiss Army Knife - Two-Pole High-Pass Filter
@@ -294,6 +294,10 @@ ADX measures the strength of a trend, not its direction. Its default signal is
 `Stay`; a custom callback receives the newest-first ADX series when its latest
 value is finite. The warm-up follows the TA-Lib ADX lookback, including its
 configured unstable period.
+
+STDDEV returns TA-Lib's population standard deviation, scaled by the optional
+multiplier (default `1`). Its default signal is `Stay`; a custom callback receives
+the newest-first STDDEV output when its latest value is finite.
 
 Heikin-Ashi transforms OHLC prices into four synthetic OHLC series. Its first
 open is the midpoint of the oldest supplied bar's open and close; later opens
