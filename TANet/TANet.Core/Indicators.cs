@@ -655,6 +655,17 @@ namespace TANet.Core
 
         #endregion
 
+        #region ROCP
+
+        public static RocpResult Rocp(double[] input, int period) => ROCP(input, period);
+        public static RocpResult Rocp(double[] input, int period, Func<double[], IndicatorSignal> signalLogic) => ROCP(input, period, signalLogic);
+        public static RocpResult Rocp(List<Candle> input, int period) => ROCP(input, period);
+        public static RocpResult Rocp(List<Candle> input, int period, Func<double[], IndicatorSignal> signalLogic) => ROCP(input, period, signalLogic: signalLogic);
+        public static RocpResult Rocp(List<Candle> input, int period, IndicatorCalculationBase calculationBase) => ROCP(input, period, calculationBase);
+        public static RocpResult Rocp(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<double[], IndicatorSignal> signalLogic) => ROCP(input, period, calculationBase, signalLogic);
+
+        #endregion
+
         #region RSI
 
         public static RsiResult Rsi(double[] input, int period)
@@ -1573,6 +1584,20 @@ namespace TANet.Core
         private static RocResult ROC(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Roc(input, period, signalLogic);
+        }
+
+        /* ROCP */
+
+        private static RocpResult ROCP(List<Candle> candles, int period,
+            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return ROCP(GetValuesFromCandles(candles, calculationBase), period, signalLogic);
+        }
+
+        private static RocpResult ROCP(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Rocp(input, period, signalLogic);
         }
 
         /* RSI */
