@@ -12,13 +12,19 @@ upgrading from an earlier major version, see [Migrating to 3.0](#migrating-to-30
 The main `TechnicalAnalysis.Net` package targets .NET 10. Its separate
 `TechnicalAnalysis.Net.Contracts` project targets .NET Standard 2.0.
 
-Install version 3.1.0 with:
+Install version 3.2.0 with:
 
 ```bash
-dotnet add package TechnicalAnalysis.Net --version 3.1.0
+dotnet add package TechnicalAnalysis.Net --version 3.2.0
 ```
 
-The examples and API described here target version 3.1.0.
+The examples and API described here target version 3.2.0.
+
+## What's new in 3.2.0
+
+This release adds ADX, Donchian Channels, Ichimoku, Keltner Channels, MOM,
+OBV, SuperTrend, and VWAP. See the indicator notes below for their output,
+warm-up, signal, and anchoring conventions.
 
 ## Data ordering and results
 
@@ -118,6 +124,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 
 ## Implemented indicators
 
+- [x] ADX — Average Directional Movement Index
 - [x] ALMA — Arnaud Legoux Moving Average
 - [x] Aroon
 - [x] Aroon Oscillator
@@ -125,23 +132,30 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] Bollinger Bands
 - [x] CCI
 - [x] DEMA — Double Exponential Moving Average
+- [x] DONCHIAN — Donchian Channels
 - [x] EMA
 - [x] Extended MACD
 - [x] HMA — Hull Moving Average
+- [x] ICHIMOKU — Ichimoku Kinko Hyo
 - [x] KAMA
+- [x] KC — Keltner Channels
 - [x] MA — Moving Average
 - [x] MACD
 - [x] MAMA — MESA Adaptive Moving Average
 - [x] MFI
+- [x] MOM — Momentum
+- [x] OBV — On Balance Volume
 - [x] Parabolic SAR
 - [x] RMA — Wilder's Smoothed Moving Average
 - [x] RSI
 - [x] SMA
 - [x] Stochastic
+- [x] SUPERTREND — SuperTrend
 - [x] T3 — Triple Exponential Moving Average (Tillson's T3)
 - [x] TEMA
 - [x] TRIMA — Triangular Moving Average
 - [x] VIDYA — Variable Index Dynamic Average
+- [x] VWAP — Volume Weighted Average Price
 - [x] VWMA — Volume Weighted Moving Average
 - [x] Williams %R
 - [x] WMA
@@ -154,7 +168,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] AD — Chaikin A/D Line
 - [ ] ADOSC — Chaikin A/D Oscillator
 - [ ] ADR — Average Day Range
-- [ ] ADX — Average Directional Movement Index
 - [ ] ADXR — Average Directional Movement Index Rating
 - [ ] AO — Awesome Oscillator
 - [ ] APO — Absolute Price Oscillator
@@ -177,7 +190,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] CRSI — Connors Relative Strength Index
 - [ ] CTI — Correlation Trend Indicator
 - [ ] CVI — Chaikin's Volatility
-- [ ] DONCHIAN — Donchian Channels
 - [ ] DOSC — Derivative Oscillator
 - [ ] DPO — Detrended Price Oscillator
 - [ ] DX — Directional Movement Index
@@ -197,9 +209,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] HT_TRENDLINE — Hilbert Transform - Instantaneous Trendline
 - [ ] HT_TRENDMODE — Hilbert Transform - Trend vs Cycle Mode
 - [ ] IBS — Internal Bar Strength
-- [ ] ICHIMOKU — Ichimoku Kinko Hyo
 - [ ] IMI — Intraday Momentum Index
-- [ ] KC — Keltner Channels
 - [ ] KDJ — KDJ Stochastic
 - [ ] KST — Know Sure Thing (Pring)
 - [ ] KSTEXT — Know Sure Thing with controllable MA type
@@ -221,10 +231,8 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] MIDPRICE — Midpoint Price over period
 - [ ] MINUS_DI — Minus Directional Indicator
 - [ ] MINUS_DM — Minus Directional Movement
-- [ ] MOM — Momentum
 - [ ] NATR — Normalized Average True Range
 - [ ] NVI — Negative Volume Index
-- [ ] OBV — On Balance Volume
 - [ ] PERCENTB — Bollinger Bands %B
 - [ ] PERCENTILE — Percentile (nearest rank)
 - [ ] PERCENTRANK — Percent Rank
@@ -253,7 +261,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] STDDEV — Standard Deviation
 - [ ] STOCHF — Stochastic Fast
 - [ ] STOCHRSI — Stochastic Relative Strength Index
-- [ ] SUPERTREND — SuperTrend
 - [ ] SWAK_2PHP — Swiss Army Knife - Two-Pole High-Pass Filter
 - [ ] SWAK_BP — Swiss Army Knife - Band-Pass Filter
 - [ ] SWAK_BUTTER — Swiss Army Knife - Butterworth Filter
@@ -268,7 +275,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] VAR — Variance
 - [ ] VHF — Vertical Horizontal Filter
 - [ ] VORTEX — Vortex Indicator
-- [ ] VWAP — Volume Weighted Average Price
 - [ ] WAD — Williams' Accumulation/Distribution
 - [ ] WAVETREND — WaveTrend Oscillator
 - [ ] WCLPRICE — Weighted Close Price
@@ -283,6 +289,28 @@ for compatibility, although the calculation does not use it. TA-Lib's other
 technical indicators are planned; candlestick patterns and mathematical
 functions are outside the current scope.
 
+ADX measures the strength of a trend, not its direction. Its default signal is
+`Stay`; a custom callback receives the newest-first ADX series when its latest
+value is finite. The warm-up follows the TA-Lib ADX lookback, including its
+configured unstable period.
+
+VWAP accumulates typical price weighted by volume from the oldest supplied bar.
+It does not reset at session or date boundaries, including for candle input;
+pass one session at a time when session-anchored VWAP is required. TA-Lib expects
+non-negative volume, skips bars with non-finite price or volume, and carries the
+previous output across zero-volume bars. Before any volume has traded, it returns
+zero: `HasValidData()` therefore returns true even though the weighted average is
+not yet defined. The default signal is `Stay`. Custom callbacks receive high,
+low, close, volume and VWAP, in that order, when the latest output is finite;
+they must check volume themselves if their strategy needs traded volume.
+
+OBV starts with the volume of the oldest supplied bar and accumulates volume
+according to price direction. Its absolute values depend on the chosen starting
+bar, and it does not reset automatically across sessions. Candle input uses
+close by default; an `IndicatorCalculationBase` can select another series.
+The default signal is `Stay`. Custom callbacks receive price, volume and OBV,
+in that order, when the latest OBV value is finite.
+
 VWMA expects non-negative volumes aligned with the price series. For periods
 greater than one, an all-zero-volume window produces `NaN` even after warm-up;
 at period one, TA-Lib returns the input price regardless of volume. Its custom
@@ -292,6 +320,45 @@ MAMA returns both the MAMA and FAMA series. Its default signal compares their
 latest values: MAMA above FAMA is `Buy`, below is `Sell`, and equal is `Stay`.
 This compares current values and does not detect a crossover event. Custom
 signal callbacks receive MAMA followed by FAMA.
+
+Donchian Channels return the highest high, the midpoint, and the lowest low
+over the period, including the current bar. The default signal is `Stay`.
+Custom signal callbacks receive the high, low, upper, middle, and lower series,
+in that order. A breakout strategy should compare the current price with the
+previous band's value, checking that the previous value is finite first.
+
+Ichimoku returns Tenkan-sen, Kijun-sen, Senkou Span A and Senkou Span B.
+Each series becomes available as soon as its own required history exists;
+this differs from the TA-Lib Ichimoku function's shared longest-period warm-up.
+Values are aligned with the bars that computed them and are not shifted. To
+draw the cloud, plot both Senkou spans `kijunPeriod` bars forward; for the
+cloud displayed at the current bar, inspect index `kijunPeriod` after checking
+that it exists and is finite. Chikou is the close plotted `kijunPeriod` bars
+back and is not returned. The default signal is `Stay`; a custom callback
+receives high, low, Tenkan, Kijun, Span A and Span B, in that order, once all
+four current outputs are finite.
+
+Keltner Channels use TA-Lib's variant: the middle band is an EMA of typical
+price `(high + low + close) / 3`, while the upper and lower bands are the middle
+band plus or minus `multiplier` times Wilder's ATR. The EMA and ATR periods are
+independent. All three bands follow TA-Lib's shared KC warm-up; computing the
+EMA separately may produce different values due to its initialization.
+The default signal is `Stay`. Custom callbacks receive high, low, close, upper,
+middle and lower series, in that order, once all current band values are finite.
+
+SuperTrend returns the trailing line and a `Trend` series: `+1` for an uptrend
+and `-1` for a downtrend. Both series use `NaN` during warm-up; `Trend` is a
+`double[]` to support this convention, although TA-Lib returns integer signs.
+TA-Lib seeds the first valid direction as up, and its signs are opposite to
+TradingView's built-in Supertrend direction. The default signal follows the
+current direction (`Buy` for up, `Sell` for down); it does not detect a flip.
+Custom callbacks receive high, low, close, SuperTrend and Trend, in that order,
+once both current outputs are finite.
+
+MOM measures the difference between the current value and the value `period`
+bars ago. Its default signal is `Buy` for positive momentum, `Sell` for
+negative momentum, and `Stay` for zero. This reflects the current value, not a
+zero-line crossing. Custom signal callbacks receive the MOM output series.
 
 ALMA takes `period`, `sigma`, and `offset`, in that order. TA-Lib accepts a
 minimum sigma of 0.01 and an offset from 0 to 1; its usual values are 6 and
@@ -370,4 +437,4 @@ request.
 
 ## License
 
-See [LICENSE](LICENSE).
+See the [project license](https://github.com/AminSaqi/TechnicalAnalysis.NET/blob/master/LICENSE).

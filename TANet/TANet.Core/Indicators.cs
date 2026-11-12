@@ -9,6 +9,27 @@ namespace TANet.Core
 {
     public static class Indicators
     {
+        #region ADX
+
+        public static AdxResult Adx(double[] high, double[] low, double[] close, int period)
+        {
+            return ADX(high, low, close, period);
+        }
+        public static AdxResult Adx(double[] high, double[] low, double[] close, int period, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return ADX(high, low, close, period, signalLogic);
+        }
+        public static AdxResult Adx(List<Candle> candles, int period)
+        {
+            return ADX(candles, period);
+        }
+        public static AdxResult Adx(List<Candle> candles, int period, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return ADX(candles, period, signalLogic);
+        }
+
+        #endregion
+
         #region ALMA
 
         public static MovingAverageResult Alma(double[] input, int period, double sigma, double offset)
@@ -196,6 +217,27 @@ namespace TANet.Core
 
         #endregion
 
+        #region Donchian
+
+        public static DonchianResult Donchian(double[] high, double[] low, int period)
+        {
+            return DONCHIAN(high, low, period);
+        }
+        public static DonchianResult Donchian(double[] high, double[] low, int period, Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return DONCHIAN(high, low, period, signalLogic);
+        }
+        public static DonchianResult Donchian(List<Candle> candles, int period)
+        {
+            return DONCHIAN(candles, period);
+        }
+        public static DonchianResult Donchian(List<Candle> candles, int period, Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return DONCHIAN(candles, period, signalLogic);
+        }
+
+        #endregion
+
         #region EMA
 
         public static MovingAverageResult Ema(double[] input, int period)
@@ -283,6 +325,27 @@ namespace TANet.Core
 
         #endregion
 
+        #region Ichimoku
+
+        public static IchimokuResult Ichimoku(double[] high, double[] low, int tenkanPeriod, int kijunPeriod, int senkouBPeriod)
+        {
+            return ICHIMOKU(high, low, tenkanPeriod, kijunPeriod, senkouBPeriod);
+        }
+        public static IchimokuResult Ichimoku(double[] high, double[] low, int tenkanPeriod, int kijunPeriod, int senkouBPeriod, Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return ICHIMOKU(high, low, tenkanPeriod, kijunPeriod, senkouBPeriod, signalLogic);
+        }
+        public static IchimokuResult Ichimoku(List<Candle> candles, int tenkanPeriod, int kijunPeriod, int senkouBPeriod)
+        {
+            return ICHIMOKU(candles, tenkanPeriod, kijunPeriod, senkouBPeriod);
+        }
+        public static IchimokuResult Ichimoku(List<Candle> candles, int tenkanPeriod, int kijunPeriod, int senkouBPeriod, Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return ICHIMOKU(candles, tenkanPeriod, kijunPeriod, senkouBPeriod, signalLogic);
+        }
+
+        #endregion
+
         #region KAMA
 
         public static MovingAverageResult Kama(double[] input, int period)
@@ -308,6 +371,27 @@ namespace TANet.Core
         public static MovingAverageResult Kama(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<double[], double[], IndicatorSignal> signalLogic)
         {
             return Indicators.MA(input, MovingAverageType.Kama, period, calculationBase: calculationBase, signalLogic: signalLogic);
+        }
+
+        #endregion
+
+        #region KeltnerChannels
+
+        public static KeltnerChannelsResult KeltnerChannels(double[] high, double[] low, double[] close, int period, int atrPeriod, double multiplier)
+        {
+            return KC(high, low, close, period, atrPeriod, multiplier);
+        }
+        public static KeltnerChannelsResult KeltnerChannels(double[] high, double[] low, double[] close, int period, int atrPeriod, double multiplier, Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return KC(high, low, close, period, atrPeriod, multiplier, signalLogic);
+        }
+        public static KeltnerChannelsResult KeltnerChannels(List<Candle> candles, int period, int atrPeriod, double multiplier)
+        {
+            return KC(candles, period, atrPeriod, multiplier);
+        }
+        public static KeltnerChannelsResult KeltnerChannels(List<Candle> candles, int period, int atrPeriod, double multiplier, Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return KC(candles, period, atrPeriod, multiplier, signalLogic);
         }
 
         #endregion
@@ -416,6 +500,64 @@ namespace TANet.Core
         public static MfiResult Mfi(List<Candle> candles, int period, Func<double[], IndicatorSignal> signalLogic)
         {
             return MFI(candles, period, signalLogic);
+        }
+
+        #endregion
+
+        #region MOM
+
+        public static MomResult Mom(double[] input, int period)
+        {
+            return MOM(input, period);
+        }
+        public static MomResult Mom(double[] input, int period, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return MOM(input, period, signalLogic);
+        }
+        public static MomResult Mom(List<Candle> input, int period)
+        {
+            return MOM(input, period);
+        }
+        public static MomResult Mom(List<Candle> input, int period, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return MOM(input, period, signalLogic: signalLogic);
+        }
+        public static MomResult Mom(List<Candle> input, int period, IndicatorCalculationBase calculationBase)
+        {
+            return MOM(input, period, calculationBase);
+        }
+        public static MomResult Mom(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<double[], IndicatorSignal> signalLogic)
+        {
+            return MOM(input, period, calculationBase, signalLogic);
+        }
+
+        #endregion
+
+        #region OBV
+
+        public static ObvResult Obv(double[] input, double[] volume)
+        {
+            return OBV(input, volume);
+        }
+        public static ObvResult Obv(double[] input, double[] volume, Func<double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return OBV(input, volume, signalLogic);
+        }
+        public static ObvResult Obv(List<Candle> candles)
+        {
+            return OBV(candles);
+        }
+        public static ObvResult Obv(List<Candle> candles, Func<double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return OBV(candles, signalLogic: signalLogic);
+        }
+        public static ObvResult Obv(List<Candle> candles, IndicatorCalculationBase calculationBase)
+        {
+            return OBV(candles, calculationBase);
+        }
+        public static ObvResult Obv(List<Candle> candles, IndicatorCalculationBase calculationBase, Func<double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return OBV(candles, calculationBase, signalLogic);
         }
 
         #endregion
@@ -598,6 +740,27 @@ namespace TANet.Core
 
         #endregion
 
+        #region Supertrend
+
+        public static SupertrendResult Supertrend(double[] high, double[] low, double[] close, int period, double multiplier)
+        {
+            return SUPERTREND(high, low, close, period, multiplier);
+        }
+        public static SupertrendResult Supertrend(double[] high, double[] low, double[] close, int period, double multiplier, Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return SUPERTREND(high, low, close, period, multiplier, signalLogic);
+        }
+        public static SupertrendResult Supertrend(List<Candle> candles, int period, double multiplier)
+        {
+            return SUPERTREND(candles, period, multiplier);
+        }
+        public static SupertrendResult Supertrend(List<Candle> candles, int period, double multiplier, Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return SUPERTREND(candles, period, multiplier, signalLogic);
+        }
+
+        #endregion
+
         #region T3
 
         public static MovingAverageResult T3(double[] input, int period, double vFactor)
@@ -735,6 +898,27 @@ namespace TANet.Core
 
         #endregion
 
+        #region VWAP
+
+        public static VwapResult Vwap(double[] high, double[] low, double[] close, double[] volume)
+        {
+            return VWAP(high, low, close, volume);
+        }
+        public static VwapResult Vwap(double[] high, double[] low, double[] close, double[] volume, Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return VWAP(high, low, close, volume, signalLogic);
+        }
+        public static VwapResult Vwap(List<Candle> candles)
+        {
+            return VWAP(candles);
+        }
+        public static VwapResult Vwap(List<Candle> candles, Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return VWAP(candles, signalLogic);
+        }
+
+        #endregion
+
         #region VWMA
 
         public static MovingAverageResult Vwma(double[] input, double[] volume, int period)
@@ -834,6 +1018,29 @@ namespace TANet.Core
                 IndicatorCalculationBase.Volume => [.. candles.Select(c => c.Volume)],
                 _ => [.. candles.Select(c => c.Close)]
             };
+        }
+
+        /* ADX */
+
+        private static AdxResult ADX(
+            List<Candle> candles,
+            int period,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            var close = candles.Select(c => c.Close).ToArray();
+            return ADX(high, low, close, period, signalLogic);
+        }
+
+        private static AdxResult ADX(
+            double[] high,
+            double[] low,
+            double[] close,
+            int period,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Adx(high, low, close, period, signalLogic);
         }
 
         /* ALMA */
@@ -979,6 +1186,79 @@ namespace TANet.Core
             return TANet.Util.StaticClasses.Indicators.Cci(high, low, close, period, signalLogic);
         }
 
+        /* DONCHIAN */
+
+        private static DonchianResult DONCHIAN(
+            List<Candle> candles,
+            int period,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            return DONCHIAN(high, low, period, signalLogic);
+        }
+
+        private static DonchianResult DONCHIAN(
+            double[] high,
+            double[] low,
+            int period,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Donchian(high, low, period, signalLogic);
+        }
+
+        /* ICHIMOKU */
+
+        private static IchimokuResult ICHIMOKU(
+            List<Candle> candles,
+            int tenkanPeriod,
+            int kijunPeriod,
+            int senkouBPeriod,
+            Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            return ICHIMOKU(high, low, tenkanPeriod, kijunPeriod, senkouBPeriod, signalLogic);
+        }
+
+        private static IchimokuResult ICHIMOKU(
+            double[] high,
+            double[] low,
+            int tenkanPeriod,
+            int kijunPeriod,
+            int senkouBPeriod,
+            Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Ichimoku(high, low, tenkanPeriod, kijunPeriod, senkouBPeriod, signalLogic);
+        }
+
+        /* KC */
+
+        private static KeltnerChannelsResult KC(
+            List<Candle> candles,
+            int period,
+            int atrPeriod,
+            double multiplier,
+            Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            var close = candles.Select(c => c.Close).ToArray();
+            return KC(high, low, close, period, atrPeriod, multiplier, signalLogic);
+        }
+
+        private static KeltnerChannelsResult KC(
+            double[] high,
+            double[] low,
+            double[] close,
+            int period,
+            int atrPeriod,
+            double multiplier,
+            Func<double[], double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.KeltnerChannels(high, low, close, period, atrPeriod, multiplier, signalLogic);
+        }
+
         /* MA */
 
         private static MovingAverageResult MA(List<Candle> candles,
@@ -1088,6 +1368,42 @@ namespace TANet.Core
             return TANet.Util.StaticClasses.Indicators.Mfi(high, low, close, volume, period, signalLogic);
         }
 
+        /* MOM */
+
+        private static MomResult MOM(
+            List<Candle> candles,
+            int period,
+            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return MOM(GetValuesFromCandles(candles, calculationBase), period, signalLogic);
+        }
+
+        private static MomResult MOM(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Mom(input, period, signalLogic);
+        }
+
+        /* OBV */
+
+        private static ObvResult OBV(
+            List<Candle> candles,
+            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            Func<double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            var input = GetValuesFromCandles(candles, calculationBase);
+            var volume = candles.Select(c => c.Volume).ToArray();
+            return OBV(input, volume, signalLogic);
+        }
+
+        private static ObvResult OBV(
+            double[] input,
+            double[] volume,
+            Func<double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Obv(input, volume, signalLogic);
+        }
+
         /* P_SAR */
 
         private static ParabolicSarResult P_SAR(List<Candle> candles,
@@ -1177,6 +1493,31 @@ namespace TANet.Core
                 low, close, fastKPeriod, slowKMaType, slowKPeriod, slowDMaType, slowDPeriod, signalLogic);
         }
 
+        /* SUPERTREND */
+
+        private static SupertrendResult SUPERTREND(
+            List<Candle> candles,
+            int period,
+            double multiplier,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            var close = candles.Select(c => c.Close).ToArray();
+            return SUPERTREND(high, low, close, period, multiplier, signalLogic);
+        }
+
+        private static SupertrendResult SUPERTREND(
+            double[] high,
+            double[] low,
+            double[] close,
+            int period,
+            double multiplier,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Supertrend(high, low, close, period, multiplier, signalLogic);
+        }
+
         /* T3Core */
 
         private static MovingAverageResult T3Core(
@@ -1221,6 +1562,29 @@ namespace TANet.Core
             Func<double[], double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Vidya(input, period, cmoPeriod, signalLogic);
+        }
+
+        /* VWAP */
+
+        private static VwapResult VWAP(
+            List<Candle> candles,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            var close = candles.Select(c => c.Close).ToArray();
+            var volume = candles.Select(c => c.Volume).ToArray();
+            return VWAP(high, low, close, volume, signalLogic);
+        }
+
+        private static VwapResult VWAP(
+            double[] high,
+            double[] low,
+            double[] close,
+            double[] volume,
+            Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Vwap(high, low, close, volume, signalLogic);
         }
 
         /* VWMA */

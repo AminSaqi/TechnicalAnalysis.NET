@@ -6,7 +6,7 @@ This package targets .NET Standard 2.0 and can be used independently when an
 application needs the data contracts without the indicator calculations.
 
 ```bash
-dotnet add package TechnicalAnalysis.Net.Contracts --version 3.1.0
+dotnet add package TechnicalAnalysis.Net.Contracts --version 3.2.0
 ```
 
 To calculate indicators, install `TechnicalAnalysis.Net` instead. It brings in
@@ -21,6 +21,9 @@ this package as a dependency.
 - `TANet.Contracts.OperationResults.Indicators` contains the result types
   returned by indicator calculations. Results expose `Success`, `Message`,
   `IndicatorSignal`, and indicator-specific output series.
+
+Version 3.2.0 adds result types for ADX, Donchian Channels, Ichimoku,
+Keltner Channels, MOM, OBV, SuperTrend, and VWAP.
 
 For example:
 
