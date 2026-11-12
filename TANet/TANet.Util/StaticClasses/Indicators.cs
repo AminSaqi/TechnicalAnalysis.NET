@@ -612,6 +612,69 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static HeikinAshiResult HeikinAshi(
+            double[] open,
+            double[] high,
+            double[] low,
+            double[] close,
+            Func<double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(open);
+                ArgumentNullException.ThrowIfNull(high);
+                ArgumentNullException.ThrowIfNull(low);
+                ArgumentNullException.ThrowIfNull(close);
+                if (open.Length != high.Length || open.Length != low.Length || open.Length != close.Length)
+                {
+                    throw new ArgumentException("Open, high, low and close series must have the same length.");
+                }
+
+                var chronologicalOpen = CopyToChronologicalOrder(open);
+                var chronologicalHigh = CopyToChronologicalOrder(high);
+                var chronologicalLow = CopyToChronologicalOrder(low);
+                var chronologicalClose = CopyToChronologicalOrder(close);
+                var outputOpen = new double[open.Length];
+                var outputHigh = new double[open.Length];
+                var outputLow = new double[open.Length];
+                var outputClose = new double[open.Length];
+                var range = TALib.Core.Default.Ha(0, open.Length - 1,
+                    chronologicalOpen, chronologicalHigh, chronologicalLow, chronologicalClose,
+                    outputOpen, outputHigh, outputLow, outputClose);
+
+                CompleteNewestFirstOutput(outputOpen, range.Count);
+                CompleteNewestFirstOutput(outputHigh, range.Count);
+                CompleteNewestFirstOutput(outputLow, range.Count);
+                CompleteNewestFirstOutput(outputClose, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (signalLogic != null && outputOpen.HasValidData() && outputHigh.HasValidData() &&
+                    outputLow.HasValidData() && outputClose.HasValidData())
+                {
+                    indicatorSignal = signalLogic.Invoke(outputOpen, outputHigh, outputLow, outputClose);
+                }
+
+                return new HeikinAshiResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Open = outputOpen,
+                    High = outputHigh,
+                    Low = outputLow,
+                    Close = outputClose
+                };
+            }
+            catch (Exception ex)
+            {
+                return new HeikinAshiResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
         public static MovingAverageResult Hma(
             double[] input,
             int period,

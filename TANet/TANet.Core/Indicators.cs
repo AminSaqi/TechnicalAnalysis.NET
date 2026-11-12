@@ -296,6 +296,27 @@ namespace TANet.Core
 
         #endregion        
 
+        #region HeikinAshi
+
+        public static HeikinAshiResult HeikinAshi(double[] open, double[] high, double[] low, double[] close)
+        {
+            return HA(open, high, low, close);
+        }
+        public static HeikinAshiResult HeikinAshi(double[] open, double[] high, double[] low, double[] close, Func<double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return HA(open, high, low, close, signalLogic);
+        }
+        public static HeikinAshiResult HeikinAshi(List<Candle> candles)
+        {
+            return HA(candles);
+        }
+        public static HeikinAshiResult HeikinAshi(List<Candle> candles, Func<double[], double[], double[], double[], IndicatorSignal> signalLogic)
+        {
+            return HA(candles, signalLogic);
+        }
+
+        #endregion
+
         #region HMA
 
         public static MovingAverageResult Hma(double[] input, int period)
@@ -1205,6 +1226,29 @@ namespace TANet.Core
             Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Donchian(high, low, period, signalLogic);
+        }
+
+        /* HA */
+
+        private static HeikinAshiResult HA(
+            List<Candle> candles,
+            Func<double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            var open = candles.Select(c => c.Open).ToArray();
+            var high = candles.Select(c => c.High).ToArray();
+            var low = candles.Select(c => c.Low).ToArray();
+            var close = candles.Select(c => c.Close).ToArray();
+            return HA(open, high, low, close, signalLogic);
+        }
+
+        private static HeikinAshiResult HA(
+            double[] open,
+            double[] high,
+            double[] low,
+            double[] close,
+            Func<double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.HeikinAshi(open, high, low, close, signalLogic);
         }
 
         /* ICHIMOKU */

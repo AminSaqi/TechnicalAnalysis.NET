@@ -18,7 +18,8 @@ Install version 3.2.0 with:
 dotnet add package TechnicalAnalysis.Net --version 3.2.0
 ```
 
-The examples and API described here target version 3.2.0.
+The examples target version 3.2.0. Features marked `unreleased` are available
+in this branch's source but are not included in the published 3.2.0 package.
 
 ## What's new in 3.2.0
 
@@ -135,6 +136,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] DONCHIAN — Donchian Channels
 - [x] EMA
 - [x] Extended MACD
+- [x] HA — Heikin-Ashi Candles (unreleased)
 - [x] HMA — Hull Moving Average
 - [x] ICHIMOKU — Ichimoku Kinko Hyo
 - [x] KAMA
@@ -201,7 +203,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] FOSC — Forecast Oscillator
 - [ ] FRACTAL — Williams Fractal
 - [ ] FRAMA — Fractal Adaptive Moving Average
-- [ ] HA — Heikin-Ashi Candles
 - [ ] HT_DCPERIOD — Hilbert Transform - Dominant Cycle Period
 - [ ] HT_DCPHASE — Hilbert Transform - Dominant Cycle Phase
 - [ ] HT_PHASOR — Hilbert Transform - Phasor Components
@@ -286,13 +287,22 @@ but not in the installed TA-Lib C# 0.8.3 API, so they require a dependency revie
 
 The array-based Williams %R overload currently requires a `volume` parameter
 for compatibility, although the calculation does not use it. TA-Lib's other
-technical indicators are planned; candlestick patterns and mathematical
+technical indicators are planned; candlestick pattern recognition and mathematical
 functions are outside the current scope.
 
 ADX measures the strength of a trend, not its direction. Its default signal is
 `Stay`; a custom callback receives the newest-first ADX series when its latest
 value is finite. The warm-up follows the TA-Lib ADX lookback, including its
 configured unstable period.
+
+Heikin-Ashi transforms OHLC prices into four synthetic OHLC series. Its first
+open is the midpoint of the oldest supplied bar's open and close; later opens
+depend on the preceding synthetic candle, so changing the start of the input
+can change the results. The output follows TA-Lib's configured unstable period
+and does not contain candle timestamps or volume. Synthetic prices are not
+necessarily tradable prices. The default signal is `Stay`; custom callbacks
+receive synthetic open, high, low, and close series, in that order, when all
+four latest outputs are finite.
 
 VWAP accumulates typical price weighted by volume from the oldest supplied bar.
 It does not reset at session or date boundaries, including for candle input;
