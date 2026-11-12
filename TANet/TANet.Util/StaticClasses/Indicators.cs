@@ -1722,6 +1722,29 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static TsiResult Tsi(double[] input, int firstPeriod, int secondPeriod, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+                var range = TALib.Core.Default.Tsi(0, input.Length - 1, chronologicalInput, firstPeriod, secondPeriod, output);
+                CompleteNewestFirstOutput(output, range.Count);
+                var signal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    signal = signalLogic != null ? signalLogic.Invoke(output) :
+                        output[0] > 0 ? IndicatorSignal.Buy : output[0] < 0 ? IndicatorSignal.Sell : IndicatorSignal.Stay;
+                }
+                return new TsiResult { Success = true, IndicatorSignal = signal, Tsi = output };
+            }
+            catch (Exception ex)
+            {
+                return new TsiResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
+            }
+        }
+
         public static VarResult Var(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
         {
             try

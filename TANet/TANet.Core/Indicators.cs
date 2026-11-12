@@ -978,6 +978,17 @@ namespace TANet.Core
 
         #endregion
 
+        #region TSI
+
+        public static TsiResult Tsi(double[] input, int firstPeriod, int secondPeriod) => TSI(input, firstPeriod, secondPeriod);
+        public static TsiResult Tsi(double[] input, int firstPeriod, int secondPeriod, Func<double[], IndicatorSignal> signalLogic) => TSI(input, firstPeriod, secondPeriod, signalLogic);
+        public static TsiResult Tsi(List<Candle> input, int firstPeriod, int secondPeriod) => TSI(input, firstPeriod, secondPeriod);
+        public static TsiResult Tsi(List<Candle> input, int firstPeriod, int secondPeriod, Func<double[], IndicatorSignal> signalLogic) => TSI(input, firstPeriod, secondPeriod, signalLogic: signalLogic);
+        public static TsiResult Tsi(List<Candle> input, int firstPeriod, int secondPeriod, IndicatorCalculationBase calculationBase) => TSI(input, firstPeriod, secondPeriod, calculationBase);
+        public static TsiResult Tsi(List<Candle> input, int firstPeriod, int secondPeriod, IndicatorCalculationBase calculationBase, Func<double[], IndicatorSignal> signalLogic) => TSI(input, firstPeriod, secondPeriod, calculationBase, signalLogic);
+
+        #endregion
+
         #region WilliamsR
 
         public static WilliamsRResult WilliamsR(double[] high, double[] low, double[] close, double[] volume, int period)
@@ -1803,6 +1814,20 @@ namespace TANet.Core
         private static TrangeResult TRANGE(double[] high, double[] low, double[] close, Func<double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Trange(high, low, close, signalLogic);
+        }
+
+        /* TSI */
+
+        private static TsiResult TSI(List<Candle> candles, int firstPeriod, int secondPeriod,
+            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return TSI(GetValuesFromCandles(candles, calculationBase), firstPeriod, secondPeriod, signalLogic);
+        }
+
+        private static TsiResult TSI(double[] input, int firstPeriod, int secondPeriod, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Tsi(input, firstPeriod, secondPeriod, signalLogic);
         }
 
         /* VAR */

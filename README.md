@@ -163,6 +163,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] TEMA
 - [x] TRANGE — True Range (unreleased)
 - [x] TRIMA — Triangular Moving Average
+- [x] TSI — True Strength Index (unreleased)
 - [x] VAR — Variance (unreleased)
 - [x] VIDYA — Variable Index Dynamic Average
 - [x] VWAP — Volume Weighted Average Price
@@ -271,7 +272,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] SWAK_HP — Swiss Army Knife - High-Pass Filter
 - [ ] TRIX — 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA
 - [ ] TSF — Time Series Forecast
-- [ ] TSI — True Strength Index
 - [ ] TYPPRICE — Typical Price
 - [ ] ULTOSC — Ultimate Oscillator
 - [ ] VHF — Vertical Horizontal Filter
@@ -314,6 +314,10 @@ the newest-first TRANGE series.
 
 ER compares net movement with the total path over the period. Its default
 signal is `Stay`; a custom callback receives the newest-first ER series.
+
+TSI applies `firstPeriod` and then `secondPeriod` to the momentum and its
+absolute value. Its default signal follows the sign of the latest output, not
+the moment of a zero-line crossing. Custom callbacks receive the TSI series.
 
 VAR returns TA-Lib's rolling population variance. The reference API accepts a
 deviation-count parameter that has no effect; TANet does not expose it. The
