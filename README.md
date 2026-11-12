@@ -135,6 +135,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] DEMA — Double Exponential Moving Average
 - [x] DONCHIAN — Donchian Channels
 - [x] EMA
+- [x] ER — Kaufman Efficiency Ratio (unreleased)
 - [x] Extended MACD
 - [x] HA — Heikin-Ashi Candles (unreleased)
 - [x] HMA — Hull Moving Average
@@ -204,7 +205,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] DX — Directional Movement Index
 - [ ] EFI — Elder's Force Index
 - [ ] EMV — Arms Ease of Movement
-- [ ] ER — Kaufman Efficiency Ratio
 - [ ] ERI — Elder Ray Index (Bull Power / Bear Power)
 - [ ] FISHER — Fisher Transform
 - [ ] FOSC — Forecast Oscillator
@@ -311,6 +311,9 @@ the default signal is `Stay` in that case, while a custom callback can still run
 TRANGE reports true range without smoothing. The oldest bar is `NaN` because it
 has no previous close. The default signal is `Stay`; custom callbacks receive
 the newest-first TRANGE series.
+
+ER compares net movement with the total path over the period. Its default
+signal is `Stay`; a custom callback receives the newest-first ER series.
 
 VAR returns TA-Lib's rolling population variance. The reference API accepts a
 deviation-count parameter that has no effect; TANet does not expose it. The

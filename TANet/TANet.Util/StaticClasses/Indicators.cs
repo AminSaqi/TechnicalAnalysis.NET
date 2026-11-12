@@ -612,6 +612,28 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static ErResult Er(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+                var range = TALib.Core.Default.Er(0, input.Length - 1, chronologicalInput, period, output);
+                CompleteNewestFirstOutput(output, range.Count);
+                var signal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    signal = signalLogic != null ? signalLogic.Invoke(output) : IndicatorSignal.Stay;
+                }
+                return new ErResult { Success = true, IndicatorSignal = signal, Er = output };
+            }
+            catch (Exception ex)
+            {
+                return new ErResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
+            }
+        }
+
         public static HeikinAshiResult HeikinAshi(
             double[] open,
             double[] high,

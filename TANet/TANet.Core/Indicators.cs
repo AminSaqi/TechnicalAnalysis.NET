@@ -267,6 +267,17 @@ namespace TANet.Core
 
         #endregion
 
+        #region ER
+
+        public static ErResult Er(double[] input, int period) => ER(input, period);
+        public static ErResult Er(double[] input, int period, Func<double[], IndicatorSignal> signalLogic) => ER(input, period, signalLogic);
+        public static ErResult Er(List<Candle> input, int period) => ER(input, period);
+        public static ErResult Er(List<Candle> input, int period, Func<double[], IndicatorSignal> signalLogic) => ER(input, period, signalLogic: signalLogic);
+        public static ErResult Er(List<Candle> input, int period, IndicatorCalculationBase calculationBase) => ER(input, period, calculationBase);
+        public static ErResult Er(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<double[], IndicatorSignal> signalLogic) => ER(input, period, calculationBase, signalLogic);
+
+        #endregion
+
         #region ExtendedMacd
 
         public static MacdResult ExtendedMacd(double[] input, MovingAverageType fastMaType, int fastPeriod, MovingAverageType slowMaType, int slowPeriod, MovingAverageType signalMaType, int signalPeriod)
@@ -1335,6 +1346,20 @@ namespace TANet.Core
             Func<double[], double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.Donchian(high, low, period, signalLogic);
+        }
+
+        /* ER */
+
+        private static ErResult ER(List<Candle> candles, int period,
+            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return ER(GetValuesFromCandles(candles, calculationBase), period, signalLogic);
+        }
+
+        private static ErResult ER(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Er(input, period, signalLogic);
         }
 
         /* HA */
