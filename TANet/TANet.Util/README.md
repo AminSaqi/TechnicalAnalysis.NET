@@ -6,7 +6,7 @@ This package targets .NET 10, uses the official C# TA-Lib package, and depends
 on `TechnicalAnalysis.Net.Contracts`.
 
 ```bash
-dotnet add package TechnicalAnalysis.Net.Util --version 3.1.0
+dotnet add package TechnicalAnalysis.Net.Util --version 3.2.0
 ```
 
 Most consumers should install the main `TechnicalAnalysis.Net` package and use
@@ -49,6 +49,11 @@ other reasons, such as a VWMA window with no volume. Check `Success` before
 accessing the output, and check the relevant series before using its values.
 Custom signal callbacks are not called when the current output required by the
 signal is non-finite.
+
+For VWAP, TA-Lib returns zero before any volume has traded; this is finite, so
+`HasValidData()` returns true even though a weighted average is not yet defined.
+VWAP and OBV accumulate from the oldest supplied observation and do not reset
+automatically at session boundaries.
 
 See the [project README](https://github.com/AminSaqi/TechnicalAnalysis.NET#readme)
 for the full contract, supported indicators, and usage examples.

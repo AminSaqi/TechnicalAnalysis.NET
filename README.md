@@ -12,13 +12,19 @@ upgrading from an earlier major version, see [Migrating to 3.0](#migrating-to-30
 The main `TechnicalAnalysis.Net` package targets .NET 10. Its separate
 `TechnicalAnalysis.Net.Contracts` project targets .NET Standard 2.0.
 
-Install version 3.1.0 with:
+Install version 3.2.0 with:
 
 ```bash
-dotnet add package TechnicalAnalysis.Net --version 3.1.0
+dotnet add package TechnicalAnalysis.Net --version 3.2.0
 ```
 
-The examples and API described here target version 3.1.0.
+The examples and API described here target version 3.2.0.
+
+## What's new in 3.2.0
+
+This release adds ADX, Donchian Channels, Ichimoku, Keltner Channels, MOM,
+OBV, SuperTrend, and VWAP. See the indicator notes below for their output,
+warm-up, signal, and anchoring conventions.
 
 ## Data ordering and results
 
@@ -431,4 +437,4 @@ request.
 
 ## License
 
-See [LICENSE](LICENSE).
+See the [project license](https://github.com/AminSaqi/TechnicalAnalysis.NET/blob/master/LICENSE).
