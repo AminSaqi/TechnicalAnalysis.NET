@@ -644,6 +644,17 @@ namespace TANet.Core
 
         #endregion
 
+        #region ROC
+
+        public static RocResult Roc(double[] input, int period) => ROC(input, period);
+        public static RocResult Roc(double[] input, int period, Func<double[], IndicatorSignal> signalLogic) => ROC(input, period, signalLogic);
+        public static RocResult Roc(List<Candle> input, int period) => ROC(input, period);
+        public static RocResult Roc(List<Candle> input, int period, Func<double[], IndicatorSignal> signalLogic) => ROC(input, period, signalLogic: signalLogic);
+        public static RocResult Roc(List<Candle> input, int period, IndicatorCalculationBase calculationBase) => ROC(input, period, calculationBase);
+        public static RocResult Roc(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<double[], IndicatorSignal> signalLogic) => ROC(input, period, calculationBase, signalLogic);
+
+        #endregion
+
         #region RSI
 
         public static RsiResult Rsi(double[] input, int period)
@@ -1548,6 +1559,20 @@ namespace TANet.Core
             Func<double[], double[], double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.ParabolicSar(high, low, acceleration, maximum, signalLogic);
+        }
+
+        /* ROC */
+
+        private static RocResult ROC(List<Candle> candles, int period,
+            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return ROC(GetValuesFromCandles(candles, calculationBase), period, signalLogic);
+        }
+
+        private static RocResult ROC(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Roc(input, period, signalLogic);
         }
 
         /* RSI */

@@ -150,6 +150,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] OBV — On Balance Volume
 - [x] Parabolic SAR
 - [x] RMA — Wilder's Smoothed Moving Average
+- [x] ROC — Rate of change : ((price/prevPrice)-1)*100 (unreleased)
 - [x] RSI
 - [x] SMA
 - [x] STDDEV — Standard Deviation (unreleased)
@@ -247,7 +248,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] PVO — Percentage Volume Oscillator
 - [ ] PVT — Price Volume Trend
 - [ ] QSTICK — Qstick
-- [ ] ROC — Rate of change : ((price/prevPrice)-1)*100
 - [ ] ROCP — Rate of change Percentage: (price-prevPrice)/prevPrice
 - [ ] ROCR — Rate of change ratio: (price/prevPrice)
 - [ ] ROCR100 — Rate of change ratio 100 scale: (price/prevPrice)*100
@@ -298,6 +298,9 @@ configured unstable period.
 STDDEV returns TA-Lib's population standard deviation, scaled by the optional
 multiplier (default `1`). Its default signal is `Stay`; a custom callback receives
 the newest-first STDDEV output when its latest value is finite.
+
+ROC reports percentage price change. The default signal follows the sign of the
+current value; an exactly zero reference price yields zero as in TA-Lib.
 
 VAR returns TA-Lib's rolling population variance. The reference API accepts a
 deviation-count parameter that has no effect; TANet does not expose it. The
