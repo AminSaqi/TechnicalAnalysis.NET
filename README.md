@@ -157,6 +157,7 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] T3 — Triple Exponential Moving Average (Tillson's T3)
 - [x] TEMA
 - [x] TRIMA — Triangular Moving Average
+- [x] VAR — Variance (unreleased)
 - [x] VIDYA — Variable Index Dynamic Average
 - [x] VWAP — Volume Weighted Average Price
 - [x] VWMA — Volume Weighted Moving Average
@@ -273,7 +274,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] TSI — True Strength Index
 - [ ] TYPPRICE — Typical Price
 - [ ] ULTOSC — Ultimate Oscillator
-- [ ] VAR — Variance
 - [ ] VHF — Vertical Horizontal Filter
 - [ ] VORTEX — Vortex Indicator
 - [ ] WAD — Williams' Accumulation/Distribution
@@ -298,6 +298,10 @@ configured unstable period.
 STDDEV returns TA-Lib's population standard deviation, scaled by the optional
 multiplier (default `1`). Its default signal is `Stay`; a custom callback receives
 the newest-first STDDEV output when its latest value is finite.
+
+VAR returns TA-Lib's rolling population variance. The reference API accepts a
+deviation-count parameter that has no effect; TANet does not expose it. The
+default signal is `Stay` and a custom callback receives the VAR output.
 
 Heikin-Ashi transforms OHLC prices into four synthetic OHLC series. Its first
 open is the midpoint of the oldest supplied bar's open and close; later opens

@@ -935,6 +935,17 @@ namespace TANet.Core
 
         #endregion
 
+        #region VAR
+
+        public static VarResult Var(double[] input, int period) => VAR(input, period);
+        public static VarResult Var(double[] input, int period, Func<double[], IndicatorSignal> signalLogic) => VAR(input, period, signalLogic);
+        public static VarResult Var(List<Candle> input, int period) => VAR(input, period);
+        public static VarResult Var(List<Candle> input, int period, Func<double[], IndicatorSignal> signalLogic) => VAR(input, period, signalLogic: signalLogic);
+        public static VarResult Var(List<Candle> input, int period, IndicatorCalculationBase calculationBase) => VAR(input, period, calculationBase);
+        public static VarResult Var(List<Candle> input, int period, IndicatorCalculationBase calculationBase, Func<double[], IndicatorSignal> signalLogic) => VAR(input, period, calculationBase, signalLogic);
+
+        #endregion
+
         #region VIDYA
 
         public static MovingAverageResult Vidya(double[] input, int period, int cmoPeriod)
@@ -1643,6 +1654,20 @@ namespace TANet.Core
             Func<double[], double[], IndicatorSignal> signalLogic = null)
         {
             return TANet.Util.StaticClasses.Indicators.T3(input, period, vFactor, signalLogic);
+        }
+
+        /* VAR */
+
+        private static VarResult VAR(List<Candle> candles, int period,
+            IndicatorCalculationBase calculationBase = IndicatorCalculationBase.Close,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return VAR(GetValuesFromCandles(candles, calculationBase), period, signalLogic);
+        }
+
+        private static VarResult VAR(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            return TANet.Util.StaticClasses.Indicators.Var(input, period, signalLogic);
         }
 
         /* VIDYA */

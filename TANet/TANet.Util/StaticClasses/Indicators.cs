@@ -1583,6 +1583,24 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static VarResult Var(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+                var range = TALib.Core.Default.Var(0, input.Length - 1, chronologicalInput, period, 1, output);
+                CompleteNewestFirstOutput(output, range.Count);
+                var signal = signalLogic != null && output.HasValidData() ? signalLogic.Invoke(output) : IndicatorSignal.Stay;
+                return new VarResult { Success = true, IndicatorSignal = signal, Var = output };
+            }
+            catch (Exception ex)
+            {
+                return new VarResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
+            }
+        }
+
         public static MovingAverageResult Vidya(
             double[] input,
             int period,
