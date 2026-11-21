@@ -12,13 +12,19 @@ upgrading from an earlier major version, see [Migrating to 3.0](#migrating-to-30
 The main `TechnicalAnalysis.Net` package targets .NET 10. Its separate
 `TechnicalAnalysis.Net.Contracts` project targets .NET Standard 2.0.
 
-Install version 3.2.0 with:
+Install version 3.3.0 with:
 
 ```bash
-dotnet add package TechnicalAnalysis.Net --version 3.2.0
+dotnet add package TechnicalAnalysis.Net --version 3.3.0
 ```
 
-The examples and API described here target version 3.2.0.
+The examples and API described here target version 3.3.0.
+
+## What's new in 3.3.0
+
+This release adds ER, Heikin-Ashi, MEDIAN, ROC, ROCP, ROCR, STDDEV, TRANGE,
+TSI, and VAR. See the indicator notes below for their calculation and signal
+conventions.
 
 ## What's new in 3.2.0
 
@@ -134,7 +140,9 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] DEMA — Double Exponential Moving Average
 - [x] DONCHIAN — Donchian Channels
 - [x] EMA
+- [x] ER — Kaufman Efficiency Ratio
 - [x] Extended MACD
+- [x] HA — Heikin-Ashi Candles
 - [x] HMA — Hull Moving Average
 - [x] ICHIMOKU — Ichimoku Kinko Hyo
 - [x] KAMA
@@ -142,18 +150,26 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] MA — Moving Average
 - [x] MACD
 - [x] MAMA — MESA Adaptive Moving Average
+- [x] MEDIAN — Rolling Median
 - [x] MFI
 - [x] MOM — Momentum
 - [x] OBV — On Balance Volume
 - [x] Parabolic SAR
 - [x] RMA — Wilder's Smoothed Moving Average
+- [x] ROC — Rate of change : ((price/prevPrice)-1)*100
+- [x] ROCP — Rate of change Percentage: (price-prevPrice)/prevPrice
+- [x] ROCR — Rate of change ratio: (price/prevPrice)
 - [x] RSI
 - [x] SMA
+- [x] STDDEV — Standard Deviation
 - [x] Stochastic
 - [x] SUPERTREND — SuperTrend
 - [x] T3 — Triple Exponential Moving Average (Tillson's T3)
 - [x] TEMA
+- [x] TRANGE — True Range
 - [x] TRIMA — Triangular Moving Average
+- [x] TSI — True Strength Index
+- [x] VAR — Variance
 - [x] VIDYA — Variable Index Dynamic Average
 - [x] VWAP — Volume Weighted Average Price
 - [x] VWMA — Volume Weighted Moving Average
@@ -195,13 +211,11 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] DX — Directional Movement Index
 - [ ] EFI — Elder's Force Index
 - [ ] EMV — Arms Ease of Movement
-- [ ] ER — Kaufman Efficiency Ratio
 - [ ] ERI — Elder Ray Index (Bull Power / Bear Power)
 - [ ] FISHER — Fisher Transform
 - [ ] FOSC — Forecast Oscillator
 - [ ] FRACTAL — Williams Fractal
 - [ ] FRAMA — Fractal Adaptive Moving Average
-- [ ] HA — Heikin-Ashi Candles
 - [ ] HT_DCPERIOD — Hilbert Transform - Dominant Cycle Period
 - [ ] HT_DCPHASE — Hilbert Transform - Dominant Cycle Phase
 - [ ] HT_PHASOR — Hilbert Transform - Phasor Components
@@ -225,7 +239,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] MASSI — Mass Index
 - [ ] MAVP — Moving average with variable period
 - [ ] MCGD — McGinley Dynamic
-- [ ] MEDIAN — Rolling Median
 - [ ] MEDPRICE — Median Price
 - [ ] MIDPOINT — MidPoint over period
 - [ ] MIDPRICE — Midpoint Price over period
@@ -244,9 +257,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] PVO — Percentage Volume Oscillator
 - [ ] PVT — Price Volume Trend
 - [ ] QSTICK — Qstick
-- [ ] ROC — Rate of change : ((price/prevPrice)-1)*100
-- [ ] ROCP — Rate of change Percentage: (price-prevPrice)/prevPrice
-- [ ] ROCR — Rate of change ratio: (price/prevPrice)
 - [ ] ROCR100 — Rate of change ratio 100 scale: (price/prevPrice)*100
 - [ ] ROGERSSATCHELL — Rogers-Satchell Volatility
 - [ ] RVI — Relative Volatility Index
@@ -258,7 +268,6 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] SMI — Stochastic Momentum Index
 - [ ] SQZMOM — Squeeze Momentum and Level
 - [ ] STC — Schaff Trend Cycle
-- [ ] STDDEV — Standard Deviation
 - [ ] STOCHF — Stochastic Fast
 - [ ] STOCHRSI — Stochastic Relative Strength Index
 - [ ] SWAK_2PHP — Swiss Army Knife - Two-Pole High-Pass Filter
@@ -266,13 +275,10 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [ ] SWAK_BUTTER — Swiss Army Knife - Butterworth Filter
 - [ ] SWAK_GAUSS — Swiss Army Knife - Gaussian Filter
 - [ ] SWAK_HP — Swiss Army Knife - High-Pass Filter
-- [ ] TRANGE — True Range
 - [ ] TRIX — 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA
 - [ ] TSF — Time Series Forecast
-- [ ] TSI — True Strength Index
 - [ ] TYPPRICE — Typical Price
 - [ ] ULTOSC — Ultimate Oscillator
-- [ ] VAR — Variance
 - [ ] VHF — Vertical Horizontal Filter
 - [ ] VORTEX — Vortex Indicator
 - [ ] WAD — Williams' Accumulation/Distribution
@@ -286,13 +292,55 @@ but not in the installed TA-Lib C# 0.8.3 API, so they require a dependency revie
 
 The array-based Williams %R overload currently requires a `volume` parameter
 for compatibility, although the calculation does not use it. TA-Lib's other
-technical indicators are planned; candlestick patterns and mathematical
+technical indicators are planned; candlestick pattern recognition and mathematical
 functions are outside the current scope.
 
 ADX measures the strength of a trend, not its direction. Its default signal is
 `Stay`; a custom callback receives the newest-first ADX series when its latest
 value is finite. The warm-up follows the TA-Lib ADX lookback, including its
 configured unstable period.
+
+STDDEV returns TA-Lib's population standard deviation, scaled by the optional
+multiplier (default `1`). Its default signal is `Stay`; a custom callback receives
+the newest-first STDDEV output when its latest value is finite.
+
+ROC reports percentage price change. The default signal follows the sign of the
+current value; an exactly zero reference price yields zero as in TA-Lib.
+
+ROCP returns fractional price change (multiply by 100 for a percentage). Its
+default signal follows its sign; zero reference prices yield zero as in TA-Lib.
+
+ROCR is centered at 1. When the reference price is zero, TA-Lib returns zero;
+the default signal is `Stay` in that case, while a custom callback can still run.
+
+TRANGE reports true range without smoothing. The oldest bar is `NaN` because it
+has no previous close. The default signal is `Stay`; custom callbacks receive
+the newest-first TRANGE series.
+
+ER compares net movement with the total path over the period. Its default
+signal is `Stay`; a custom callback receives the newest-first ER series.
+
+TSI applies `firstPeriod` and then `secondPeriod` to the momentum and its
+absolute value. Its default signal follows the sign of the latest output, not
+the moment of a zero-line crossing. Custom callbacks receive the TSI series.
+
+VAR returns TA-Lib's rolling population variance. The reference API accepts a
+deviation-count parameter that has no effect; TANet does not expose it. The
+default signal is `Stay` and a custom callback receives the VAR output.
+
+MEDIAN returns the middle value of each rolling window, or the mean of its two
+middle values for an even window. TANet rejects non-finite input because TA-Lib
+cannot reliably maintain the ordering in their presence. The default signal is
+`Stay`; custom callbacks receive the MEDIAN series.
+
+Heikin-Ashi transforms OHLC prices into four synthetic OHLC series. Its first
+open is the midpoint of the oldest supplied bar's open and close; later opens
+depend on the preceding synthetic candle, so changing the start of the input
+can change the results. The output follows TA-Lib's configured unstable period
+and does not contain candle timestamps or volume. Synthetic prices are not
+necessarily tradable prices. The default signal is `Stay`; custom callbacks
+receive synthetic open, high, low, and close series, in that order, when all
+four latest outputs are finite.
 
 VWAP accumulates typical price weighted by volume from the oldest supplied bar.
 It does not reset at session or date boundaries, including for candle input;

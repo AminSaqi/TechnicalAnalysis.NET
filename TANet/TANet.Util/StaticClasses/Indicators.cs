@@ -612,6 +612,91 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static ErResult Er(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+                var range = TALib.Core.Default.Er(0, input.Length - 1, chronologicalInput, period, output);
+                CompleteNewestFirstOutput(output, range.Count);
+                var signal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    signal = signalLogic != null ? signalLogic.Invoke(output) : IndicatorSignal.Stay;
+                }
+                return new ErResult { Success = true, IndicatorSignal = signal, Er = output };
+            }
+            catch (Exception ex)
+            {
+                return new ErResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
+            }
+        }
+
+        public static HeikinAshiResult HeikinAshi(
+            double[] open,
+            double[] high,
+            double[] low,
+            double[] close,
+            Func<double[], double[], double[], double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(open);
+                ArgumentNullException.ThrowIfNull(high);
+                ArgumentNullException.ThrowIfNull(low);
+                ArgumentNullException.ThrowIfNull(close);
+                if (open.Length != high.Length || open.Length != low.Length || open.Length != close.Length)
+                {
+                    throw new ArgumentException("Open, high, low and close series must have the same length.");
+                }
+
+                var chronologicalOpen = CopyToChronologicalOrder(open);
+                var chronologicalHigh = CopyToChronologicalOrder(high);
+                var chronologicalLow = CopyToChronologicalOrder(low);
+                var chronologicalClose = CopyToChronologicalOrder(close);
+                var outputOpen = new double[open.Length];
+                var outputHigh = new double[open.Length];
+                var outputLow = new double[open.Length];
+                var outputClose = new double[open.Length];
+                var range = TALib.Core.Default.Ha(0, open.Length - 1,
+                    chronologicalOpen, chronologicalHigh, chronologicalLow, chronologicalClose,
+                    outputOpen, outputHigh, outputLow, outputClose);
+
+                CompleteNewestFirstOutput(outputOpen, range.Count);
+                CompleteNewestFirstOutput(outputHigh, range.Count);
+                CompleteNewestFirstOutput(outputLow, range.Count);
+                CompleteNewestFirstOutput(outputClose, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (signalLogic != null && outputOpen.HasValidData() && outputHigh.HasValidData() &&
+                    outputLow.HasValidData() && outputClose.HasValidData())
+                {
+                    indicatorSignal = signalLogic.Invoke(outputOpen, outputHigh, outputLow, outputClose);
+                }
+
+                return new HeikinAshiResult
+                {
+                    Success = true,
+                    IndicatorSignal = indicatorSignal,
+                    Open = outputOpen,
+                    High = outputHigh,
+                    Low = outputLow,
+                    Close = outputClose
+                };
+            }
+            catch (Exception ex)
+            {
+                return new HeikinAshiResult
+                {
+                    Success = false,
+                    IndicatorSignal = IndicatorSignal.Stay,
+                    Message = ex.ToString()
+                };
+            }
+        }
+
         public static MovingAverageResult Hma(
             double[] input,
             int period,
@@ -960,6 +1045,30 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static MedianResult Median(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                foreach (var value in input)
+                {
+                    if (!double.IsFinite(value))
+                        throw new ArgumentException("Median input values must be finite.", nameof(input));
+                }
+
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+                var range = TALib.Core.Default.Median(0, input.Length - 1, chronologicalInput, period, output);
+                CompleteNewestFirstOutput(output, range.Count);
+                var signal = signalLogic != null && output.HasValidData() ? signalLogic.Invoke(output) : IndicatorSignal.Stay;
+                return new MedianResult { Success = true, IndicatorSignal = signal, Median = output };
+            }
+            catch (Exception ex)
+            {
+                return new MedianResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
+            }
+        }
+
         public static MfiResult Mfi(double[] inputHigh,
             double[] inputLow,
             double[] inputClose,
@@ -1218,6 +1327,73 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static RocResult Roc(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+                var range = TALib.Core.Default.Roc(0, input.Length - 1, chronologicalInput, period, output);
+                CompleteNewestFirstOutput(output, range.Count);
+                var signal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    signal = signalLogic != null ? signalLogic.Invoke(output) : output[0] > 0 ? IndicatorSignal.Buy : output[0] < 0 ? IndicatorSignal.Sell : IndicatorSignal.Stay;
+                }
+                return new RocResult { Success = true, IndicatorSignal = signal, Roc = output };
+            }
+            catch (Exception ex)
+            {
+                return new RocResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
+            }
+        }
+
+        public static RocpResult Rocp(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+                var range = TALib.Core.Default.Rocp(0, input.Length - 1, chronologicalInput, period, output);
+                CompleteNewestFirstOutput(output, range.Count);
+                var signal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    signal = signalLogic != null ? signalLogic.Invoke(output) : output[0] > 0 ? IndicatorSignal.Buy : output[0] < 0 ? IndicatorSignal.Sell : IndicatorSignal.Stay;
+                }
+                return new RocpResult { Success = true, IndicatorSignal = signal, Rocp = output };
+            }
+            catch (Exception ex)
+            {
+                return new RocpResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
+            }
+        }
+
+        public static RocrResult Rocr(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+                var range = TALib.Core.Default.Rocr(0, input.Length - 1, chronologicalInput, period, output);
+                CompleteNewestFirstOutput(output, range.Count);
+                var signal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    signal = signalLogic != null ? signalLogic.Invoke(output) : (input[period == int.MinValue ? 10 : period] == 0 ? IndicatorSignal.Stay :
+                        output[0] > 1 ? IndicatorSignal.Buy : output[0] < 1 ? IndicatorSignal.Sell : IndicatorSignal.Stay);
+                }
+                return new RocrResult { Success = true, IndicatorSignal = signal, Rocr = output };
+            }
+            catch (Exception ex)
+            {
+                return new RocrResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
+            }
+        }
+
         public static RsiResult Rsi(double[] input, int period, Func<double[], IndicatorSignal> rsiSignalLogic = null)
         {
             try
@@ -1257,6 +1433,31 @@ namespace TANet.Util.StaticClasses
                     IndicatorSignal = IndicatorSignal.Stay,
                     Message = ex.ToString()
                 };
+            }
+        }
+
+        public static StddevResult Stddev(double[] input, int period, double multiplier = 1,
+            Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+                var range = TALib.Core.Default.Stddev(0, input.Length - 1, chronologicalInput, period, multiplier, output);
+                CompleteNewestFirstOutput(output, range.Count);
+
+                var indicatorSignal = IndicatorSignal.Stay;
+                if (signalLogic != null && output.HasValidData())
+                {
+                    indicatorSignal = signalLogic.Invoke(output);
+                }
+
+                return new StddevResult { Success = true, IndicatorSignal = indicatorSignal, Stddev = output };
+            }
+            catch (Exception ex)
+            {
+                return new StddevResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
             }
         }
 
@@ -1448,6 +1649,32 @@ namespace TANet.Util.StaticClasses
             }
         }
 
+        public static TrangeResult Trange(double[] high, double[] low, double[] close, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(high);
+                ArgumentNullException.ThrowIfNull(low);
+                ArgumentNullException.ThrowIfNull(close);
+                if (high.Length != low.Length || high.Length != close.Length)
+                    throw new ArgumentException("High, low and close series must have the same length.");
+
+                var chronologicalHigh = CopyToChronologicalOrder(high);
+                var chronologicalLow = CopyToChronologicalOrder(low);
+                var chronologicalClose = CopyToChronologicalOrder(close);
+                var output = new double[high.Length];
+                var range = TALib.Core.Default.Trange(0, high.Length - 1,
+                    chronologicalHigh, chronologicalLow, chronologicalClose, output);
+                CompleteNewestFirstOutput(output, range.Count);
+                var signal = signalLogic != null && output.HasValidData() ? signalLogic.Invoke(output) : IndicatorSignal.Stay;
+                return new TrangeResult { Success = true, IndicatorSignal = signal, Trange = output };
+            }
+            catch (Exception ex)
+            {
+                return new TrangeResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
+            }
+        }
+
         public static MovingAverageResult Trima(
             double[] input,
             int period,
@@ -1492,6 +1719,47 @@ namespace TANet.Util.StaticClasses
                     IndicatorSignal = IndicatorSignal.Stay,
                     Message = ex.ToString()
                 };
+            }
+        }
+
+        public static TsiResult Tsi(double[] input, int firstPeriod, int secondPeriod, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+                var range = TALib.Core.Default.Tsi(0, input.Length - 1, chronologicalInput, firstPeriod, secondPeriod, output);
+                CompleteNewestFirstOutput(output, range.Count);
+                var signal = IndicatorSignal.Stay;
+                if (output.HasValidData())
+                {
+                    signal = signalLogic != null ? signalLogic.Invoke(output) :
+                        output[0] > 0 ? IndicatorSignal.Buy : output[0] < 0 ? IndicatorSignal.Sell : IndicatorSignal.Stay;
+                }
+                return new TsiResult { Success = true, IndicatorSignal = signal, Tsi = output };
+            }
+            catch (Exception ex)
+            {
+                return new TsiResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
+            }
+        }
+
+        public static VarResult Var(double[] input, int period, Func<double[], IndicatorSignal> signalLogic = null)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(input);
+                var chronologicalInput = CopyToChronologicalOrder(input);
+                var output = new double[input.Length];
+                var range = TALib.Core.Default.Var(0, input.Length - 1, chronologicalInput, period, 1, output);
+                CompleteNewestFirstOutput(output, range.Count);
+                var signal = signalLogic != null && output.HasValidData() ? signalLogic.Invoke(output) : IndicatorSignal.Stay;
+                return new VarResult { Success = true, IndicatorSignal = signal, Var = output };
+            }
+            catch (Exception ex)
+            {
+                return new VarResult { Success = false, IndicatorSignal = IndicatorSignal.Stay, Message = ex.ToString() };
             }
         }
 
