@@ -6,7 +6,7 @@ This package targets .NET 10, uses the official C# TA-Lib package, and depends
 on `TechnicalAnalysis.Net.Contracts`.
 
 ```bash
-dotnet add package TechnicalAnalysis.Net.Util --version 3.2.0
+dotnet add package TechnicalAnalysis.Net.Util --version 3.3.0
 ```
 
 Most consumers should install the main `TechnicalAnalysis.Net` package and use

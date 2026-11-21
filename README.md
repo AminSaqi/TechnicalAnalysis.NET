@@ -12,14 +12,19 @@ upgrading from an earlier major version, see [Migrating to 3.0](#migrating-to-30
 The main `TechnicalAnalysis.Net` package targets .NET 10. Its separate
 `TechnicalAnalysis.Net.Contracts` project targets .NET Standard 2.0.
 
-Install version 3.2.0 with:
+Install version 3.3.0 with:
 
 ```bash
-dotnet add package TechnicalAnalysis.Net --version 3.2.0
+dotnet add package TechnicalAnalysis.Net --version 3.3.0
 ```
 
-The examples target version 3.2.0. Features marked `unreleased` are available
-in this branch's source but are not included in the published 3.2.0 package.
+The examples and API described here target version 3.3.0.
+
+## What's new in 3.3.0
+
+This release adds ER, Heikin-Ashi, MEDIAN, ROC, ROCP, ROCR, STDDEV, TRANGE,
+TSI, and VAR. See the indicator notes below for their calculation and signal
+conventions.
 
 ## What's new in 3.2.0
 
@@ -135,9 +140,9 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] DEMA — Double Exponential Moving Average
 - [x] DONCHIAN — Donchian Channels
 - [x] EMA
-- [x] ER — Kaufman Efficiency Ratio (unreleased)
+- [x] ER — Kaufman Efficiency Ratio
 - [x] Extended MACD
-- [x] HA — Heikin-Ashi Candles (unreleased)
+- [x] HA — Heikin-Ashi Candles
 - [x] HMA — Hull Moving Average
 - [x] ICHIMOKU — Ichimoku Kinko Hyo
 - [x] KAMA
@@ -145,26 +150,26 @@ Check `result.Success` and the relevant output series as in the SMA example.
 - [x] MA — Moving Average
 - [x] MACD
 - [x] MAMA — MESA Adaptive Moving Average
-- [x] MEDIAN — Rolling Median (unreleased)
+- [x] MEDIAN — Rolling Median
 - [x] MFI
 - [x] MOM — Momentum
 - [x] OBV — On Balance Volume
 - [x] Parabolic SAR
 - [x] RMA — Wilder's Smoothed Moving Average
-- [x] ROC — Rate of change : ((price/prevPrice)-1)*100 (unreleased)
-- [x] ROCP — Rate of change Percentage: (price-prevPrice)/prevPrice (unreleased)
-- [x] ROCR — Rate of change ratio: (price/prevPrice) (unreleased)
+- [x] ROC — Rate of change : ((price/prevPrice)-1)*100
+- [x] ROCP — Rate of change Percentage: (price-prevPrice)/prevPrice
+- [x] ROCR — Rate of change ratio: (price/prevPrice)
 - [x] RSI
 - [x] SMA
-- [x] STDDEV — Standard Deviation (unreleased)
+- [x] STDDEV — Standard Deviation
 - [x] Stochastic
 - [x] SUPERTREND — SuperTrend
 - [x] T3 — Triple Exponential Moving Average (Tillson's T3)
 - [x] TEMA
-- [x] TRANGE — True Range (unreleased)
+- [x] TRANGE — True Range
 - [x] TRIMA — Triangular Moving Average
-- [x] TSI — True Strength Index (unreleased)
-- [x] VAR — Variance (unreleased)
+- [x] TSI — True Strength Index
+- [x] VAR — Variance
 - [x] VIDYA — Variable Index Dynamic Average
 - [x] VWAP — Volume Weighted Average Price
 - [x] VWMA — Volume Weighted Moving Average
